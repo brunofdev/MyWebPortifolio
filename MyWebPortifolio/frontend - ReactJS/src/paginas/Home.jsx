@@ -12,6 +12,7 @@ import "../styles/home.css";
 import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
+import MatrixBackground from "../components/MatrixBackground";
 
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
@@ -30,6 +31,7 @@ const Home = () => {
 
   return (
     <div className="container">
+      <MatrixBackground />
       <Header />
       <div className="content">
         {/* Modal 1 */}

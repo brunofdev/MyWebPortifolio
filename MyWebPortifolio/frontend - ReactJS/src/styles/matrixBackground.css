@@ -1,0 +1,10 @@
+.matrix-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Coloca o canvas atrás de todo o conteúdo */
+  opacity: 0.3; /* Baixa opacidade para um efeito sutil */
+  pointer-events: none; /* Impede interação com o canvas */
+}
