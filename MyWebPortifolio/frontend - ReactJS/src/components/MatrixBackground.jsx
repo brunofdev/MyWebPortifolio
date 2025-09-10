@@ -1,61 +1,63 @@
 import React, { useEffect, useRef } from "react";
-import "../styles/matrixBackground.css"
-
+import "../styles/matrixBackground.css";
 
 const MatrixBackground = () => {
   const canvasRef = useRef(null);
+  const mouse = useRef({ x: -100, y: -100 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Configura o tamanho do canvas para cobrir a janela
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     resizeCanvas();
 
-    // Configurações do efeito Matrix
-    const fontSize = 14;
+    const fontSize = 16;
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?";
     const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(0); // Posição inicial de cada coluna
+    const drops = Array(columns).fill(0);
 
-    // Cores consistentes com o tema da aplicação
-    const baseGreen = "#4caf50";
+    const baseGreen = "#00ff00";
     const glowGreen = "#00ff88";
+    const redColor = "#ff3333"; // cor das letras empurradas
 
-    // Função para desenhar o efeito
     const draw = () => {
-      // Adiciona um fundo semi-transparente para efeito de fade
-      ctx.fillStyle = "rgba(8, 8, 8, 0.05)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = `${fontSize}px monospace`;
 
-      // Loop por cada coluna
       for (let i = 0; i < drops.length; i++) {
         const char = chars.charAt(Math.floor(Math.random() * chars.length));
         const x = i * fontSize;
-        const y = drops[i] * fontSize;
+        let y = drops[i] * fontSize;
 
-        // Alterna entre cores para efeito de brilho
-        ctx.fillStyle = Math.random() > 0.5 ? baseGreen : glowGreen;
+        const dx = mouse.current.x - x;
+        const dy = mouse.current.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Letras próximas ao mouse são empurradas e ficam vermelhas
+        if (dist < 150) {
+          drops[i] = Math.max(drops[i] - Math.ceil((150 - dist) / 10), 0);
+          ctx.fillStyle = redColor;
+        } else {
+          ctx.fillStyle = Math.random() > 0.3 ? baseGreen : glowGreen;
+        }
+
         ctx.fillText(char, x, y);
 
-        // Reseta a coluna ao chegar ao fim da tela
-        if (y > canvas.height && Math.random() > 0.975) {
+        if (y > canvas.height && Math.random() > 0.95) {
           drops[i] = 0;
         }
-        drops[i]++;
+        drops[i] += 1 + Math.random() * 1.5;
       }
     };
 
-    // Inicia a animação
-    const interval = setInterval(draw, 50);
+    const interval = setInterval(draw, 35);
 
-    // Ajusta o canvas ao redimensionar a janela
     const handleResize = () => {
       resizeCanvas();
       drops.length = Math.floor(canvas.width / fontSize);
@@ -63,10 +65,16 @@ const MatrixBackground = () => {
     };
     window.addEventListener("resize", handleResize);
 
-    // Limpeza ao desmontar o componente
+    const handleMouseMove = (e) => {
+      mouse.current.x = e.clientX;
+      mouse.current.y = e.clientY;
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+
     return () => {
       clearInterval(interval);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 

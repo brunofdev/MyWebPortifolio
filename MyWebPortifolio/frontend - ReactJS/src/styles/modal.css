@@ -1,19 +1,22 @@
 .modal-overlay {
-    position: fixed; /* Fixa o modal em toda a tela */
+    position: fixed;
     top: 0;
-    left:0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Fundo escuro semi-transparente */
-    padding: 100px;
-    display: flex; /* Centraliza o conteúdo */
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
     justify-content: center;
-    z-index: 1; /* Coloca o modal acima de outros elementos */
-    
-  }
+    align-items: center;
+    z-index: 1000; /* garante que modal fique acima do header */
+    padding: 0; /* melhor ajuste para centralizar */
+}
 
 .container-modal{
     width: 600px;
-    height: 300px;
-   
+    max-width: 90%;
+    background-color: #1e1e1e;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0,255,0,0.5);
 }

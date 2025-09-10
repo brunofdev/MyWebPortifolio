@@ -1,27 +1,51 @@
 .header {
-  background-color: #4caf50;
-  padding: 10px 20px;
-  border-radius: 6px;
+  background-color: #121212;
+  padding: 15px 30px;
+  border-radius: 0 0 10px 10px;
   position: sticky;
   top: 0;
-  z-index: 1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 200; /* menor que o modal */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
 }
-
 .nav {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 35px;
 }
 
 .nav-link {
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
-  transition: color 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Efeito de underline animado no hover */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
 
 .nav-link:hover {
   color: #4caf50;
+  transform: scale(1.05);
 }
