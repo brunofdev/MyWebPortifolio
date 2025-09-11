@@ -19,6 +19,13 @@
   text-align: center;
 }
 
+.feedback h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #bbb;
+}
+
 .feedback-stars {
   display: flex;
   justify-content: center;
@@ -97,4 +104,26 @@
 .feedback-submitted p {
   font-size: 18px;
   color: #4caf50;
+}
+
+/* 🚨 Aviso flutuante para palavrões detectados */
+.feedback-warning {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffcc00;
+  color: #333;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
