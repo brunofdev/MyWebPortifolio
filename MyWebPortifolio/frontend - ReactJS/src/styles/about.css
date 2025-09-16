@@ -1,16 +1,106 @@
 .about {
-  background-color: #181818;
-  transition: bgChange 6s ease infinite alternate-reverse;
   padding: 20px;
-  border: 2px solid #4caf50;
-  border-radius: 10px;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+  max-width: 100%;
+  box-sizing: border-box;
+  max-height: 80vh;
+  overflow-y: auto;
 }
-.about:hover{
-    border: 2px solid #f50505;
-  }
-  
+
+.about:hover {
+  border-color: #f50505;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
 .about h2 {
-  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #ffffff;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.about h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #4caf50;
+  transition: background-color 0.3s ease;
+}
+
+.about:hover h2::after {
+  background-color: #f50505;
+}
+
+.about p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #e5e7eb;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeInText 0.8s ease-out forwards;
+}
+
+.about p:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.about p:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Custom Scrollbar */
+.about::-webkit-scrollbar {
+  width: 8px;
+}
+
+.about::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.about::-webkit-scrollbar-thumb {
+  background: #4caf50;
+  border-radius: 4px;
+}
+
+.about::-webkit-scrollbar-thumb:hover {
+  background: #f50505;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .about {
+    padding: 24px;
+    max-height: 70vh;
+  }
+
+  .about h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .about p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
 }
