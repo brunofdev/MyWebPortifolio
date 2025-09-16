@@ -14,6 +14,7 @@ import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
 import MatrixBackground from "../components/MatrixBackground";
 
+
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
 
@@ -48,24 +49,31 @@ const Home = () => {
         </Modal>
         <Sidebar />
         <main className="main-content">
-          <section className="section-about" id="about" onClick={() => openModal(2)}>
-            Quem é Bruno de Fraga? 
-          </section>
-          <section className="section-experience" id="experience" onClick={() => openModal(3)}>
-            Experiencias
-          </section>
-          <section id="skills">
-            <Skills />
-          </section>
-          <section id="projects">
-            <Projects />
-          </section>
-          <section id="contact">
-            <Contact />
-          </section>
-          <section id="feedback">
-            <Feedback />
-          </section>
+          <div className="main-container">
+            <section className="section-about" id="about">
+              <About />
+            </section>
+            <hr className="separator" />
+            <section className="section-experience" id="experience">
+              <Experience />
+            </section>
+            <hr className="separator" />
+            <section id="skills">
+              <Skills />
+            </section>
+            <hr className="separator" />
+            <section id="projects">
+              <Projects />
+            </section>
+            <hr className="separator" />
+            <section id="contact">
+              <Contact />
+            </section>
+            <hr className="separator" />
+            <section id="feedback">
+              <Feedback />
+            </section>
+          </div>
         </main>
       </div>
       <Footer />

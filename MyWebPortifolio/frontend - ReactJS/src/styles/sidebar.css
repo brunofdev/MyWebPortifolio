@@ -5,12 +5,17 @@
   border-radius: 10px;
   color: #fff;
   text-align: center;
-  height: 43rem;
-  width: 300px;
+  width: 260px;
+  height: 50rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease;
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
 }
-.sidebar:hover{
-  border: 2px solid #f50505;
+
+.sidebar:hover {
+  border-color: #f50505;
 }
 
 .profile-pic {
@@ -26,50 +31,52 @@
   font-size: 14px;
   line-height: 1.6;
 }
-.btn1{
-  background: linear-gradient(135deg,rgb(15, 172, 15) , rgb(51, 51, 51), black);
+
+.btn1 {
+  background: linear-gradient(135deg, rgb(15, 172, 15), rgb(51, 51, 51), black);
   background-size: 200% 200%;
   animation: waveDiagonal 10s ease-in-out infinite;
   margin-top: 15%;
-  color:white;
+  color: white;
   width: 150px;
   height: 40px;
   border: black solid 1px;
   border-radius: 15px;
-}
-.btn1:hover{
-  background: red;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-@keyframes waveDiagonal {
-  
-  0% {
-      background-position: 0% 0%; /* começa no superior esquerdo */
-  }
-  50% {
-      background-position: 100% 100%; /* chega ao inferior direito */
-  }
-  100% {
-      background-position: 0% 0%; /* volta ao superior esquerdo */
- 
-    }
-    
+
+.btn1:hover {
+  background: #f50505;
 }
-.img-qr-code img{
+
+.img-qr-code img {
   width: 150px;
   height: 150px;
   margin-top: 10px;
+  transition: transform 0.3s ease, border 0.3s ease;
 }
-.img-qr-code img:hover{
-  scale: 1.5;
-  transition: 2s;
-  cursor: pointer;
-  border: 2px solid red;
+
+.img-qr-code img:hover {
+  transform: scale(1.5);
+  border: 2px solid #f50505;
   border-radius: 10px;
 }
-.redes-icons img{
+
+.redes-icons img {
   width: 30px;
   height: 30px;
   margin: 20px 10px;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.redes-icons img:hover {
+  transform: scale(1.2);
+}
+
+@keyframes waveDiagonal {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
 }

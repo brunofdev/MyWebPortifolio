@@ -1,20 +1,16 @@
+import ReactDOM from "react-dom";
 import "../styles/modal.css";
-
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="modal-overlay">
+  return ReactDOM.createPortal(
+    <div className="modal-overlay" onClick={onClose}>
       <div className="container-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose} aria-label="Fechar modal">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body // garante que fica por cima de tudo
   );
 };
 
