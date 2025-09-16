@@ -31,16 +31,30 @@
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  filter: url(#static-noise);
-  transition: filter 0.3s ease, transform 0.3s ease;
+  animation: tvStatic 2.5s infinite;
 }
 
+@keyframes tvStatic {
+  0%, 70% {
+    filter: url(#static-noise);
+    opacity: 0.85;
+  }
+  75%, 90% {
+    filter: none;
+    opacity: 1;
+  }
+  95%, 100% {
+    filter: url(#static-noise);
+    opacity: 0.85;
+  }
+}
 
 .project-item:hover img {
   filter: none;
   transform: scale(1.05);
   border-radius: 2px;
   border: 2px solid #f50505;
+  animation: none;
 }
 
 /* Estilos para o conteúdo do modal */
