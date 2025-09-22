@@ -53,7 +53,7 @@ const FeedbackList = () => {
     setIsLoading(true);
     setError(null); // Limpa erros anteriores
     try {
-      const response = await fetch('http://localhost:8080/feedback/listar-todos', {
+      const response = await fetch('https://microservice-feedback.onrender.com/feedback/listar-todos', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
