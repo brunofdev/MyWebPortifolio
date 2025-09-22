@@ -107,13 +107,16 @@
   gap: 5px;
   margin-bottom: 8px;
   font-size: 20px;
-  color: #585a58; /* Estrelas vazias */
 }
 
 /* Estrelas preenchidas */
-.feedback-item-rating::before {
-  content: '★'; /* Estrelas preenchidas são manipuladas no JSX */
+.feedback-item-rating .full-stars {
   color: #ffcc00; /* Amarelo para estrelas preenchidas */
+}
+
+/* Estrelas vazias */
+.feedback-item-rating .empty-stars {
+  color: #585a58; /* Cinza para estrelas vazias */
 }
 
 /* Comentário do feedback */

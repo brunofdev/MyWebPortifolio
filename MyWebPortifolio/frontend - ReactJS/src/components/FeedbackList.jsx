@@ -3,40 +3,53 @@ import '../styles/feedbacklist.css';
 
 // --- Componente: Item de Feedback (Estilo WhatsApp) ---
 const FeedbackItem = ({ feedback }) => {
-  // Formata a data para exibir apenas a hora e os minutos
-  const formatTime = (dateString) => {
+  // Função para formatar a data para exibir data e hora completa
+  const formatDateTime = (dateString) => {
     if (!dateString) {
       console.warn('Data inválida recebida em FeedbackItem:', { feedback });
       return 'Data não disponível';
     }
     try {
+      // O Spring Boot retorna a data e hora no formato ISO 8601,
+      // que o construtor do Date() entende perfeitamente.
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
         console.warn('Data inválida recebida em FeedbackItem:', { dateString, feedback });
         return 'Data não disponível';
       }
-      return date.toLocaleTimeString('pt-BR', {
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      });
+      }) + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     } catch (error) {
       console.warn('Erro ao formatar data em FeedbackItem:', { error, feedback });
       return 'Data não disponível';
     }
   };
 
-  // Valida userRating para evitar erros
-  const userRating = Math.max(0, Math.min(5, Number(feedback.userRating) || 0));
+  // Renderiza as estrelas de avaliação dinamicamente
+  const renderRating = (rating) => {
+    // Garante que a nota seja um número entre 1 e 5
+    const validatedRating = Math.max(1, Math.min(5, Number(rating) || 1));
+    const fullStars = '★'.repeat(validatedRating);
+    const emptyStars = '☆'.repeat(5 - validatedRating);
+    return (
+      <div className="feedback-item-rating">
+        <span className="full-stars">{fullStars}</span>
+        <span className="empty-stars">{emptyStars}</span>
+      </div>
+    );
+  };
 
   return (
     <div className="whatsapp-bubble-container">
       <div className="whatsapp-bubble">
-        <div className="feedback-item-rating">
-          {'★'.repeat(userRating)}
-          {'☆'.repeat(5 - userRating)}
-        </div>
+        {renderRating(feedback.userRating)}
         <p className="feedback-item-comment">{feedback.userFeedback || 'Sem comentário'}</p>
-        <div className="feedback-time">{formatTime(feedback.time)}</div>
+        <div className="feedback-time">{formatDateTime(feedback.time)}</div>
       </div>
     </div>
   );
@@ -48,12 +61,15 @@ const FeedbackList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // URL da sua API no Render
+  const API_URL = 'https://microservice-feedback.onrender.com/feedback/listar-todos';
+
   // Função para buscar os feedbacks
   const fetchFeedbacks = async () => {
     setIsLoading(true);
-    setError(null); // Limpa erros anteriores
+    setError(null);
     try {
-      const response = await fetch('https://microservice-feedback.onrender.com/feedback/listar-todos', {
+      const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,17 +77,16 @@ const FeedbackList = () => {
       });
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Endpoint não encontrado. Verifique a configuração do backend.');
+          throw new Error('Endpoint não encontrado. Verifique a URL da API.');
         }
         throw new Error(`Erro ao buscar feedbacks: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
-      // Ordena os feedbacks por data (do mais recente ao mais antigo)
       const sortedFeedbacks = Array.isArray(data)
         ? data.sort((a, b) => {
-            const dateA = a.time ? new Date(a.time) : new Date(0); // Usa epoch para undefined
+            const dateA = a.time ? new Date(a.time) : new Date(0);
             const dateB = b.time ? new Date(b.time) : new Date(0);
-            return dateB.getTime() - dateA.getTime(); // Mais recente primeiro
+            return dateB.getTime() - dateA.getTime();
           })
         : [];
       setFeedbacks(sortedFeedbacks);
@@ -84,12 +99,10 @@ const FeedbackList = () => {
     }
   };
 
-  // Carrega os feedbacks na montagem inicial
   useEffect(() => {
     fetchFeedbacks();
   }, []);
 
-  // Componente auxiliar para renderizar o conteúdo condicional
   const renderContent = () => {
     if (isLoading) {
       return <p className="loading-text">Carregando feedbacks...</p>;
