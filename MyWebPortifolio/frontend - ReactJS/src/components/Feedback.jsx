@@ -197,7 +197,7 @@ const Feedback = () => {
             };
 
             try {
-                const response = await fetch('https://microservice-feedback.onrender.com/feedback/criar-feedback', {
+                const response = await fetch('https://processador-feedbacks.onrender.com/feedback/criar-feedback', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
