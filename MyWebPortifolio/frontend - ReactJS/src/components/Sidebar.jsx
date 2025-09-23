@@ -6,7 +6,7 @@ const Sidebar = ({ isMobile, isOpen }) => {
   return (
     <aside className={isMobile ? `sidebar-mobile ${isOpen ? "open" : ""}` : "sidebar"}>
       <img
-        src="https://rollingstone.com.br/media/_versions/keanu_reeves_como_neo_em_matrix_divulgacao_widelg.jpg"
+        src="../public/imgperfil.png"
         alt="Profile"
         className="profile-pic"
       />
