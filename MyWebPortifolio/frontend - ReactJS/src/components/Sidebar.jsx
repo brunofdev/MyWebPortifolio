@@ -6,7 +6,7 @@ const Sidebar = ({ isMobile, isOpen }) => {
   return (
     <aside className={isMobile ? `sidebar-mobile ${isOpen ? "open" : ""}` : "sidebar"}>
       <img
-        src="../public/imgperfil.png"
+        src="/imgperfil.png"
         alt="Profile"
         className="profile-pic"
       />
