@@ -110,6 +110,37 @@
   color: #f50505;
 }
 
+/* ===== ENGINE BUTTON ===== */
+.engine-button {
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.engine-button:hover:not(:disabled) {
+  background: #f50505;
+  transform: scale(1.05);
+}
+
+.engine-button.error502or500 {
+  background: #ff0000;
+}
+
+.engine-button.error403 {
+  background: #4caf50;
+}
+
+.engine-button:disabled {
+  background: #888888;
+  cursor: not-allowed;
+}
+
 /* ===== MOBILE STYLES ===== */
 @media (max-width: 640px) {
   .nav {
@@ -129,7 +160,6 @@
     box-shadow: -4px 0 15px rgba(0,0,0,0.5);
     z-index: 1100;
     animation: slideIn 0.7s forwards;
-  
   }
 
   .nav-link {
@@ -141,6 +171,11 @@
 
   .menu-toggle {
     display: block;
+  }
+
+  .engine-button {
+    font-size: 1rem;
+    padding: 8px 16px;
   }
 }
 
