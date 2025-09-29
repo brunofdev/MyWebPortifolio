@@ -7,20 +7,22 @@ import Skills from "../components/Skills";
 import Projects from "../components/Projects";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
-import "../styles/global.css";
-import "../styles/home.css";
+import AuthModal from "../components/AuthModal";
 import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";
 import FeedbackList from "../components/FeedbackList";
 import MatrixBackground from "../components/MatrixBackground";
-
+import "../styles/global.css";
+import "../styles/home.css";
 
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    setActiveModalContent(1);
+    setActiveModalContent(1); // Abre modal de apresentação ao carregar
   }, []);
 
   const openModal = (index) => {
@@ -31,22 +33,46 @@ const Home = () => {
     setActiveModalContent(null);
   };
 
+  const handleLogin = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    closeModal();
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  const openAuthModal = () => {
+    setActiveModalContent("auth");
+  };
+
   return (
     <div className="container">
       <MatrixBackground />
-      <Header />
+      <Header
+        isAuthenticated={isAuthenticated}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+        openAuthModal={openAuthModal}
+      />
       <div className="content">
-        {/* Modal 1 */}
+        {/* Modal de Apresentação */}
         <Modal isOpen={activeModalContent === 1} onClose={closeModal}>
-            <ModalApresentacao onClose={closeModal} />	
+          <ModalApresentacao onClose={closeModal} />
         </Modal>
-        {/* Modal 2*/}
+        {/* Modal de Sobre */}
         <Modal isOpen={activeModalContent === 2} onClose={closeModal}>
           <About />
         </Modal>
-         {/* Modal 3*/}
+        {/* Modal de Experiência */}
         <Modal isOpen={activeModalContent === 3} onClose={closeModal}>
           <Experience />
+        </Modal>
+        {/* Modal de Autenticação */}
+        <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
+          <AuthModal handleLogin={handleLogin} onClose={closeModal} />
         </Modal>
         <Sidebar />
         <main className="main-content">
@@ -72,7 +98,7 @@ const Home = () => {
             </section>
             <hr className="separator" />
             <section id="feedback">
-              <Feedback />
+              <Feedback isAuthenticated={isAuthenticated} openAuthModal={openAuthModal} />
             </section>
             <hr className="separator" />
             <section id="feedbackList">

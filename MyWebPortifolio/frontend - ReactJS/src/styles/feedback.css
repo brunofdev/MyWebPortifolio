@@ -1,195 +1,226 @@
 /* Container principal da página, para centralizar o formulário */
 .feedback-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  font-family: sans-serif;
 }
 
 /* Container do formulário de feedback */
 .feedback {
-    background-color: #181818;
-    padding: 20px;
-    border-radius: 10px;
-    color: #fff;
-    margin-top: 20px;
-    transform: translateY(-3px);
-    font-size: 18px;
-    max-width: 42rem;
-    width: 100%;
-    border: 2px solid transparent;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    transition: border-color 0.3s ease;
+  background-color: #181818;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  margin-top: 20px;
+  transform: translateY(-3px);
+  font-size: 18px;
+  max-width: 42rem;
+  width: 100%;
+  border: 2px solid transparent;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transition: border-color 0.3s ease;
 }
 
 /* Estilo de hover para o contêiner do formulário */
 .feedback:hover {
-    border-color: #1ee208ff;
+  border-color: #1ee208ff;
 }
 
 /* Título principal do formulário */
 .feedback h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 700;
 }
 
 /* Subtítulo do formulário */
 .feedback h3 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #bbb;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #bbb;
+}
+
+/* Mensagem de autenticação necessária */
+.auth-required {
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
+}
+
+.auth-required p {
+  font-size: 16px;
+  color: #ef4444;
+  margin-bottom: 15px;
+}
+
+.login-link {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-link:hover {
+  background: #1976d2;
+  transform: scale(1.05);
 }
 
 /* Estrelas de avaliação */
 .feedback-stars {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 /* Estilo para cada estrela */
 .star {
-    font-size: 30px;
-    color: #585a58;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  font-size: 30px;
+  color: #585a58;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 /* Efeito de hover nas estrelas */
 .star:hover {
-    color: #ff6666;
-    transform: scale(1.25);
+  color: #ff6666;
+  transform: scale(1.25);
 }
 
 /* Estilo para estrelas preenchidas */
 .star.filled {
-    color: #f50505;
+  color: #f50505;
 }
 
 .star.filled:hover {
-    color: #ff6666;
+  color: #ff6666;
 }
 
 /* Caixa de texto do comentário */
 .feedback-comment {
-    width: 100%;
-    min-height: 100px;
-    background-color: #222;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #4caf50;
-    font-size: 16px;
-    resize: vertical;
-    margin-bottom: 10px;
-    box-sizing: border-box;
+  width: 100%;
+  min-height: 100px;
+  background-color: #222;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #4caf50;
+  font-size: 16px;
+  resize: vertical;
+  margin-bottom: 10px;
+  box-sizing: border-box;
 }
 
 /* Estilo de foco na caixa de texto */
 .feedback-comment:focus {
-    outline: none;
-    border-color: #f50505;
+  outline: none;
+  border-color: #f50505;
 }
 
 /* Contador de caracteres */
 .char-count {
-    font-size: 14px;
-    color: #bbb;
-    text-align: right;
-    margin-bottom: 10px;
+  font-size: 14px;
+  color: #bbb;
+  text-align: right;
+  margin-bottom: 10px;
 }
 
 /* Botão de envio */
 .feedback-submit {
-    width: 100%;
-    padding: 12px 24px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+  width: 100%;
+  padding: 12px 24px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 /* Efeito de hover no botão de envio */
 .feedback-submit:hover:not(:disabled) {
-    background-color: #f50505;
-    box-shadow: 0 0 15px rgba(245, 5, 5, 0.5);
-    transform: translateY(-2px);
+  background-color: #f50505;
+  box-shadow: 0 0 15px rgba(245, 5, 5, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Estilo para o botão de envio desabilitado */
 .feedback-submit:disabled {
-    background-color: #585a58;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+  background-color: #585a58;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Mensagem de sucesso após o envio */
 .feedback-submitted {
-    text-align: center;
-    padding: 20px;
-    background-color: #222;
-    border-radius: 5px;
+  text-align: center;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 5px;
 }
 
 .feedback-submitted .thank-you-message {
-    font-size: 18px;
-    color: #4caf50;
+  font-size: 18px;
+  color: #4caf50;
 }
 
 .feedback-submitted .submitted-rating,
 .feedback-submitted .submitted-comment {
-    color: #fff;
-    margin-top: 0.5rem;
-    word-break: break-word;
+  color: #fff;
+  margin-top: 0.5rem;
+  word-break: break-word;
 }
 
 /* Aviso temporário */
 .feedback-warning {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ffcc00;
-    color: #333;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-weight: bold;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
-    animation: fadeInOut 3s ease forwards;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffcc00;
+  color: #333;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
 }
 
 /* Mensagem de erro de envio */
 .submission-error {
-    color: #ef4444;
-    background-color: rgba(153, 27, 27, 0.2);
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 1rem;
+  color: #ef4444;
+  background-color: rgba(153, 27, 27, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 @keyframes fadeInOut {
-    0% { opacity: 0; transform: translateY(-10px); }
-    10% { opacity: 1; transform: translateY(0); }
-    90% { opacity: 1; }
-    100% { opacity: 0; transform: translateY(-10px); }
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
 }

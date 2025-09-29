@@ -1,4 +1,4 @@
-/* ===== HEADER ===== */
+/* ===== CABEÇALHO ===== */
 .header {
   position: sticky;
   top: 0;
@@ -33,7 +33,7 @@
   font-weight: 700;
 }
 
-/* ===== NAVIGATION ===== */
+/* ===== NAVEGAÇÃO ===== */
 .nav {
   display: flex;
   gap: 40px;
@@ -72,7 +72,7 @@
   background: rgba(255,255,255,0.05);
 }
 
-/* ===== MENU TOGGLE (HAMBURGUER) ===== */
+/* ===== BOTÃO HAMBURGUER (MENU MOBILE) ===== */
 .menu-toggle {
   display: none;
   background: #4caf50;
@@ -93,7 +93,7 @@
   height: 24px;
 }
 
-/* ===== CLOSE BUTTON INSIDE MENU ===== */
+/* ===== BOTÃO DE FECHAR MENU ===== */
 .close-menu {
   background: none;
   border: none;
@@ -110,7 +110,30 @@
   color: #f50505;
 }
 
-/* ===== ENGINE BUTTON ===== */
+/* ===== CONTAINER DO BOTÃO LIGAR MOTORES ===== */
+.engine-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+.engine-button-container:hover::after {
+  content: "Este botão serve para 'acordar' nossos serviços, pois como utilizamos plataformas com planos gratuitos, os serviços ficam adormecidos quando inutilizados e demoram cerca de 1 ou 2 minutos para estarem em funcionamento.";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 200px;
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* ===== BOTÃO LIGAR MOTORES ===== */
 .engine-button {
   background: #4caf50;
   color: #ffffff;
@@ -132,7 +155,7 @@
   background: #ff0000;
 }
 
-.engine-button.error403 {
+.engine-button.success {
   background: #4caf50;
 }
 
@@ -141,7 +164,31 @@
   cursor: not-allowed;
 }
 
-/* ===== MOBILE STYLES ===== */
+/* ===== CONTAINER DO BOTÃO DE AUTENTICAÇÃO ===== */
+.auth-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* ===== BOTÃO DE AUTENTICAÇÃO ===== */
+.auth-button {
+  background: #2196f3;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  background: #1976d2;
+  transform: scale(1.05);
+}
+
+/* ===== ESTILOS MOBILE ===== */
 @media (max-width: 640px) {
   .nav {
     display: none;
@@ -173,13 +220,19 @@
     display: block;
   }
 
-  .engine-button {
+  .engine-button,
+  .auth-button {
     font-size: 1rem;
     padding: 8px 16px;
   }
+
+  .engine-button-container:hover::after {
+    width: 150px;
+    font-size: 0.8rem;
+  }
 }
 
-/* ===== ANIMATION ===== */
+/* ===== ANIMAÇÃO ===== */
 @keyframes slideIn {
   from {
     right: -300px;
