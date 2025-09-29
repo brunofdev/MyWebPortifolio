@@ -19,18 +19,28 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   });
 
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Lida com a mudança em qualquer campo de input
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "name") {
+      // Permite apenas letras, espaços, hifens e apóstrofos no campo nome
+      if (!/^[a-zA-Z\s\-\']*$/.test(value)) {
+        setError("O nome deve conter apenas letras, espaços, hifens ou apóstrofos.");
+        return;
+      }
+    }
+    setFormData({ ...formData, [name]: value });
+    setError(""); // Limpa erro ao digitar
   };
 
   // Lida com a mudança de aba, limpando os erros
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setError("");
-    // Limpa o formulário ao trocar de aba para não manter dados antigos
+    setSuccessMessage("");
     setFormData({ name: "", userName: "", password: "", email: "" });
   };
 
@@ -48,13 +58,18 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       setError("O nome é obrigatório para o cadastro.");
       return false;
     }
+    if (!isLogin && !/^[a-zA-Z\s\-\']+$/.test(formData.name)) {
+      setError("O nome deve conter apenas letras, espaços, hifens ou apóstrofos.");
+      return false;
+    }
     return true;
   };
 
   // Função única de submissão para login e registro
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Limpa erros anteriores
+    setError("");
+    setSuccessMessage("");
     setIsLoading(true);
 
     const isLogin = activeTab === "login";
@@ -78,39 +93,40 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         body: JSON.stringify(bodyPayload),
       });
 
-      // Trata erros
+      const data = await response.json();
+
+      // Verifica o status da resposta
       if (!response.ok) {
-        if (response.status === 500 || response.status === 502 || response.status === 503) {
-          throw new Error("Servidor indisponível, tente novamente mais tarde.");
+        if (data.status === false && data.erro?.message) {
+          setError(data.erro.message); // Usa erro.message diretamente
+        } else if (response.status === 500 || response.status === 502 || response.status === 503) {
+          setError("Servidor indisponível, tente novamente mais tarde.");
+        } else if (response.status === 401 || response.status === 403) {
+          setError("Credenciais inválidas, tente novamente.");
+        } else {
+          setError("Ocorreu um erro desconhecido.");
         }
-
-        if (response.status === 401 || response.status === 403) {
-          throw new Error("Credenciais inválidas, tente novamente.");
-        }
-
-        if (response.status === 400) {
-          const errorData = await response.json();
-          const validationErrors = errorData.messages ? Object.values(errorData.messages).join(' ') : 'Dados inválidos.';
-          throw new Error(validationErrors);
-        }
-
-        throw new Error("Ocorreu um erro desconhecido.");
+        setIsLoading(false);
+        return;
       }
 
-      // Para login, espera um JSON com o token
-      if (isLogin) {
-        const data = await response.json();
-        handleLoginSuccess({ token: data.token }); // Passa o token e fecha o modal
-        onClose(); // Fecha o modal após login bem-sucedido
-      } 
-      // Para registro, status 201 com body vazio
-      else if (response.status === 201) {
-        alert('Cadastro realizado com sucesso! Por favor, faça o login.');
-        handleTabChange('login');
+      // Sucesso: status === true
+      if (data.status === true) {
+        if (isLogin) {
+          handleLoginSuccess({ token: data.dados?.token || data.token });
+          onClose();
+        } else {
+          setSuccessMessage(data.message || "Recurso Criado");
+          setTimeout(() => {
+            handleTabChange("login");
+          }, 2000);
+        }
+      } else {
+        setError("Resposta inesperada do servidor.");
       }
 
     } catch (error) {
-      setError(error.message);
+      setError("Erro de conexão com o servidor. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -196,6 +212,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
         {/* Exibição de Erro */}
         {error && <div className="error-message">{error}</div>}
+
+        {/* Exibição de Sucesso */}
+        {successMessage && <div className="success-message">{successMessage}</div>}
 
         <button type="submit" className="submit-button" disabled={isLoading}>
           {isLoading ? "Enviando..." : activeTab === "login" ? "Entrar" : "Cadastrar"}
