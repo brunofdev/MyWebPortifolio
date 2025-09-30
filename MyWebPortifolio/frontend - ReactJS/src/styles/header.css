@@ -25,14 +25,6 @@
   align-items: center;
 }
 
-/* ===== LOGO ===== */
-.logo {
-  color: #4caf50;
-  font-size: 1.0rem;
-  margin: 0;
-  font-weight: 700;
-}
-
 /* ===== NAVEGAÇÃO ===== */
 .nav {
   display: flex;
@@ -110,58 +102,45 @@
   color: #f50505;
 }
 
-/* ===== CONTAINER DO BOTÃO LIGAR MOTORES ===== */
-.engine-button-container {
+/* ===== CONTAINER DO STATUS DOS MOTORES ===== */
+.engine-status-container {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
-.engine-button-container:hover::after {
-  content: "Este botão serve para 'acordar' nossos serviços, pois como utilizamos plataformas com planos gratuitos, os serviços ficam adormecidos quando inutilizados e demoram cerca de 1 ou 2 minutos para estarem em funcionamento.";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  width: 200px;
-  text-align: center;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-/* ===== BOTÃO LIGAR MOTORES ===== */
-.engine-button {
-  background: #4caf50;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
+.engine-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 20px;
+  border-radius: 8px;
   font-size: 1.1rem;
   font-weight: 600;
-  cursor: pointer;
+  color: #ffffff;
   transition: all 0.3s ease;
 }
 
-.engine-button:hover:not(:disabled) {
-  background: #f50505;
-  transform: scale(1.05);
-}
-
-.engine-button.error502or500 {
+.engine-status.loading,
+.engine-status.error {
   background: #ff0000;
 }
 
-.engine-button.success {
+.engine-status.success {
   background: #4caf50;
 }
 
-.engine-button:disabled {
-  background: #888888;
-  cursor: not-allowed;
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ffffff;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.blink {
+  animation: blink 1.5s ease-in-out infinite;
 }
 
 /* ===== CONTAINER DO BOTÃO DE AUTENTICAÇÃO ===== */
@@ -220,19 +199,14 @@
     display: block;
   }
 
-  .engine-button,
+  .engine-status,
   .auth-button {
     font-size: 1rem;
     padding: 8px 16px;
   }
-
-  .engine-button-container:hover::after {
-    width: 150px;
-    font-size: 0.8rem;
-  }
 }
 
-/* ===== ANIMAÇÃO ===== */
+/* ===== ANIMAÇÕES ===== */
 @keyframes slideIn {
   from {
     right: -300px;
@@ -242,4 +216,15 @@
     right: 0;
     opacity: 1;
   }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
 }
