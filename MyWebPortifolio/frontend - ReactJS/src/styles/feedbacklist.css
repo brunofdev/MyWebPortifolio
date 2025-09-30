@@ -1,22 +1,36 @@
-/* Container principal da lista de feedbacks */
+/* Variáveis para cores e tamanhos */
+:root {
+  --primary-bg: #181818;
+  --bubble-bg: #1e2a2f;
+  --bubble-alt-bg: #24353c;
+  --highlight-color: #4caf50;
+  --error-color: #f50505;
+  --star-color: #ffcc00;
+  --text-primary: #fff;
+  --text-secondary: #bbb;
+  --text-muted: #585a58;
+  --font-size-base: 16px;
+  --font-size-small: 12px;
+  --font-size-title: 24px;
+}
+
+/* Container principal */
 .feedback-list-container {
-  background-color: #181818;
+  background-color: var(--primary-bg);
   padding: 20px;
   border-radius: 10px;
-  color: #fff;
+  color: var(--text-primary);
   margin: 20px auto;
   max-width: 800px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-3px);
-  font-size: 16px;
+  font-size: var(--font-size-base);
 }
 
-/* Efeito de hover no container */
 .feedback-list-container:hover {
-  border: 2px solid #4caf50;
+  border: 2px solid var(--highlight-color);
 }
 
-/* Cabeçalho com título e botão */
+/* Cabeçalho */
 .feedback-list-header {
   display: flex;
   justify-content: space-between;
@@ -24,38 +38,35 @@
   margin-bottom: 20px;
 }
 
-/* Título da lista */
 .feedback-list-title {
-  font-size: 24px;
+  font-size: var(--font-size-title);
   font-weight: bold;
-  color: #fff;
+  color: var(--text-primary);
   margin: 0;
 }
 
 /* Botão de recarregar */
 .reload-button {
-  background-color: #4caf50;
-  color: #fff;
+  background-color: var(--highlight-color);
+  color: var(--text-primary);
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   transition: background-color 0.3s ease;
 }
 
-/* Hover no botão */
 .reload-button:hover:not(:disabled) {
-  background-color: #f50505;
+  background-color: var(--error-color);
 }
 
-/* Botão desabilitado */
 .reload-button:disabled {
-  background-color: #585a58;
+  background-color: var(--text-muted);
   cursor: not-allowed;
 }
 
-/* Container da lista de feedbacks */
+/* Lista de feedbacks */
 .feedback-list {
   display: flex;
   flex-direction: column;
@@ -65,7 +76,6 @@
   padding-right: 10px;
 }
 
-/* Estiliza a barra de rolagem */
 .feedback-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -76,44 +86,51 @@
 }
 
 .feedback-list::-webkit-scrollbar-thumb {
-  background: #4caf50;
+  background: var(--highlight-color);
   border-radius: 4px;
 }
 
 .feedback-list::-webkit-scrollbar-thumb:hover {
-  background: #f50505;
+  background: var(--error-color);
 }
 
-/* Container de cada bolha de feedback */
+/* Bolha de feedback */
 .whatsapp-bubble-container {
   display: flex;
-  justify-content: flex-end; /* Alinha à direita como no WhatsApp */
+  justify-content: flex-end;
   margin-bottom: 10px;
 }
 
-/* Bolha de feedback (estilo WhatsApp) */
 .whatsapp-bubble {
-  background-color: #1e2a2f; /* Verde escuro inspirado no WhatsApp */
+  background-color: var(--bubble-bg);
   padding: 12px;
   border-radius: 8px;
   width: 100%;
-  max-width: 100%; /* Ajuste para 90% */
+  max-width: 90%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-.whatsapp-bubble:hover {
-  background-color: #4caf50; /* Muda para verde claro ao passar o mouse */
-  color: #000; /* Muda o texto para preto */
 }
 
-/* Bolha de feedback alternativa */
-.whatsapp-bubble.whatsapp-bubble-alt {
-  background-color: #24353c; /* Outro tom de verde */
-  justify-content: flex-end;
+.whatsapp-bubble:hover {
+  background-color: var(--highlight-color);
+  color: #000;
 }
+
+.whatsapp-bubble.whatsapp-bubble-alt {
+  background-color: var(--bubble-alt-bg);
+}
+
 .whatsapp-bubble.whatsapp-bubble-alt:hover {
-  background-color: #4caf50; /* Muda para verde claro ao passar o mouse */
-  color: #000; /* Muda o texto para preto */
+  background-color: var(--highlight-color);
+  color: #000;
+}
+
+/* Nome do usuário */
+.feedback-item-username {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--highlight-color);
+  margin: 0 0 8px 0;
+  word-wrap: break-word;
 }
 
 /* Estrelas de avaliação */
@@ -124,63 +141,54 @@
   font-size: 20px;
 }
 
-/* Estrelas preenchidas */
 .feedback-item-rating .full-stars {
-  color: #ffcc00; /* Amarelo para estrelas preenchidas */
+  color: var(--star-color);
 }
 
-/* Estrelas vazias */
 .feedback-item-rating .empty-stars {
-  color: #585a58; /* Cinza para estrelas vazias */
+  color: var(--text-muted);
 }
 
-/* Comentário do feedback */
+/* Comentário */
 .feedback-item-comment {
-  font-size: 16px;
-  color: #fff;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
   margin: 0;
   word-wrap: break-word;
 }
 
-/* Hora do feedback */
+/* Hora */
 .feedback-time {
-  font-size: 12px;
-  color: #bbb;
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
   text-align: right;
   margin-top: 8px;
 }
 
-/* Texto de carregamento */
-.loading-text {
-  font-size: 16px;
-  color: #4caf50;
-  text-align: center;
-  padding: 20px;
-  background-color: #222;
-  border-radius: 5px;
-}
-
-/* Texto de erro */
-.error-text {
-  font-size: 16px;
-  color: #f50505;
-  text-align: center;
-  padding: 20px;
-  background-color: #222;
-  border-radius: 5px;
-}
-
-/* Texto de nenhum feedback */
+/* Estados de carregamento e erro */
+.loading-text,
+.error-text,
 .no-feedback-text {
-  font-size: 16px;
-  color: #bbb;
+  font-size: var(--font-size-base);
   text-align: center;
   padding: 20px;
   background-color: #222;
   border-radius: 5px;
 }
 
-/* Responsividade para telas menores */
+.loading-text {
+  color: var(--highlight-color);
+}
+
+.error-text {
+  color: var(--error-color);
+}
+
+.no-feedback-text {
+  color: var(--text-secondary);
+}
+
+/* Responsividade */
 @media (max-width: 600px) {
   .feedback-list-container {
     padding: 15px;
@@ -198,6 +206,10 @@
 
   .whatsapp-bubble {
     max-width: 100%;
+  }
+
+  .feedback-item-username {
+    font-size: 13px;
   }
 
   .feedback-item-rating {
