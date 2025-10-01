@@ -3,44 +3,47 @@
   position: sticky;
   top: 0;
   width: 100%;
-  padding: 15px 30px;
-  background: linear-gradient(135deg, rgba(30,30,30,0.9), rgba(42,42,42,0.9));
-  backdrop-filter: blur(8px);
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  backdrop-filter: blur(12px);
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   font-family: 'Inter', sans-serif;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
   z-index: 1000;
   box-sizing: border-box;
 }
 
 .header.scrolled {
-  box-shadow: 0 4px 12px rgba(0,255,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 255, 0, 0.1);
+  background: linear-gradient(135deg, #202020, #303030);
 }
 
 /* ===== CONTAINER ===== */
 .header-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 /* ===== NAVEGAÇÃO ===== */
 .nav {
   display: flex;
-  gap: 40px;
+  gap: 28px;
   align-items: center;
 }
 
 .nav-link {
   position: relative;
-  color: #ffffff;
+  color: #e0e0e0;
   text-decoration: none;
   font-size: 1.1rem;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: color 0.3s ease, background 0.3s ease;
 }
 
 .nav-link::after {
@@ -49,57 +52,64 @@
   width: 0;
   height: 2px;
   bottom: 0;
-  left: 0;
-  background-color: #4caf50;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #48bb78;
   transition: width 0.3s ease;
 }
 
 .nav-link:hover::after {
-  width: 100%;
+  width: 70%;
 }
 
 .nav-link:hover {
-  color: #f50505;
-  transform: scale(1.05);
-  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+  background: rgba(72, 187, 120, 0.1);
 }
 
 /* ===== BOTÃO HAMBURGUER (MENU MOBILE) ===== */
 .menu-toggle {
   display: none;
-  background: #4caf50;
+  background: none;
   border: none;
-  border-radius: 50%;
+  border-radius: 6px;
   padding: 8px;
   cursor: pointer;
-  color: #ffffff;
-  transition: background-color 0.3s ease;
+  color: #e0e0e0;
+  transition: background 0.3s ease;
 }
 
 .menu-toggle:hover {
-  background: #f50505;
+  background: rgba(72, 187, 120, 0.2);
 }
 
 .menu-toggle svg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 /* ===== BOTÃO DE FECHAR MENU ===== */
 .close-menu {
   background: none;
   border: none;
-  color: #ffffff;
-  font-size: 2rem;
-  font-weight: bold;
+  color: #e0e0e0;
+  font-size: 1.5rem;
+  font-weight: 700;
   cursor: pointer;
   align-self: flex-end;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   transition: color 0.3s ease;
 }
 
 .close-menu:hover {
-  color: #f50505;
+  color: #48bb78;
+}
+
+/* ===== SEÇÃO DIREITA (ENGINE + AUTH) ===== */
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 /* ===== CONTAINER DO STATUS DOS MOTORES ===== */
@@ -113,28 +123,68 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #ffffff;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .engine-status.loading,
 .engine-status.error {
-  background: #ff0000;
+  background: #ef4444;
 }
 
 .engine-status.success {
-  background: #4caf50;
+  background: linear-gradient(45deg, #48bb78, #68d391);
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* ===== TOOLTIP ===== */
+.engine-status.success:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 5px);
+  background: #1a1a1a;
+  color: #e0e0e0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(72, 187, 120, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  font-size: 0.85rem;
+  font-weight: 400;
+  width: 180px;
+  text-align: center;
+  z-index: 1001;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #1a1a1a;
 }
 
 .loader {
-  width: 20px;
-  height: 20px;
-  border: 3px solid #ffffff;
-  border-top: 3px solid transparent;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -151,24 +201,28 @@
 
 /* ===== BOTÃO DE AUTENTICAÇÃO ===== */
 .auth-button {
-  background: #2196f3;
+  background: #48bb78;
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .auth-button:hover:not(:disabled) {
-  background: #1976d2;
-  transform: scale(1.05);
+  background: #38a169;
+  transform: translateY(-2px);
 }
 
 /* ===== ESTILOS MOBILE ===== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 16px;
+  }
+
   .nav {
     display: none;
   }
@@ -179,19 +233,19 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 160px;
-    height: 90vh;
-    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
-    padding: 20px;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+    width: 240px;
+    height: 100vh;
+    background: #1a1a1a;
+    padding: 24px;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
     z-index: 1100;
-    animation: slideIn 0.7s forwards;
+    animation: slideIn 0.5s ease-out forwards;
   }
 
   .nav-link {
-    font-size: 1.2rem;
-    padding: 15px;
-    margin: 10px 0;
+    font-size: 1.1rem;
+    padding: 12px;
+    margin: 8px 0;
     text-align: center;
   }
 
@@ -199,10 +253,19 @@
     display: block;
   }
 
+  .right-section {
+    gap: 12px;
+  }
+
   .engine-status,
   .auth-button {
     font-size: 1rem;
-    padding: 8px 16px;
+    padding: 10px 20px;
+  }
+
+  .tooltip {
+    width: 160px;
+    font-size: 0.8rem;
   }
 }
 
@@ -225,6 +288,12 @@
 
 @keyframes blink {
   0% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.4; }
   100% { opacity: 1; }
+}
+
+@keyframes glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

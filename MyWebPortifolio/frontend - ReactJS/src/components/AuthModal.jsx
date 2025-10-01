@@ -1,50 +1,44 @@
 import React, { useState } from "react";
 import "../styles/authmodal.css";
 
-// Definindo as URLs da API em um só lugar para fácil manutenção
+// URLs da API centralizadas
 const API_URLS = {
   login: "https://apigateway-qao8.onrender.com/api/auth/login",
   register: "https://apigateway-qao8.onrender.com/api/users/register",
 };
 
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
-  const [activeTab, setActiveTab] = useState("login"); // 'login' ou 'register'
-  
-  // Estado único para ambos os formulários
+  const [activeTab, setActiveTab] = useState("login");
   const [formData, setFormData] = useState({
     name: "",
     userName: "",
     password: "",
     email: "",
   });
-
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lida com a mudança em qualquer campo de input
+  // Atualiza os campos do formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "name") {
-      // Permite apenas letras, espaços, hifens e apóstrofos no campo nome
-      if (!/^[a-zA-Z\s\-\']*$/.test(value)) {
-        setError("O nome deve conter apenas letras, espaços, hifens ou apóstrofos.");
-        return;
-      }
+    if (name === "name" && !/^[a-zA-Z\s\-\']*$/.test(value)) {
+      setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
+      return;
     }
     setFormData({ ...formData, [name]: value });
-    setError(""); // Limpa erro ao digitar
+    setError("");
   };
 
-  // Lida com a mudança de aba, limpando os erros
+  // Muda entre abas (login/cadastro) e limpa o estado
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setFormData({ name: "", userName: "", password: "", email: "" });
     setError("");
     setSuccessMessage("");
-    setFormData({ name: "", userName: "", password: "", email: "" });
   };
 
-  // Validação de entrada
+  // Valida os dados do formulário
   const validateForm = (isLogin) => {
     if (!formData.userName || !formData.password) {
       setError("Nome de usuário e senha são obrigatórios.");
@@ -59,13 +53,13 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       return false;
     }
     if (!isLogin && !/^[a-zA-Z\s\-\']+$/.test(formData.name)) {
-      setError("O nome deve conter apenas letras, espaços, hifens ou apóstrofos.");
+      setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
       return false;
     }
     return true;
   };
 
-  // Função única de submissão para login e registro
+  // Envia o formulário (login ou cadastro)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -73,58 +67,57 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     setIsLoading(true);
 
     const isLogin = activeTab === "login";
-
-    // Valida os campos antes de enviar
     if (!validateForm(isLogin)) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const apiUrl = isLogin ? API_URLS.login : API_URLS.register;
-      
-      const bodyPayload = isLogin
+      const url = isLogin ? API_URLS.login : API_URLS.register;
+      const payload = isLogin
         ? { userName: formData.userName, password: formData.password }
-        : { name: formData.name, userName: formData.userName, password: formData.password, email: formData.email };
+        : {
+            name: formData.name,
+            userName: formData.userName,
+            password: formData.password,
+            email: formData.email,
+          };
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyPayload),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
-      // Verifica o status da resposta
       if (!response.ok) {
-        if (data.status === false && data.erro?.message) {
-          setError(data.erro.message); // Usa erro.message diretamente
-        } else if (response.status === 500 || response.status === 502 || response.status === 503) {
-          setError("Servidor indisponível, tente novamente mais tarde.");
-        } else if (response.status === 401 || response.status === 403) {
-          setError("Credenciais inválidas, tente novamente.");
-        } else {
-          setError("Ocorreu um erro desconhecido.");
-        }
+        setError(
+          data.status === false && data.erro?.message
+            ? data.erro.message
+            : response.status >= 500
+            ? "Servidor indisponível, tente novamente mais tarde."
+            : response.status === 401 || response.status === 403
+            ? "Credenciais inválidas, tente novamente."
+            : "Ocorreu um erro desconhecido."
+        );
         setIsLoading(false);
         return;
       }
 
-      // Sucesso: status === true
       if (data.status === true) {
         if (isLogin) {
           handleLoginSuccess({ token: data.dados?.token || data.token });
           onClose();
         } else {
-          setSuccessMessage(data.message || "Recurso Criado");
-          setTimeout(() => {
-            handleTabChange("login");
-          }, 2000);
+          setSuccessMessage(
+            `Cadastro realizado com sucesso, ${data.dados.nome || "usuário"}! Bem-vindo(a)!`
+          );
+          setTimeout(() => handleTabChange("login"), 3000);
         }
       } else {
         setError("Resposta inesperada do servidor.");
       }
-
     } catch (error) {
       setError("Erro de conexão com o servidor. Verifique sua internet e tente novamente.");
     } finally {
@@ -134,7 +127,11 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   return (
     <div className="auth-modal">
-      <button className="close-button" onClick={onClose} aria-label="Fechar modal">
+      <button
+        className="close-button"
+        onClick={onClose}
+        aria-label="Fechar modal"
+      >
         ✕
       </button>
       <div className="tabs">
@@ -155,7 +152,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       <form onSubmit={handleSubmit} className="auth-form">
         <h2>{activeTab === "login" ? "Login" : "Cadastre-se"}</h2>
 
-        {/* Campo de Nome (apenas para cadastro) */}
         {activeTab === "register" && (
           <div className="form-group">
             <label htmlFor="name">Nome</label>
@@ -170,9 +166,8 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           </div>
         )}
 
-        {/* Campos Comuns */}
         <div className="form-group">
-          <label htmlFor="userName">Username</label>
+          <label htmlFor="userName">Nome de Usuário</label>
           <input
             type="text"
             id="userName"
@@ -182,6 +177,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="password">Senha</label>
           <input
@@ -196,7 +192,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           />
         </div>
 
-        {/* Campo de Email (apenas para cadastro) */}
         {activeTab === "register" && (
           <div className="form-group">
             <label htmlFor="email">Email (opcional)</label>
@@ -210,10 +205,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           </div>
         )}
 
-        {/* Exibição de Erro */}
         {error && <div className="error-message">{error}</div>}
-
-        {/* Exibição de Sucesso */}
         {successMessage && <div className="success-message">{successMessage}</div>}
 
         <button type="submit" className="submit-button" disabled={isLoading}>

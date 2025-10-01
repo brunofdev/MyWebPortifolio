@@ -94,9 +94,26 @@
 .error-message {
   color: #ef4444;
   background: rgba(153, 27, 27, 0.2);
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
   text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1px solid #ef4444;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #ffffff;
+  background: rgba(76, 175, 80, 0.2);
+  padding: 12px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1px solid #4caf50;
+  margin-top: 10px;
+  transition: opacity 0.3s ease;
 }
 
 .submit-button {
