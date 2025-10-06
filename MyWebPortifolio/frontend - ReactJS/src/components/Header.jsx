@@ -40,7 +40,8 @@ const Header = ({ isAuthenticated, handleLogin, handleLogout, openAuthModal }) =
       "https://apigateway-qao8.onrender.com/api/auth/login",
       "https://user-service-tj9w.onrender.com/api/users/register",
       "https://authservice-5f3d.onrender.com/api/auth/login",
-      "https://processador-feedbacks.onrender.com/api/processfeedback/createfeedback"
+      "https://processador-feedbacks.onrender.com/api/processfeedback/createfeedback",
+      "https://mailservice-6m9a.onrender.com/health"
     ];
 
     try {

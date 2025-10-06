@@ -187,7 +187,9 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     }
   }, [warning]);
 
-  const handleRating = (value) => setRating(value);
+  const handleRating = (value) => {
+    setRating(value);
+  };
 
   const handleCommentChange = (e) => {
     if (e.target.value.length <= 1000) {
@@ -203,75 +205,86 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
       openAuthModal();
       return;
     }
-    if (rating > 0 && comment.trim()) {
-      setIsLoading(true);
-      setSubmissionError("");
+    if (rating === 0) {
+      setSubmissionError("Por favor, selecione uma avaliação com estrelas.");
+      return;
+    }
+    if (!comment.trim()) {
+      setSubmissionError("O comentário não pode estar vazio.");
+      return;
+    }
+    if (comment.trim().length < 15) {
+      setSubmissionError("O comentário deve ter no mínimo 15 caracteres.");
+      return;
+    }
 
-      const feedbackData = {
-        userFeedback: comment,
-        userRating: rating,
-      };
+    setIsLoading(true);
+    setSubmissionError("");
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const feedbackData = {
+      userFeedback: comment,
+      userRating: rating,
+    };
 
-      try {
-        const response = await fetchWithRetry(
-          "https://apigateway-qao8.onrender.com/api/processfeedback/createfeedback",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(feedbackData),
-            signal: controller.signal,
-          }
-        );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        clearTimeout(timeoutId);
-        const data = await response.json();
-
-        if (response.ok) {
-          setSubmitted(true);
-        } else {
-          if (response.status === 401 || response.status === 403) {
-            setSubmissionError("Sessão expirada ou token inválido. Faça login novamente.");
-            setTimeout(() => {
-              openAuthModal();
-            }, 2000);
-          } else if (response.status >= 500) {
-            setSubmissionError("Servidor indisponível após várias tentativas.");
-          } else {
-            setSubmissionError(
-              data?.message || "Ocorreu um erro ao enviar o feedback."
-            );
-          }
+    try {
+      const response = await fetchWithRetry(
+        "https://apigateway-qao8.onrender.com/api/processfeedback/createfeedback",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(feedbackData),
+          signal: controller.signal,
         }
-      } catch (error) {
-        if (error.name === "AbortError") {
-          setSubmissionError("A requisição demorou muito. Tente novamente.");
+      );
+
+      clearTimeout(timeoutId);
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        if (response.status === 401 || response.status === 403) {
+          setSubmissionError("Sessão expirada ou token inválido. Faça login novamente.");
+          setTimeout(() => {
+            openAuthModal();
+          }, 2000);
+        } else if (response.status >= 500) {
+          setSubmissionError("Servidor indisponível após várias tentativas.");
         } else {
-          console.error("Erro de conexão:", error);
           setSubmissionError(
-            "Erro de conexão com o servidor. Verifique sua internet e tente novamente."
+            data?.message || "Ocorreu um erro ao enviar o feedback."
           );
         }
-      } finally {
-        setIsLoading(false);
       }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        setSubmissionError("A requisição demorou muito. Tente novamente.");
+      } else {
+        console.error("Erro de conexão:", error);
+        setSubmissionError(
+          "Erro de conexão com o servidor. Verifique sua internet e tente novamente."
+        );
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <div className="feedback-container">
-        <section className="feedback">
+        <section className="feedback animate-fadeIn">
           <h2>Deixe seu Feedback</h2>
-          <h3>(Isso me ajuda a evoluir)</h3>
+          <h3>(Ajude-nos a melhorar!)</h3>
           {isLoading && <div className="loading-bar" />}
           {!isAuthenticated ? (
-            <div className="auth-required">
+            <div className="auth-required animate-fadeIn">
               <p>Você precisa estar logado para enviar um feedback.</p>
               <button className="login-link" onClick={openAuthModal}>
                 Fazer login ou cadastrar
@@ -279,13 +292,26 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
             </div>
           ) : submitted ? (
             <div className="feedback-submitted animate-fadeIn">
+              <div className="success-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--highlight-color)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
               <p className="thank-you-message">Seu feedback foi enviado com sucesso!</p>
               <p className="submitted-rating">
                 <strong>Sua avaliação:</strong> {"★".repeat(rating)}
                 {"☆".repeat(5 - rating)}
               </p>
               <p className="submitted-comment">
-                <strong>Sua comentário:</strong> {comment}
+                <strong>Seu comentário:</strong> {comment}
               </p>
             </div>
           ) : (
@@ -305,28 +331,38 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               </div>
               <textarea
                 className="feedback-comment"
-                placeholder="Escreva seu comentário (máximo 1000 caracteres)"
+                placeholder="Escreva seu comentário (mínimo 15 caracteres, máximo 1000)"
                 value={comment}
                 onChange={handleCommentChange}
                 maxLength={1000}
                 required
               />
+              <div className="instruction-message">
+                O comentário deve ter no mínimo 15 caracteres.
+              </div>
               <p className="char-count">{comment.length}/1000</p>
               {submissionError && (
-                <div className="submission-error">{submissionError}</div>
+                <div className="submission-error animate-slideUp">{submissionError}</div>
               )}
               <button
                 type="submit"
                 className="feedback-submit"
-                disabled={rating === 0 || !comment.trim() || isLoading}
+                disabled={rating === 0 || comment.trim().length < 15 || isLoading}
               >
-                {isLoading ? "Enviando..." : "Enviar Feedback"}
+                {isLoading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Enviando...
+                  </>
+                ) : (
+                  "Enviar Feedback"
+                )}
               </button>
             </form>
           )}
         </section>
       </div>
-      {warning && <div className="feedback-warning">{warning}</div>}
+      {warning && <div className="feedback-warning animate-slideUp">{warning}</div>}
     </>
   );
 };
