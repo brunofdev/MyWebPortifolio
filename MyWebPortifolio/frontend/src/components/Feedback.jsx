@@ -222,8 +222,8 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     setSubmissionError("");
 
     const feedbackData = {
-      userFeedback: comment,
-      userRating: rating,
+      descricao: comment,
+      avaliacao: rating,
     };
 
     const controller = new AbortController();
@@ -231,7 +231,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
 
     try {
       const response = await fetchWithRetry(
-        "https://apigateway-kgvz.onrender.com/api/processfeedback/createfeedback",
+       "http://localhost:8080/feedback/criar",
         {
           method: "POST",
           headers: {

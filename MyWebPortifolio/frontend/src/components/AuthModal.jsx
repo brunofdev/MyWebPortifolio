@@ -4,8 +4,8 @@ import "../styles/authmodal.css";
 
 // URLs da API centralizadas
 const API_URLS = {
-  login: "https://apigateway-kgvz.onrender.com/api/auth/login",
-  register: "https://apigateway-kgvz.onrender.com/api/users/register",
+  login: "http://localhost:8080/auth/login",
+  register: "http://localhost:8080/usuario/cadastro",
 };
 
 // Função utilitária para requisições com retry
@@ -144,13 +144,15 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
     try {
       const url = isLogin ? API_URLS.login : API_URLS.register;
+      
+      // Mapeamento correto para as chaves que a sua API espera
       const payload = isLogin
-        ? { userName: formData.userName, password: formData.password }
+        ? { cpf: formData.userName, senha: formData.password }
         : {
-            name: formData.name,
-            userName: formData.userName.toUpperCase(),
-            password: formData.password,
-            email: formData.email ? formData.email.toUpperCase() : "",
+            nome: formData.name,               // name -> nome
+            email: formData.email || "",       // mantém email
+            userName: formData.userName,       // mantém userName (removi o toUpperCase para evitar divergência)
+            senha: formData.password,          // password -> senha
           };
 
       const response = await fetchWithRetry(url, {
@@ -158,7 +160,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const data = await response.json();
       // Log adicionado para depurar a resposta completa da API
       console.log('Resposta completa da API:', data);
@@ -226,7 +227,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   // O restante do JSX permanece o mesmo
   return (
     <div className="modal-overlay">
-      <div className="container-modal">
+      <div className="auth-modal">
         <button
           className="close-button"
           onClick={onClose}

@@ -55,10 +55,10 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
   return (
     <div className="whatsapp-bubble-container">
       <div className={`whatsapp-bubble ${colorClass}`} role="article">
-        <p className="feedback-item-username">{feedback.name || 'Usuário Anônimo'}</p>
-        {renderRating(feedback.userRating)}
-        <p className="feedback-item-comment">{feedback.feedback || 'Sem comentário'}</p>
-        <div className="feedback-time">{formatDateTime(feedback.time)}</div>
+        <p className="feedback-item-username">{feedback.criadoPor || 'Usuário Anônimo'}</p>
+        {renderRating(feedback.notaAvaliacao)}
+        <p className="feedback-item-comment">{feedback.comentario || 'Sem comentário'}</p>
+        <div className="feedback-time">{formatDateTime(feedback.dataDeCriacao)}</div>
         {isAdmin && (
           <button
             className="delete-button"
@@ -79,7 +79,7 @@ const FeedbackList = ({ userRole, token }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE = 'https://apigateway-kgvz.onrender.com/api/feedback';
+  const API_BASE = 'http://localhost:8080/feedback';
   const isAdmin = userRole === "ADMIN";
 
   // Função para buscar feedbacks
@@ -87,7 +87,7 @@ const FeedbackList = ({ userRole, token }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetchWithRetry(`${API_BASE}/getallfeedbacks`, {
+      const response = await fetchWithRetry(`${API_BASE}/listar-todos`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
