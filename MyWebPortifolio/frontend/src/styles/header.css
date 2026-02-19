@@ -13,6 +13,9 @@
   z-index: 1000;
   box-sizing: border-box;
 }
+.nav-header {
+  display: none;
+}
 
 .header.scrolled {
   box-shadow: 0 4px 12px rgba(0, 255, 0, 0.1);
@@ -93,7 +96,7 @@
   background: none;
   border: none;
   color: #e0e0e0;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   align-self: flex-end;
@@ -219,13 +222,14 @@
 
 /* ===== ESTILOS MOBILE ===== */
 @media (max-width: 768px) {
-  .header-container {
+   .header-container {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
   }
 
   .menu-toggle {
+    display: block;
     grid-column: 1;
     justify-self: start;
   }
@@ -234,31 +238,87 @@
     grid-column: 3;
     justify-self: end;
   }
+
   .nav {
     display: none;
   }
 
   .nav.open {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 240px;
-    height: 100vh;
-    background: #1a1a1a;
-    padding: 24px;
-    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
-    z-index: 1100;
-    animation: slideIn 0.5s ease-out forwards;
-  }
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 92vh;
 
-  .nav-link {
-    font-size: 1.1rem;
-    padding: 12px;
-    margin: 8px 0;
-    text-align: center;
-  }
+  background: linear-gradient(180deg, #1b1b1b, #0f0f0f);
+  backdrop-filter: blur(12px);
+
+  padding: 28px 24px;
+  gap: 24px;
+
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    -10px 0 30px rgba(0, 0, 0, 0.6),
+    inset 1px 0 0 rgba(255, 255, 255, 0.04);
+
+  z-index: 1100;
+  animation: slideInSoft 0.35s ease forwards;
+}
+.nav-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.nav-divider {
+  height: 2px;
+  background: rgba(72, 187, 120, 0.3);
+  border-radius: 1px;
+}
+
+  .nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nav-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.nav-auth-button {
+  background: linear-gradient(135deg, #00ff9c, #00c77a);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  color: #0f0f0f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 156, 0.4);
+}
+
+.nav-footer-text {
+  font-size: 0.75rem;
+  color: #888;
+  text-align: center;
+}
 
   .menu-toggle {
     display: block;
