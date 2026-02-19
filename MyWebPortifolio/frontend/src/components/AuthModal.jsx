@@ -4,8 +4,8 @@ import "../styles/authmodal.css";
 
 // URLs da API centralizadas
 const API_URLS = {
-  login: "http://localhost:8080/auth/login",
-  register: "http://localhost:8080/usuario/cadastro",
+  login: "http://192.168.0.41:8080/auth/login",
+  register: "http://192.168.0.41:8080/usuario/cadastro",
 };
 
 // Função utilitária para requisições com retry

@@ -231,7 +231,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
 
     try {
       const response = await fetchWithRetry(
-       "http://localhost:8080/feedback/criar",
+       "http://192.168.0.41:8080/feedback/criar",
         {
           method: "POST",
           headers: {
