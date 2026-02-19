@@ -220,9 +220,20 @@
 /* ===== ESTILOS MOBILE ===== */
 @media (max-width: 768px) {
   .header-container {
-    padding: 0 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
   }
 
+  .menu-toggle {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .right-section {
+    grid-column: 3;
+    justify-self: end;
+  }
   .nav {
     display: none;
   }
@@ -261,6 +272,7 @@
   .auth-button {
     font-size: 1rem;
     padding: 10px 20px;
+    
   }
 
   .tooltip {

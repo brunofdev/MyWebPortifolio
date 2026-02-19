@@ -1,14 +1,11 @@
-// auth.js
 import React, { useState } from "react";
 import "../styles/authmodal.css";
 
-// URLs da API centralizadas
 const API_URLS = {
   login: "http://192.168.0.41:8080/auth/login",
   register: "http://192.168.0.41:8080/usuario/cadastro",
 };
 
-// Função utilitária para requisições com retry
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -40,7 +37,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   const isLogin = activeTab === "login";
 
-  // Validações (sem alterações)
   const isNameValid = !isLogin && formData.name &&
     formData.name.length >= 5 &&
     formData.name.length <= 100 &&
@@ -83,7 +79,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   };
 
   const validateForm = () => {
-    // Validação (sem alterações)
     if (!formData.userName || !formData.password) {
       setError("Nome de usuário e senha são obrigatórios.");
       return false;
@@ -144,15 +139,13 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
     try {
       const url = isLogin ? API_URLS.login : API_URLS.register;
-      
-      // Mapeamento correto para as chaves que a sua API espera
       const payload = isLogin
         ? { cpf: formData.userName, senha: formData.password }
         : {
-            nome: formData.name,               // name -> nome
-            email: formData.email || "",       // mantém email
-            userName: formData.userName,       // mantém userName (removi o toUpperCase para evitar divergência)
-            senha: formData.password,          // password -> senha
+            nome: formData.name,
+            email: formData.email || "",
+            userName: formData.userName,
+            senha: formData.password,
           };
 
       const response = await fetchWithRetry(url, {
@@ -161,11 +154,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      // Log adicionado para depurar a resposta completa da API
       console.log('Resposta completa da API:', data);
 
       if (!response.ok) {
-        // Log de erro no console para depuração
         console.error('Erro na resposta da API:', {
           status: response.status,
           statusText: response.statusText,
@@ -189,15 +180,11 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
       if (data.status === true) {
         if (isLogin) {
-          // Log adicionado para depurar os dados antes de passar para handleLoginSuccess
           console.log('Dados para login success:', data.dados);
-
-          // Remapeamento para corrigir a estrutura (userResponseDTO -> user)
           const loginData = {
             token: data.dados.token,
-            user: data.dados.userResponseDTO || {}, // Evita undefined se não existir
+            user: data.dados.userResponseDTO || {},
           };
-
           handleLoginSuccess(loginData);
           onClose();
         } else {
@@ -210,21 +197,18 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         setError("Resposta inesperada do servidor.");
       }
     } catch (error) {
-      // Log de erro no console para depuração
       console.error('Erro de conexão ou execução na API:', {
         message: error.message,
         stack: error.stack,
         url: isLogin ? API_URLS.login : API_URLS.register,
         payload: isLogin ? { userName: formData.userName, password: formData.password } : { ...formData }
       });
-
       setError("Erro de conexão com o servidor. Verifique sua internet e tente novamente.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // O restante do JSX permanece o mesmo
   return (
     <div className="modal-overlay">
       <div className="auth-modal">
@@ -290,7 +274,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           )}
 
           <div className="form-group">
-            <label htmlFor="userName">Nome de Usuário</label>
+            <label htmlFor="userName">Usuário</label>
             <div className="input-wrapper">
               <input
                 type="text"

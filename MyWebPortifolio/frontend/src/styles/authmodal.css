@@ -68,13 +68,19 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 30px;
   max-width: 400px;
   margin: 0 auto;
 }
+.auth-form label {
+  font-size: 1.2rem !important;
+  margin-bottom: 8px !important;
+  color: #fdfcfc !important;
+  font-weight: 500 !important;
+}
 
 .auth-form h2 {
-  font-size: 1.8rem;
+  font-size: rem;
   color: #48bb78;
   text-align: center;
   margin-bottom: 12px;
@@ -105,6 +111,8 @@
 .form-group {
   display: flex;
   flex-direction: column;
+  min-height: max-content !important; /* Força o bloco a esticar para caber tudo */
+  margin-bottom: 8px;
 }
 
 .form-group label {
@@ -112,13 +120,18 @@
   margin-bottom: 8px;
   color: #e0e0e0;
   font-weight: 500;
+  flex-shrink: 0; /* Trava o espaço */
 }
 
 .input-wrapper {
   position: relative;
+  width: 100%;
+  flex-shrink: 0; /* Impede que o input seja esmagado */
 }
 
 .form-group input {
+  display: block; /* Força o input a ser um bloco sólido na tela */
+  width: 100%;
   padding: 14px 20px;
   border-radius: 10px;
   border: 1px solid rgba(72, 187, 120, 0.3);
@@ -126,10 +139,8 @@
   color: #ffffff;
   font-size: 1.05rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
   box-sizing: border-box;
 }
-
 .form-group input:focus {
   outline: none;
   border-color: #48bb78;
@@ -140,7 +151,8 @@
   border-color: #ef4444;
 }
 
-.form-group input[aria-invalid="true"]::after {
+/* REFATORAÇÃO: Ícones de validação aplicados no wrapper, não no input */
+.form-group:has(input[aria-invalid="true"]) .input-wrapper::after {
   content: "✕";
   position: absolute;
   right: 16px;
@@ -148,9 +160,10 @@
   transform: translateY(-50%);
   color: #ef4444;
   font-size: 1.1rem;
+  pointer-events: none; /* Impede que o ícone bloqueie o clique no input */
 }
 
-.form-group input.valid::after {
+.form-group:has(input.valid) .input-wrapper::after {
   content: "✓";
   position: absolute;
   right: 16px;
@@ -158,15 +171,27 @@
   transform: translateY(-50%);
   color: #48bb78;
   font-size: 1.1rem;
+  pointer-events: none;
 }
 
-/* ===== MENSAGENS DE INSTRUÇÃO ===== */
-.instruction-message{
-  font-size: 0.9rem;
-  color: #9ca3af;
-  margin-top: 8px;
+.instruction-message {
+  font-style: italic;
+  position: relative !important; /* Impede qualquer flutuação absoluta global */
+  display: block !important;
+  height: auto !important; /* Garante que a caixa tenha a altura real do texto */
+  margin-top: 5px !important; /* Parede de concreto: empurra obrigatoriamente para baixo do input */
+  margin-bottom: 4px !important;
   padding-left: 12px;
-  line-height: 1.4;
+  font-size: 0.875rem;
+  color: #0a60f4;
+  line-height: 1.5;
+  clear: both !important;
+  z-index: 1; /* Garante que não fique atrás de nada */
+}
+
+.form-group:has(input[aria-invalid="true"]) .instruction-message {
+  color: #f87171;
+  opacity: 1;
 }
 
 /* ===== MENSAGENS DE FEEDBACK ===== */
@@ -216,7 +241,7 @@
   background: #48bb78;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 10px;;
   padding: 14px 24px;
   font-size: 1.1rem;
   font-weight: 500;
@@ -271,15 +296,6 @@
   .submit-button {
     font-size: 1rem;
     padding: 12px 20px;
-  }
-
-  .form-group input[aria-invalid="true"]::after,
-  .form-group input.valid::after {
-    font-size: 1rem;
-  }
-
-  .instruction-message {
-    font-size: 0.85rem;
   }
 }
 
