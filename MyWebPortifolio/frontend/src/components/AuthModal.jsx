@@ -319,7 +319,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
           {activeTab === "register" && (
             <div className="form-group">
-              <label htmlFor="email">Email (opcional)</label>
+              <label htmlFor="email">Email</label>
               <div className="input-wrapper">
                 <input
                   type="email"

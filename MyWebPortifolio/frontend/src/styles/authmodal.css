@@ -274,6 +274,13 @@
 
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 640px) {
+.auth-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
   .auth-form {
     gap: 20px;
     max-width: 90%;

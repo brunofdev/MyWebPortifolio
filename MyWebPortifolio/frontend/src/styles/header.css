@@ -241,6 +241,7 @@
     display: block;
     grid-column: 1;
     justify-self: start;
+    font-size: 1.5rem;
   }
 
   .right-section {
