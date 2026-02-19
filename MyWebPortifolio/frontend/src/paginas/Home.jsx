@@ -21,6 +21,7 @@ const Home = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     setActiveModalContent(1); // Abre modal de apresentação ao carregar
@@ -34,18 +35,20 @@ const Home = () => {
     setActiveModalContent(null);
   };
 
-  const handleLogin = (data) => {
-    setIsAuthenticated(true);
-    setToken(data.token);
-    setUserRole(data.user.role);
-    closeModal();
-  };
+const handleLogin = (data) => {
+  setIsAuthenticated(true);
+  setToken(data.token);
+  setUserRole(data.user.role);
+  setUserName(data.user.userName);
+  closeModal();
+};
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    setToken(null);
-    setUserRole(null);
-  };
+  setIsAuthenticated(false);
+  setToken(null);
+  setUserRole(null);
+  setUserName(null);
+};
 
   const openAuthModal = () => {
     setActiveModalContent("auth");
@@ -56,9 +59,11 @@ const Home = () => {
       <MatrixBackground />
       <Header
         isAuthenticated={isAuthenticated}
+        userName={userName}
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         openAuthModal={openAuthModal}
+
       />
       <div className="content">
         {/* Modal de Apresentação */}

@@ -183,7 +183,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           console.log('Dados para login success:', data.dados);
           const loginData = {
             token: data.dados.token,
-            user: data.dados.userResponseDTO || {},
+            user: data.dados.clienteDTO || {},
           };
           handleLoginSuccess(loginData);
           onClose();

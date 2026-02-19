@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/header.css";
 
-const Header = ({ isAuthenticated, handleLogin, handleLogout, openAuthModal }) => {
+const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -27,58 +27,68 @@ const Header = ({ isAuthenticated, handleLogin, handleLogout, openAuthModal }) =
 
   {/* NAVEGAÇÃO */}
   <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
-  {/* HEADER */}
   <div className="nav-header">
     <span className="nav-title">Bruno Dev</span>
-
+    <span className="nav-subtitle">Full Stack Developer</span>
+    <div className="nav-divider" />
   </div>
 
-  <div className="nav-divider" />
+  <div className="nav-links">
+    <a href="#about" className="nav-link">Sobre</a>
+    <a href="#experience" className="nav-link">Experiência</a>
+    <a href="#skills" className="nav-link">Habilidades</a>
+    <a href="#projects" className="nav-link">Projetos</a>
+    <a href="#contact" className="nav-link">Contato</a>
+  </div>
 
-  {/* LINKS */}
-  <a href="#about" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-    Sobre
-  </a>
-  <a href="#experience" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-    Experiência
-  </a>
-  <a href="#skills" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-    Habilidades
-  </a>
-  <a href="#projects" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-    Projetos
-  </a>
-  <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-    Contato
-  </a>
-
-  {/* FOOTER DO MENU */}
   <div className="nav-footer">
+  {isAuthenticated && userName ? (
+    <span className="welcome-text">
+      Bem-vindo, <strong>{userName}</strong>!
+    </span>
+  ) : (
     <button
       className="nav-auth-button"
       onClick={() => {
+        openAuthModal();
         setIsMenuOpen(false);
-        isAuthenticated ? handleLogout() : openAuthModal();
       }}
     >
-      {isAuthenticated ? "Sair" : "Entrar"}
+      Entrar
     </button>
+  )}
 
-    <span className="nav-footer-text">
-      © {new Date().getFullYear()} Bruno Dev
-    </span>
-  </div>
+  {isAuthenticated && (
+    <button
+      className="nav-auth-button"
+      onClick={() => {
+        handleLogout();
+        setIsMenuOpen(false);
+      }}
+    >
+      Sair
+    </button>
+  )}
+
+  <span className="nav-footer-text">© 2026 BrunoFraga.dev</span>
+</div>
 </nav>
 
   {/* DIREITA */}
   <div className="right-section">
-    <button
-      className="auth-button"
-      onClick={isAuthenticated ? handleLogout : openAuthModal}
-    >
-      {isAuthenticated ? "Sair" : "Entrar"}
-    </button>
-  </div>
+  {isAuthenticated && userName && (
+    <span className="welcome-text">
+      Bem-vindo, <strong>{userName}</strong>!
+    </span>
+  )}
+
+  <button
+    className="auth-button"
+    onClick={isAuthenticated ? handleLogout : openAuthModal}
+  >
+    {isAuthenticated ? "Sair" : "Entrar"}
+  </button>
+</div>
 
 </div>
     </header>
