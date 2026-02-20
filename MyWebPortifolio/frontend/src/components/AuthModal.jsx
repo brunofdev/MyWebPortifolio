@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "../styles/authmodal.css";
 
 const API_URLS = {
-  login: "http://192.168.0.41:8080/auth/login",
-  register: "http://192.168.0.41:8080/usuario/cadastro",
+  login: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/auth/login",
+  register: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/cadastro",
 };
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {

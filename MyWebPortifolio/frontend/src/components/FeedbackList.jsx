@@ -79,7 +79,7 @@ const FeedbackList = ({ userRole, token }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE = 'http://192.168.0.41:8080/feedback';
+  const API_BASE = 'https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/feedback';
   const isAdmin = userRole === "ADMIN";
 
   // Função para buscar feedbacks

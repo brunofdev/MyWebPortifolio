@@ -231,7 +231,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
 
     try {
       const response = await fetchWithRetry(
-       "http://192.168.0.41:8080/feedback/criar",
+       "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/feedback/criar",
         {
           method: "POST",
           headers: {
