@@ -1,11 +1,12 @@
+/* =========================================
+   BASE E GRID DOS PROJETOS (Seu código original mantido)
+   ========================================= */
 .projects {
   background-color: #181818;
   padding: 20px;
-
   border-radius: 10px;
   color: #fff;
   margin-top: 20px;
-  
 }
 
 .projects:hover {
@@ -57,12 +58,43 @@
   animation: none;
 }
 
-/* Estilos para o conteúdo do modal */
+/* =========================================
+   MODAL - ESTRUTURA E TEXTOS (ATUALIZADO)
+   ========================================= */
 .modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  width: 100%;
+  
+  /* NOVO: Controle de Altura e Scroll */
+  max-height: 70vh; /* Reduz a altura máxima para 70% da tela */
+  overflow-y: auto; /* Liga a barra de rolagem vertical */
+  overflow-x: hidden; /* Impede a tela de quebrar para os lados */
+  padding-right: 10px; /* Dá um espacinho para a barra não colar no texto */
+}
+
+/* NOVO: Pintando a barra de rolagem com o seu tema Hacker/Neon */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: #4caf50; /* Verde neon */
+  border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #f50505; /* Fica vermelho ao passar o mouse */
+}
+.modal-content iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Trava a proporção exata do YouTube */
+  height: auto; /* Ignora o 315px fixo do React */
+  border-radius: 8px; /* Dá uma arredondada nas pontas para combinar com o modal */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Destaca o vídeo do fundo */
 }
 
 .modal-title {
@@ -70,6 +102,7 @@
   color: #4caf50;
   text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
   margin: 0;
+  text-align: center;
 }
 
 .modal-description {
@@ -79,10 +112,83 @@
   line-height: 1.5;
 }
 
+.main-desc {
+  margin-bottom: 20px;
+}
+
+/* =========================================
+   NOVO: NAVEGAÇÃO (SETAS DO CARROSSEL)
+   ========================================= */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.nav-arrow {
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #4caf50; /* Borda neon verde */
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+  background-color: #4caf50;
+  color: #181818; /* Inverte a cor no hover */
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+}
+
+/* =========================================
+   NOVO: FICHA TÉCNICA (Especificações)
+   ========================================= */
+.tech-specs {
+  background-color: #222; /* Fundo levemente mais claro que o base para destacar */
+  padding: 15px;
+  border-left: 4px solid #f50505; /* Destaque vermelho lateral */
+  border-radius: 4px;
+  margin: 15px 0;
+  text-align: left;
+  width: 100%;
+}
+
+.tech-specs h4 {
+  color: #4caf50;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.tech-specs ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tech-specs li {
+  margin-bottom: 8px;
+  color: #ccc; /* Texto das infos um pouco mais suave */
+}
+
+.tech-specs strong {
+  color: #fff; /* Títulos fortes (Linguagem, Framework) em branco */
+}
+
+/* =========================================
+   LINKS
+   ========================================= */
 .modal-links {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .modal-links li {
@@ -93,8 +199,118 @@
   color: #4caf50;
   text-decoration: none;
   transition: color 0.3s ease;
+  border-bottom: 1px solid transparent;
 }
 
 .modal-links a:hover {
   color: #f50505;
+  border-bottom: 1px solid #f50505;
+}
+/* =========================================
+   SETAS FLUTUANTES E PISCANTES
+   ========================================= */
+.nav-arrow {
+  background-color: #181818;
+  color: #4caf50;
+  border: 2px solid #4caf50;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsividade: No celular ficam embaixo/dentro, no PC flutuam */
+@media (max-width: 768px) {
+  .nav-arrow {
+    position: relative;
+    display: inline-flex;
+    margin: 10px;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: piscaAlerta 1.5s infinite; /* A mágica de piscar */
+  }
+  
+  .left-arrow { left: 5%; }
+  .right-arrow { right: 5%; }
+}
+
+@keyframes piscaAlerta {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+    opacity: 0.5;
+  }
+}
+
+.nav-arrow:hover {
+  background-color: #4caf50;
+  color: #181818;
+  animation: none; /* Para de piscar quando o mouse está em cima */
+  transform: translateY(-50%) scale(1.1); /* Dá uma leve crescida */
+}
+
+/* =========================================
+   COMO RODAR (TERMINAL DE COMANDOS)
+   ========================================= */
+.setup-section {
+  margin-top: 25px;
+  width: 100%;
+  text-align: left;
+}
+
+.setup-section h4 {
+  color: #4caf50;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.setup-obs {
+  color: #f50505; /* Destaque vermelho para a observação do Docker */
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.terminal-box {
+  background-color: #0d0d0d;
+  border: 1px solid #333;
+  border-left: 4px solid #4caf50;
+  padding: 15px;
+  border-radius: 5px;
+  font-family: 'Courier New', Courier, monospace; /* Fonte com cara de código */
+}
+
+.step-item {
+  margin-bottom: 15px;
+}
+
+.step-item p {
+  color: #ccc;
+  margin: 0 0 5px 0;
+  font-size: 15px;
+}
+
+.step-item code {
+  display: block;
+  background-color: #222;
+  color: #19c9e8; /* Vermelho padrão do seu tema */
+  padding: 8px;
+  border-radius: 4px;
+  user-select: all; /* Facilita a cópia com um clique */
+  word-wrap: break-word;
 }

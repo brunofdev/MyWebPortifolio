@@ -88,10 +88,7 @@ const handleLogin = (data) => {
             <section className="section-about" id="about">
               <About />
             </section>
-            <hr className="separator" />
-            <section className="section-experience" id="experience">
-              <Experience />
-            </section>
+            
             <hr className="separator" />
             <section id="skills">
               <Skills />

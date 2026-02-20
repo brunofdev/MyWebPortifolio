@@ -1,137 +1,118 @@
 import React, { useState } from "react";
 import "../styles/projects.css";
-import Modal from "./Modal"; // Assumindo que o Modal está em um arquivo separado, ajuste o caminho se necessário
+import Modal from "./Modal";
 
 const Projects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const projects = [
     {
       id: 1,
       image: "https://wallpapers.com/images/high/tech-pictures-1920-x-1080-nqr4qrsm66z8irh0.webp",
-      title: "Projeto 1",
-      video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      description: "Descrição breve do Projeto 1. Aqui pode adicionar mais detalhes sobre o projeto.",
+      title: "API Restaurante",
+      video: "https://www.youtube.com/embed/w3QDj-_1O3o",
+      description: "API robusta focada em segurança, validação de dados e retornos padronizados para facilitar a integração com o front-end.",
+      techs: {
+        linguagem: "Java 21",
+        paradigma: "Orientação a Objetos (POO)",
+        framework: "Spring Boot 3.4",
+        bibliotecas: "Spring Security, Hibernate/JPA, HikariCP, SpringDoc/swagger",
+        infraestrutura: "Docker containerizando a aplicação completa para rodar localmente. ",
+      },
+      setup: {
+        obs: "Pré-requisito: Docker/Git instalados e Docker rodando na sua máquina.",
+        steps: [
+          { num: 1, text: "Abra o seu Terminal ou CMD e baixe o repositório:", cmd: "git clone https://github.com/brunofdev/sistema-restaurante-api.git" },
+          { num: 2, text: "Entre na pasta do projeto recém-baixado:", cmd: "cd sistema-restaurante-api" },
+          { num: 3, text: "Suba o banco de dados e a aplicação automaticamente:", cmd: "docker-compose up -d" }
+        ]
+      },
       links: [
-        { text: "Link para GitHub", url: "https://github.com" },
-        { text: "Link para Demo", url: "https://example.com" },
+        { text: "Repositório GitHub", url: "https://github.com/brunofdev/sistema-restaurante-api" },
       ],
     },
-    {
-      id: 2,
-      image: "https://wallpapers.com/images/high/tech-pictures-3840-x-2160-n3w27njzo05gggcn.webp",
-      title: "Projeto 2",
-      video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      description: "Descrição breve do Projeto 2. Aqui pode adicionar mais detalhes sobre o projeto.",
-      links: [
-        { text: "Link para GitHub", url: "https://github.com" },
-        { text: "Link para Demo", url: "https://example.com" },
-      ],
-    },
-    {
-      id: 3,
-      image: "https://wallpapers.com/images/high/tech-pictures-1920-x-1080-gk6brlvu4a49h6wz.webp",
-      title: "Projeto 3",
-      video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      description: "Descrição breve do Projeto 3. Aqui pode adicionar mais detalhes sobre o projeto.",
-      links: [
-        { text: "Link para GitHub", url: "https://github.com" },
-        { text: "Link para Demo", url: "https://example.com" },
-      ],
-    },
-    {
-      id: 4,
-      image: "https://wallpapers.com/images/high/tech-pictures-2560-x-1600-11f6g33uka5eyom3.webp",
-      title: "Projeto 4",
-      video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      description: "Descrição breve do Projeto 4. Aqui pode adicionar mais detalhes sobre o projeto.",
-      links: [
-        { text: "Link para GitHub", url: "https://github.com" },
-        { text: "Link para Demo", url: "https://example.com" },
-      ],
-    },
+    // Demais projetos...
   ];
+
+  const openModal = (index) => {
+    setCurrentIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const nextProject = () => setCurrentIndex((prev) => (prev + 1) % projects.length);
+  const prevProject = () => setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
+
+  const activeProject = projects[currentIndex];
 
   return (
     <section className="projects">
       <h2>Projetos</h2>
       <svg width="0" height="0">
-        <filter id="static-noise">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.9"
-            numOctaves="4"
-            result="noise"
-          >
-            <animate
-              attributeName="baseFrequency"
-              values="0.9;0.8;0.9;0.85;0.95"
-              dur="0.3s"
-              repeatCount="indefinite"
-            />
-          </feTurbulence>
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="10"
-          >
-            <animate
-              attributeName="scale"
-              values="10;15;10;12;8"
-              dur="0.3s"
-              repeatCount="indefinite"
-            />
-          </feDisplacementMap>
-          <feColorMatrix
-            type="matrix"
-            values="1 0 0 0 0
-                    0 1 0 0 0
-                    0 0 1 0 0
-                    0 0 0 0.5 0"
-          />
-        </filter>
+         {/* Seu filtro SVG continua aqui */}
       </svg>
+
       <div className="projects-grid">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="project-item"
-            onClick={() => {
-              setSelectedProject(project);
-              setIsModalOpen(true);
-            }}
-          >
+        {projects.map((project, index) => (
+          <div key={project.id} className="project-item" onClick={() => openModal(index)}>
             <img src={project.image} alt={project.title} />
           </div>
         ))}
       </div>
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {selectedProject && (
-          <div className="modal-content">
-            <h3 className="modal-title">{selectedProject.title}</h3>
-            <iframe
-              width="100%"
-              height="315"
-              src={selectedProject.video}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-            <div className="modal-description">
-              <p>{selectedProject.description}</p>
-              <ul className="modal-links">
-                {selectedProject.links.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.url} target="_blank" rel="noopener noreferrer">
-                      {link.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+        {activeProject && (
+          <>
+            {/* Setas movidas para fora do conteúdo principal para flutuarem */}
+            <button className="nav-arrow left-arrow" onClick={prevProject}>&#8592;</button>
+            <button className="nav-arrow right-arrow" onClick={nextProject}>&#8594;</button>
+
+            <div className="modal-content">
+              <h3 className="modal-title">{activeProject.title}</h3>
+
+              <iframe
+                width="100%" height="315" src={activeProject.video} title={activeProject.title}
+                frameBorder="0" allowFullScreen
+              ></iframe>
+
+              <div className="modal-description">
+                <p className="main-desc">{activeProject.description}</p>
+                
+                <div className="tech-specs">
+                  <h4>Ficha Técnica:</h4>
+                  <ul>
+                    <li><strong>Linguagem:</strong> {activeProject.techs.linguagem}</li>
+                    <li><strong>Paradigma:</strong> {activeProject.techs.paradigma}</li>
+                    <li><strong>Framework:</strong> {activeProject.techs.framework}</li>
+                    <li><strong>Bibliotecas:</strong> {activeProject.techs.bibliotecas}</li>
+                    <li><strong>Infraestrutura:</strong> {activeProject.techs.infraestrutura}</li>
+                  </ul>
+                </div>
+
+                {/* Nova Sessão: Como Rodar */}
+                {activeProject.setup && (
+                  <div className="setup-section">
+                    <h4>Como rodar e testar o projeto?</h4>
+                    <p className="setup-obs">⚠️ {activeProject.setup.obs}</p>
+                    <div className="terminal-box">
+                      {activeProject.setup.steps.map((step) => (
+                        <div key={step.num} className="step-item">
+                          <p><strong>{step.num} &#10132;</strong> {step.text}</p>
+                          <code>{step.cmd}</code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <ul className="modal-links">
+                  {activeProject.links.map((link, idx) => (
+                    <li key={idx}><a href={link.url} target="_blank" rel="noopener noreferrer">{link.text}</a></li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </Modal>
     </section>

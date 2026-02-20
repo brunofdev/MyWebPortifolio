@@ -4,7 +4,7 @@ import "../styles/footer.css";
 const Footer = () => {
   return (
     <footer className="footer">
-      <p>&copy; 2025 Bruno Fraga. Todos os direitos reservados.</p>
+      <p>&copy; 2026 Bruno Fraga. Todos os direitos reservados.</p>
     </footer>
   );
 };
