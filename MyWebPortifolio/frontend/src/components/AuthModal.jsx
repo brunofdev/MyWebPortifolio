@@ -4,7 +4,7 @@ import "../styles/authmodal.css";
 const API_URLS = {
   login: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/auth/login",
   register: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/cadastro",
-  verify: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/verificar",
+  verify: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/ativar-conta", // Ajustado para bater com o Controller
   resend: "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net/usuario/reenviar-codigo",
 };
 
@@ -92,22 +92,29 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     try {
       await fetchWithRetry(API_URLS.resend, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email }),
+        headers: { "Content-Type": "text/plain" }, // Backend espera String simples
+        body: formData.userName,
       });
       setResendTimer(60);
-      setSuccessMessage("Novo código enviado com sucesso!");
+      setSuccessMessage("Novo código enviado para seu e-mail!");
     } catch (err) {
-      setError("Erro ao reenviar código.");
+      setError("Erro ao solicitar novo código. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const validateForm = () => {
-    if (activeTab === "verify") return formData.code.length === 6;
+    if (activeTab === "verify") {
+      if (formData.code.length !== 6) {
+        setError("O código deve ter exatamente 6 dígitos.");
+        return false;
+      }
+      return true;
+    }
+    
     if (!formData.userName || !formData.password) {
-      setError("Nome de usuário e senha são obrigatórios.");
+      setError("Nome de usuário (CPF) e senha são obrigatórios.");
       return false;
     }
     if (isLogin) return true;
@@ -140,11 +147,12 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       let url = API_URLS[activeTab];
       let payload;
 
+      // Monta o payload respeitando o contrato exato do seu Backend
       if (activeTab === "verify") {
-        payload = { email: formData.email, codigo: formData.code };
+        payload = { userName: formData.userName, codigo: formData.code };
       } else {
         payload = isLogin
-          ? { cpf: formData.userName, senha: formData.password }
+          ? { cpf: formData.userName, senha: formData.password } // Mantido o envio como "cpf"
           : { nome: formData.name, email: formData.email || "", userName: formData.userName, senha: formData.password };
       }
 
@@ -154,38 +162,71 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         body: JSON.stringify(payload),
       });
 
-      // --- LOG ESTRATÉGICO AQUI ---
       const data = await response.json();
       console.log('🔍 DEBUG API - Resposta completa:', data);
 
       if (!response.ok) {
-        setError(data.erro?.message || "Erro na resposta da API.");
+        setError(data.erro?.message || data.message || "Erro na resposta da API.");
         setIsLoading(false);
         return;
       }
 
-      if (data.status === true) {
-        if (activeTab === "login") {
-          const user = data.dados.clienteDTO || {};
+      // Tratamento baseado no status da resposta padrão da sua API
+      if (data.status === true || response.status === 200) {
+        
+        // ==========================================
+        // FLUXO DE VERIFICAÇÃO DE CONTA (Ativação)
+        // ==========================================
+        if (activeTab === "verify") {
+          setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
+          setTimeout(() => {
+            handleLoginSuccess({ 
+              token: tempUser?.token || data.dados?.token, 
+              user: data.dados.clienteDTO || data.dados 
+            });
+            onClose();
+          }, 1500);
+        } 
+        
+        // ==========================================
+        // FLUXO DE LOGIN
+        // ==========================================
+        else if (activeTab === "login") {
+          const user = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados;
           
           if (user.contaAtiva === false) {
             setTempUser(data.dados); 
-            setFormData({ ...formData, email: user.email });
             setActiveTab("verify");
-            setSuccessMessage("Sua conta ainda não está ativa. Verifique seu e-mail.");
+            setSuccessMessage("Sua conta não está ativa. Verifique seu e-mail.");
           } else {
             handleLoginSuccess({ token: data.dados.token, user });
             onClose();
           }
-        } else if (activeTab === "register") {
-          setFormData({ ...formData, email: data.dados.email });
+        } 
+        
+        // ==========================================
+        // FLUXO DE CADASTRO E AUTO-LOGIN
+        // ==========================================
+        else if (activeTab === "register") {
+          // Auto-login silencioso usando a chave "cpf"
+          try {
+            const loginPayload = { cpf: formData.userName, senha: formData.password };
+            const loginRes = await fetchWithRetry(API_URLS.login, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(loginPayload),
+            });
+            const loginData = await loginRes.json();
+            if (loginRes.ok) {
+              setTempUser(loginData.dados); 
+            }
+          } catch (autoLoginErr) {
+            console.warn("Auto-login falhou, o usuário precisará fazer login manualmente após validar.");
+          }
+
+          setFormData((prev) => ({ ...prev, email: data.dados?.email || prev.email }));
           setActiveTab("verify");
-        } else if (activeTab === "verify") {
-          handleLoginSuccess({ 
-            token: tempUser?.token || data.dados.token, 
-            user: data.dados.clienteDTO || data.dados 
-          });
-          onClose();
+          setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
         }
       }
     } catch (error) {
@@ -219,7 +260,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           {activeTab === "verify" ? (
             <div className="verify-view">
               <p className="instruction-message">Enviamos um código para <strong>{formData.email}</strong></p>
-              <p className="expiry-warning">O código expira em 15 minutos.</p>
+              <p className="expiry-warning">O código expira em 5 minutos.</p>
               <div className="form-group">
                 <label>Código de 6 dígitos</label>
                 <input type="text" name="code" value={formData.code} onChange={handleChange} placeholder="000000" maxLength="6" required className="code-input" />
@@ -251,7 +292,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
                 <div className="form-group">
                   <label>Email</label>
                   <input type="email" name="email" value={formData.email} onChange={handleChange} className={formData.email && isEmailValid ? "valid" : ""} />
-                  <div className="instruction-message">Email deve ser válido e sem espaços (opcional).</div>
+                  <div className="instruction-message">Email deve ser válido e sem espaços (obrigatório).</div>
                 </div>
               )}
             </>
