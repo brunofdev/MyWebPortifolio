@@ -283,9 +283,9 @@
 }
 
 .user-menu-button {
-  background: rgba(72, 187, 120, 0.1); /* Fundo verde translúcido */
+  background: transparent; /* Fundo verde translúcido */
   color: #e0e0e0;
-  border: 1px solid rgba(72, 187, 120, 0.3);
+  border: 1px solid transparent;
   border-radius: 8px;
   padding: 10px 18px;
   font-size: 1rem;
@@ -358,9 +358,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== ESTILOS MOBILE ===== */
-@media (max-width: 768px) {
-   .header-container {
+/* ========================================================= */
+/* ===== ESTILOS MOBILE (Onde a mágica acontece) ===== */
+/* ========================================================= */
+@media (max-width: 930px) {
+  .header-container {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -376,159 +378,162 @@
   .right-section {
     grid-column: 3;
     justify-self: end;
+    gap: 12px;
   }
 
+  /* Esconde o texto no botão do topo pra não apertar, mostra só a foto */
+  .user-menu-name {
+    display: none; 
+  }
+
+ .user-menu-button {
+    padding: 0;
+    background: transparent;
+    border: none;
+    gap: 2;
+  }
+
+  /* Ajusta o balão de dropdown para não sair da tela no celular */
+  .user-dropdown {
+    right: -10px;
+  }
+
+  /* Oculta os links no topo */
   .nav {
     display: none;
   }
 
+  /* Menu Lateral Overlay */
   .nav.open {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  right: 0;
-
-  width: 260px;
-  height: 100vh;
-
-  background: linear-gradient(180deg, #1b1b1b, #0e0e0e);
-  backdrop-filter: blur(14px);
-
-  padding: 28px 22px;
-  gap: 28px;
-
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    -12px 0 40px rgba(0, 0, 0, 0.75),
-    inset 1px 0 0 rgba(255, 255, 255, 0.05);
-
-  z-index: 1100;
-  animation: slideInSoft 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.nav-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.nav-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.3px;
-}
-
-.nav-subtitle {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.nav-divider {
-  margin-top: 10px;
-  height: 2px;
-  width: 40%;
-  background: linear-gradient(90deg, #48bb78, transparent);
-  border-radius: 2px;
-}
-
- .nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.nav-links .nav-link {
-  padding: 12px 14px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #e5e7eb;
-  transition: background 0.25s ease, transform 0.2s ease;
-}
-
-.nav-links .nav-link:hover {
-  background: rgba(72, 187, 120, 0.15);
-  transform: translateX(4px);
-}
-.nav-footer {
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.nav-auth-button {
-  background: linear-gradient(135deg, #48bb78, #2f855a);
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  color: #0f172a;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.nav-auth-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(72, 187, 120, 0.45);
-}
-
-.nav-footer-text {
-  font-size: 0.7rem;
-  color: #9ca3af;
-  text-align: center;
-}
-
-  .menu-toggle {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1b1b1b, #0e0e0e);
+    backdrop-filter: blur(14px);
+    padding: 28px 22px;
+    gap: 28px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.75), inset 1px 0 0 rgba(255, 255, 255, 0.05);
+    z-index: 1100;
+    animation: slideInSoft 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .right-section {
-    gap: 12px;
+  .nav-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
-  .engine-status,
+  .nav-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+
+  .nav-subtitle {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .nav-divider {
+    margin-top: 10px;
+    height: 2px;
+    width: 40%;
+    background: linear-gradient(90deg, #48bb78, transparent);
+    border-radius: 2px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav-links .nav-link {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #e5e7eb;
+    transition: background 0.25s ease, transform 0.2s ease;
+  }
+
+  .nav-links .nav-link:hover {
+    background: rgba(72, 187, 120, 0.15);
+    transform: translateX(4px);
+  }
+
+  /* ALINHAMENTO DO BOTÃO HOME NO MOBILE */
+  .nav-links .btn-home {
+    text-align: left;
+    width: 100%;
+  }
+
+  /* FOOTER DO MENU LATERAL (Auth) */
+  .nav-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-auth-button {
+    background: linear-gradient(135deg, #48bb78, #2f855a);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    color: #0f172a;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .nav-auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(72, 187, 120, 0.45);
+  }
+
+  /* Deixa o botão Sair vermelho no menu lateral */
+  .nav-auth-button.logout {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #ffffff;
+  }
+
+  .nav-footer-text {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    text-align: center;
+  }
+
   .auth-button {
     font-size: 1rem;
     padding: 10px 20px;
-    
-  }
-
-  .tooltip {
-    width: 160px;
-    font-size: 0.8rem;
   }
 }
 
 /* ===== ANIMAÇÕES ===== */
 @keyframes slideInSoft {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
 @keyframes blink {
   0% { opacity: 1; }
   50% { opacity: 0.4; }
   100% { opacity: 1; }
 }
-
 @keyframes glow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }

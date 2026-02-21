@@ -155,7 +155,7 @@
   100% { transform: scale(1); }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1225px) {
   .content {
     flex-direction: column;
   }
