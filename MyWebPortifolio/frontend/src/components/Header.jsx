@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/header.css";
 
-// NOVO: Adicionei a prop 'goHome' aqui
 const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEditProfile, goHome }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,95 +38,70 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
           </div>
 
           <div className="nav-links">
-            {/* NOVO: O botão Home agora chama a prop goHome além de fechar o menu mobile */}
             <button 
               className="nav-link btn-home" 
               onClick={() => {
-                if (goHome) goHome(); // Volta pro início
-                setIsMenuOpen(false); // Fecha o menu no celular
+                if (goHome) goHome(); 
+                setIsMenuOpen(false); 
               }}
             >
               Home
             </button>
-            <a href="#about" className="nav-link">Sobre</a>
-            <a href="#skills" className="nav-link">Habilidades</a>
-            <a href="#projects" className="nav-link">Projetos</a>
-            <a href="#contact" className="nav-link">Contato</a>
-            <a href="#feedback" className="nav-link">Deixe seu Feedback</a>
+            <a href="#about" className="nav-link" onClick={() => setIsMenuOpen(false)}>Sobre</a>
+            <a href="#skills" className="nav-link" onClick={() => setIsMenuOpen(false)}>Habilidades</a>
+            <a href="#projects" className="nav-link" onClick={() => setIsMenuOpen(false)}>Projetos</a>
+            <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contato</a>
+            <a href="#feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>Deixe seu Feedback</a>
           </div>
 
           <div className="nav-footer">
             {isAuthenticated && userName ? (
-              <span className="welcome-text">
-                Bem-vindo, <strong>{userName}</strong>!
-              </span>
+              <>
+                {/* AQUI ESTÁ A FOTO E NOME DENTRO DO MENU MOBILE */}
+                <div className="mobile-user-profile">
+                  <img src={defaultAvatar} alt="Perfil" className="header-avatar" />
+                  <span>Olá, <strong>{userName}</strong></span>
+                </div>
+                
+                <button className="nav-auth-button" onClick={() => { openEditProfile(); setIsMenuOpen(false); }}>
+                  Editar Perfil
+                </button>
+                <button className="nav-auth-button logout" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>
+                  Sair
+                </button>
+              </>
             ) : (
-              <button
-                className="nav-auth-button"
-                onClick={() => {
-                  openAuthModal();
-                  setIsMenuOpen(false);
-                }}
-              >
+              <button className="nav-auth-button" onClick={() => { openAuthModal(); setIsMenuOpen(false); }}>
                 Entrar
               </button>
             )}
-
-            {isAuthenticated && (
-              <button
-                className="nav-auth-button"
-                onClick={() => {
-                  handleLogout();
-                  setIsMenuOpen(false);
-                }}
-              >
-                Sair
-              </button>
-            )}
-
             <span className="nav-footer-text">© 2026 BrunoFraga.dev</span>
           </div>
         </nav>
 
         {/* DIREITA (COM O NOVO DROPDOWN E AVATAR) */}
-        <div className="right-section">
+        {/* Adicionamos a classe 'hide-on-mobile' que é ativada quando o menu abre */}
+        <div className={`right-section ${isMenuOpen ? "hide-on-mobile" : ""}`}>
           {isAuthenticated && userName ? (
             <div className="user-menu-container">
-              <button
-                className="user-menu-button"
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              >
+              <button className="user-menu-button" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
                 <img src={defaultAvatar} alt="Perfil" className="header-avatar" />
-                <span>Olá, <strong>{userName}</strong> ▼</span>
+                <span className="user-menu-name">Olá, <strong>{userName}</strong> ▼</span>
               </button>
 
               {isUserMenuOpen && (
                 <div className="user-dropdown">
-                  <button 
-                    className="dropdown-item" 
-                    onClick={() => {
-                      openEditProfile();
-                      setIsUserMenuOpen(false);
-                    }}
-                  >
+                  <button className="dropdown-item" onClick={() => { openEditProfile(); setIsUserMenuOpen(false); }}>
                     Editar Perfil
                   </button>
-                  <button 
-                    className="dropdown-item logout" 
-                    onClick={() => {
-                      handleLogout();
-                      setIsUserMenuOpen(false);
-                    }}
-                  >
+                  <button className="dropdown-item logout" onClick={() => { handleLogout(); setIsUserMenuOpen(false); }}>
                     Sair / Logout
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <button className="auth-button" onClick={openAuthModal}>
-              Entrar
-            </button>
+            <button className="auth-button" onClick={openAuthModal}>Entrar</button>
           )}
         </div>
 
