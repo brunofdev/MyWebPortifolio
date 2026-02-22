@@ -72,7 +72,7 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
               </>
             ) : (
               <button className="nav-auth-button" onClick={() => { openAuthModal(); setIsMenuOpen(false); }}>
-                Entrar
+                Acessar / Cadastrar
               </button>
             )}
             <span className="nav-footer-text">© 2026 BrunoFraga.dev</span>
@@ -101,7 +101,7 @@ const Header = ({ isAuthenticated, userName, handleLogout, openAuthModal, openEd
               )}
             </div>
           ) : (
-            <button className="auth-button" onClick={openAuthModal}>Entrar</button>
+            <button className="auth-button" onClick={openAuthModal}>Acessar / Cadastrar</button>
           )}
         </div>
 

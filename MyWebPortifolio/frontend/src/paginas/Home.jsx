@@ -7,7 +7,7 @@ import Skills from "../components/Skills";
 import Projects from "../components/Projects";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
-import AuthModal from "../components/AuthModal";
+import AuthModal from "../components/auth/AuthModal";
 import Modal from "../components/Modal";
 import ModalApresentacao from "../components/ModalApresentacao";
 import Feedback from "../components/Feedback";

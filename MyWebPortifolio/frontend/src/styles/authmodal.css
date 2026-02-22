@@ -271,6 +271,49 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+.forgot-password-container {
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: #48bb78;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.forgot-password-link:hover {
+  color: #38a169;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  background: transparent;
+  color: #9ca3af;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
 
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 640px) {
