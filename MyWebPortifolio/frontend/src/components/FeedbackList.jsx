@@ -23,11 +23,11 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
   // ATENÇÃO: Os nomes abaixo devem ser IGUAIS aos do seu FeedbackDTO no Java
   const { 
     id, 
-    comentario,    // Antes era 'descricao'
-    notaAvaliacao,          // Antes era 'notaAvaliacao'
-    dataDeCriacao,   // Antes era 'dataDeCriacao'
-    criadoPor,      // Antes era 'criadoPor'
-    fotoPerfil     // Antes era 'fotoperfil'
+    comentario,   
+    notaAvaliacao,       
+    dataDeCriacao,  
+    criadoPor,      
+    fotoUsuario  
   } = feedback;
 
   const formatDateTime = useCallback((dateString) => {
@@ -52,7 +52,7 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
   }, []);
 
   const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-  const userPhoto = fotoPerfil || defaultAvatar;
+  const userPhoto = fotoUsuario || defaultAvatar;
 
   return (
     <div className="whatsapp-bubble-container">
