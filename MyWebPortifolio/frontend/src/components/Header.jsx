@@ -1,37 +1,46 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/header.css";
 
 const Header = ({ 
   isAuthenticated, 
   userName, 
-  userPhoto, // Nova prop para a URL da imagem
+  userPhoto, 
   handleLogout, 
   openAuthModal, 
   openEditProfile, 
-  goHome 
+  goHome,
+  userRole 
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Detecta rolagem da página para mudar o estilo do header
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // IMAGEM PADRÃO caso o usuário não tenha foto
   const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-  // Lógica de exibição: prioriza a foto da API (userPhoto), senão usa a padrão
   const avatarImage = userPhoto || defaultAvatar;
+
+  // Lógica corrigida para garantir que userRole não seja undefined
+  const isAdminMaster = isAuthenticated && userRole === "ADMIN3";
+
+  // Função centralizada para navegação
+  const handleAdminNavigation = (e) => {
+    e.preventDefault(); // Evita recarregamento indesejado
+    console.log("Navegando para /admin..."); // Para debug
+    setIsMenuOpen(false); // Fecha o menu mobile se estiver aberto
+    navigate('/admin');
+  };
 
   return (
     <header className={`header ${isScrolled ? "scrolled" : ""}`}>
       <div className="header-container">
 
-        {/* BOTÃO MENU (MOBILE) */}
         <button
           className="menu-toggle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -40,7 +49,6 @@ const Header = ({
           ☰
         </button>
 
-        {/* NAVEGAÇÃO LATERAL (MOBILE) / LINKS (DESKTOP) */}
         <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
           <div className="nav-header">
             <span className="nav-title">Bruno Dev</span>
@@ -63,13 +71,22 @@ const Header = ({
             <a href="#projects" className="nav-link" onClick={() => setIsMenuOpen(false)}>Projetos</a>
             <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contato</a>
             <a href="#feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>Deixe seu Feedback</a>
+            
+            {/* O ÚNICO BOTÃO ADMIN: Fica junto com os outros links */}
+            {isAdminMaster && (
+              <button 
+                className="nav-link admin-nav-btn" 
+                onClick={handleAdminNavigation}
+              >
+                ⚙️ Painel Admin
+              </button>
+            )}
           </div>
 
           <div className="nav-footer">
             {isAuthenticated && userName ? (
               <>
                 <div className="mobile-user-profile">
-                  {/* FOTO NO MENU MOBILE */}
                   <img src={avatarImage} alt="Perfil" className="header-avatar" />
                   <span>Olá, <strong>{userName}</strong></span>
                 </div>
@@ -90,12 +107,11 @@ const Header = ({
           </div>
         </nav>
 
-        {/* SEÇÃO DIREITA (DESKTOP: DROPDOWN E AVATAR) */}
+        {/* SEÇÃO DIREITA (Apenas Avatar e Login) */}
         <div className={`right-section ${isMenuOpen ? "hide-on-mobile" : ""}`}>
           {isAuthenticated && userName ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                {/* FOTO NO HEADER DESKTOP */}
                 <img src={avatarImage} alt="Perfil" className="header-avatar" />
                 <span className="user-menu-name">Olá, <strong>{userName}</strong> ▼</span>
               </button>

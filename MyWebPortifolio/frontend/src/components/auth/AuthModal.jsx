@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/authmodal.css"; 
+import "../../styles/authmodal.css";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import VerifyForm from "./VerifyForm";
@@ -14,7 +14,7 @@ const API_URLS = {
   register: `${BASE_URL}/usuario/cadastro`,
   verify: `${BASE_URL}/usuario/ativar-conta`,
   resend: `${BASE_URL}/usuario/reenviar-codigo`,
-  
+
   forgotPassword: `${BASE_URL}/usuario/senha/recuperacao`,
   verifyRecovery: `${BASE_URL}/usuario/senha/recuperacao/validar-codigo`,
   resetPassword: `${BASE_URL}/usuario/senha/recuperacao/alterar-senha`,
@@ -38,7 +38,7 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
 };
 
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
-  const [activeTab, setActiveTab] = useState("login"); 
+  const [activeTab, setActiveTab] = useState("login");
   const [formData, setFormData] = useState({
     name: "", userName: "", password: "", email: "", code: ""
   });
@@ -47,9 +47,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [tempUser, setTempUser] = useState(null);
-  
+
   // Estado para armazenar o email ofuscado retornado pela API
-  const [maskedEmail, setMaskedEmail] = useState(""); 
+  const [maskedEmail, setMaskedEmail] = useState("");
 
   useEffect(() => {
     let interval;
@@ -67,7 +67,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
 
   const isUserNameValid = formData.userName &&
-    (activeTab !== "register" ? true : formData.userName.length >= 5) && 
+    (activeTab !== "register" ? true : formData.userName.length >= 5) &&
     (activeTab !== "register" || (formData.userName.length <= 20 && /^\S+$/.test(formData.userName)));
 
   const isPasswordValid = formData.password &&
@@ -130,7 +130,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       }
       return true;
     }
-    
+
     if (activeTab === "forgot-password") {
       if (!formData.userName) { setError("Informe o usuário ou e-mail para recuperar a senha."); return false; }
       return true;
@@ -178,7 +178,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
       if (activeTab === "login") {
         url = API_URLS.login;
-        payload = { cpf: formData.userName, senha: formData.password };
+        payload = { userName: formData.userName, senha: formData.password };
       } else if (activeTab === "register") {
         url = API_URLS.register;
         payload = { nome: formData.name, email: formData.email || "", userName: formData.userName, senha: formData.password };
@@ -187,7 +187,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         payload = { userName: formData.userName, codigo: formData.code };
       } else if (activeTab === "forgot-password") {
         url = API_URLS.forgotPassword;
-        payload = formData.userName; 
+        payload = formData.userName;
       } else if (activeTab === "verify-recovery") {
         url = API_URLS.verifyRecovery;
         payload = { userName: formData.userName, codigo: formData.code };
@@ -201,13 +201,13 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
       const body = isPlainText ? payload : JSON.stringify(payload);
 
       const response = await fetchWithRetry(url, { method: "POST", headers, body });
-      
+
       let data = {};
       // Só tenta ler o JSON se a resposta não for 204 No Content
       if (response.status !== 204) {
-          try { data = await response.json(); } catch(err) {}
+        try { data = await response.json(); } catch (err) { }
       }
-      
+
       if (!response.ok) {
         setError(data.erro?.message || data.message || "Erro na solicitação.");
         setIsLoading(false);
@@ -220,7 +220,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         if (data.dados && data.dados.email) setMaskedEmail(data.dados.email);
         setActiveTab("verify-recovery");
         setSuccessMessage("Código de recuperação enviado!");
-      } 
+      }
       else if (activeTab === "verify-recovery") {
         setActiveTab("reset-password");
         setSuccessMessage("Código validado! Escolha sua nova senha.");
@@ -236,29 +236,31 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           handleLoginSuccess({ token: tempUser?.token || data.dados?.token, user: data.dados.clienteDTO || data.dados });
           onClose();
         }, 1500);
-      } 
+      }
       else if (activeTab === "login") {
         const user = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados;
         if (user.contaAtiva === false) {
-          setTempUser(data.dados); 
+          setTempUser(data.dados);
           setActiveTab("verify");
           setSuccessMessage("Sua conta não está ativa. Verifique seu e-mail.");
         } else {
           handleLoginSuccess({ token: data.dados.token, user });
           onClose();
         }
-      } 
+      }
       else if (activeTab === "register") {
         try {
-          const loginPayload = { cpf: formData.userName, senha: formData.password };
+          // AQUI ESTÁ O ERRO:
+          const loginPayload = { userName: formData.userName, senha: formData.password };
+
           const loginRes = await fetchWithRetry(API_URLS.login, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(loginPayload),
+            body: JSON.stringify(loginPayload), // <--- Enviando 'cpf' de novo!
           });
           const loginData = await loginRes.json();
           if (loginRes.ok) { setTempUser(loginData.dados); }
-        } catch (err) {}
+        } catch (err) { }
         setFormData((prev) => ({ ...prev, email: data.dados?.email || prev.email }));
         setActiveTab("verify");
         setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
@@ -318,7 +320,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
             <button type="submit" className="submit-button" disabled={isLoading}>
               {isLoading ? "Processando..." : (activeTab === "verify" || activeTab === "verify-recovery") ? "Confirmar" : activeTab === "forgot-password" ? "Enviar Código" : activeTab === "reset-password" ? "Salvar Senha" : isLogin ? "Entrar" : "Cadastrar"}
             </button>
-            
+
             {(activeTab === "forgot-password" || activeTab === "verify-recovery" || activeTab === "reset-password") && (
               <button type="button" className="cancel-button" onClick={() => handleTabChange("login")} disabled={isLoading}>
                 Cancelar / Voltar

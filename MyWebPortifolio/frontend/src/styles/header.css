@@ -358,6 +358,33 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== BOTÃO PAINEL ADMIN ===== */
+.admin-nav-btn {
+  background: transparent;
+  border: 1px solid #ff4d4d; /* Borda vermelha para destaque */
+  color: #ff4d4d !important; /* Força a cor vermelha no texto */
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+/* Remove a linha verde padrão dos outros links */
+.admin-nav-btn::after {
+  display: none; 
+}
+
+/* Efeito Hover do Admin */
+.admin-nav-btn:hover {
+  background: #ff4d4d;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
+}
+
 /* ========================================================= */
 /* ===== ESTILOS MOBILE (Onde a mágica acontece) ===== */
 /* ========================================================= */
@@ -367,7 +394,9 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
   }
-
+.admin-nav-btn {
+    display: none; /* Esconde o botão de admin no mobile */
+  }
   .menu-toggle {
     display: block;
     grid-column: 1;

@@ -155,6 +155,7 @@
   100% { transform: scale(1); }
 }
 
+/*MOBILE RESPONSIVE*/
 @media (max-width: 1225px) {
   .content {
     flex-direction: column;
@@ -217,4 +218,8 @@
     width: 90%;
     margin: 20px auto;
   }
+  .desktop-only {
+    display: none !important;
+  }
+  
 }

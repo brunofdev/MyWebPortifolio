@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom'; 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import About from "../components/About";
-import Experience from "../components/Experience";
 import Skills from "../components/Skills";
 import Projects from "../components/Projects";
 import Contact from "../components/Contact";
@@ -23,7 +23,8 @@ const Home = () => {
   const [token, setToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState(null);
-  const [userPhoto, setUserPhoto] = useState(null); // AJUSTE: Novo estado para a foto
+  const [userPhoto, setUserPhoto] = useState(null);
+  const [openAdminPanel, setOpenAdminPanel] = useState(false); // AJUSTE: Novo estado para a foto
 
   const [currentView, setCurrentView] = useState("home"); 
 
@@ -33,6 +34,7 @@ const Home = () => {
 
   const closeModal = () => setActiveModalContent(null);
   const openAuthModal = () => setActiveModalContent("auth");
+  const navigate = useNavigate();
 
   const handleLogin = (data) => {
     setIsAuthenticated(true);
@@ -41,6 +43,8 @@ const Home = () => {
     setUserName(data.user.userName);
     setUserPhoto(data.user.fotoPerfil); // AJUSTE: Salva a foto que vem do login
     closeModal();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
   };
 
   const handleLogout = () => {
@@ -52,6 +56,39 @@ const Home = () => {
     goHome(); 
   };
 
+  const handleAdminNavigation = async (e) => {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Você precisa estar logado!");
+    return;
+  }
+
+  // Coloque um estado de "loading" no botão se quiser, para o usuário saber que está pensando
+  try {
+    // Vamos bater em um endpoint do seu Java que SÓ aceita ADMIN3
+    const response = await fetch(import.meta.env.VITE_API_URL + "/auth/validar-admin", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      // O Java disse OK (Status 200). A catraca abriu!
+      setIsMenuOpen(false);
+      navigate('/admin');
+    } else {
+      // O Java barrou (Status 403 Forbidden ou 401 Unauthorized)
+      alert("Acesso negado: Tentativa de fraude detectada ou sem permissão.");
+      // Opcional: handleLogout() para deslogar o espertinho na hora
+    }
+  } catch (error) {
+    console.error("Erro ao validar:", error);
+    alert("Servidor indisponível no momento.");
+  }
+};
   // AJUSTE: Função para atualizar a foto no Header após editar o perfil
   const handleUpdateUserPhoto = (newPhotoUrl) => {
     setUserPhoto(newPhotoUrl);
@@ -109,7 +146,9 @@ const Home = () => {
       <Header
         isAuthenticated={isAuthenticated}
         userName={userName}
-        userPhoto={userPhoto} // AJUSTE: Agora usa o estado correto
+        userPhoto={userPhoto}
+        userRole={userRole}
+        openAdminPanel={openAdminPanel}
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         openAuthModal={openAuthModal}
