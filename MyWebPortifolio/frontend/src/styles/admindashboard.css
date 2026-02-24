@@ -126,3 +126,117 @@
   cursor: pointer;
   border-radius: 6px;
 }
+/* =========================================
+   TOPBAR DO ADMIN (NOVO)
+   ========================================= */
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.admin-brand {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #48bb78;
+  letter-spacing: 1px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.admin-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-right: 20px;
+}
+
+.admin-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #48bb78;
+}
+
+.admin-name {
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-topbar {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-topbar.primary {
+  background: rgba(76, 175, 80, 0.1);
+  color: #48bb78;
+  border: 1px solid #48bb78;
+}
+
+.btn-topbar.primary:hover {
+  background: #48bb78;
+  color: #1a1a1a;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+}
+
+.btn-topbar.danger {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid transparent;
+}
+
+.btn-topbar.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Ajuste Responsivo para a Topbar */
+@media (max-width: 768px) {
+  .admin-topbar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .topbar-right {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .admin-user-info {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-right: 0;
+    padding-bottom: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+}

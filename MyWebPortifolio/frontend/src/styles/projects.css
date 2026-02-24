@@ -1,65 +1,95 @@
 /* =========================================
-   BASE E GRID DOS PROJETOS (Seu código original mantido)
+   BASE E GRID DOS PROJETOS (Responsivo)
    ========================================= */
 .projects {
-  background-color: #181818;
-  padding: 20px;
-  border-radius: 10px;
+  background-color: transparent; /* Deixa o fundo do site fluir melhor */
+  padding: 20px 0;
   color: #fff;
   margin-top: 20px;
 }
 
-.projects:hover {
-  border: 2px solid #f50505;
+.projects h2 {
+  color: #4caf50;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-left: 4px solid #f50505;
+  padding-left: 15px;
 }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  align-items: center;
-}
-
-.project-item {
-  cursor: pointer;
-  position: relative;
-}
-
-.project-item img {
-  width: 60%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  animation: tvStatic 2.5s infinite;
-}
-
-@keyframes tvStatic {
-  0%, 70% {
-    filter: url(#static-noise);
-    opacity: 0.85;
-  }
-  75%, 90% {
-    filter: none;
-    opacity: 1;
-  }
-  95%, 100% {
-    filter: url(#static-noise);
-    opacity: 0.85;
-  }
-}
-
-.project-item:hover img {
-  filter: none;
-  transform: scale(1.05);
-  border-radius: 2px;
-  border: 2px solid #f50505;
-  animation: none;
+  /* MÁGICA RESPONSIVA: Cria colunas automáticas. Nunca quebra a tela! */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  align-items: stretch;
 }
 
 /* =========================================
-   MODAL - ESTRUTURA E TEXTOS (ATUALIZADO)
+   CARDS DOS PROJETOS (O visual do quadro)
+   ========================================= */
+.project-item {
+  cursor: pointer;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden; /* Garante que a imagem não vaze as bordas arredondadas */
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.project-item img {
+  width: 100%; /* Preenche todo o card */
+  height: 250px; /* Altura fixa para manter todos os cards alinhados */
+  object-fit: cover; /* Corta a imagem com elegância sem achatar */
+  display: block;
+  animation: tvStatic 3s infinite;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* O título que fica escondido e sobe no hover */
+.project-title-overlay {
+  position: absolute;
+  bottom: -100px; /* Esconde o texto para baixo */
+  left: 0;
+  width: 100%;
+  padding: 30px 20px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* EFEITOS DE HOVER (Quando o mouse passa por cima) */
+.project-item:hover {
+  transform: translateY(-8px); /* Card "flutua" para cima */
+  border-color: #4caf50; /* Borda brilha em verde */
+  box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
+}
+
+.project-item:hover img {
+  filter: none; /* Desliga o chuvisco de TV */
+  transform: scale(1.08); /* Dá um zoom suave na imagem */
+  animation: none;
+}
+
+.project-item:hover .project-title-overlay {
+  bottom: 0; /* Título desliza para cima */
+}
+
+/* A Animação Hacker (Mantida, mas ajustada para ser mais suave) */
+@keyframes tvStatic {
+  0%, 70% { filter: url(#static-noise); opacity: 0.9; }
+  75%, 90% { filter: none; opacity: 1; }
+  95%, 100% { filter: url(#static-noise); opacity: 0.9; }
+}
+
+/* =========================================
+   MODAL - ESTRUTURA E TEXTOS (Mantido)
    ========================================= */
 .modal-content {
   display: flex;
@@ -67,34 +97,23 @@
   align-items: center;
   gap: 20px;
   width: 100%;
-  
-  /* NOVO: Controle de Altura e Scroll */
-  max-height: 70vh; /* Reduz a altura máxima para 70% da tela */
-  overflow-y: auto; /* Liga a barra de rolagem vertical */
-  overflow-x: hidden; /* Impede a tela de quebrar para os lados */
-  padding-right: 10px; /* Dá um espacinho para a barra não colar no texto */
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
 }
 
-/* NOVO: Pintando a barra de rolagem com o seu tema Hacker/Neon */
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-.modal-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.modal-content::-webkit-scrollbar-thumb {
-  background: #4caf50; /* Verde neon */
-  border-radius: 10px;
-}
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #f50505; /* Fica vermelho ao passar o mouse */
-}
+.modal-content::-webkit-scrollbar { width: 8px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; }
+.modal-content::-webkit-scrollbar-thumb:hover { background: #f50505; }
+
 .modal-content iframe {
   width: 100%;
-  aspect-ratio: 16 / 9; /* Trava a proporção exata do YouTube */
-  height: auto; /* Ignora o 315px fixo do React */
-  border-radius: 8px; /* Dá uma arredondada nas pontas para combinar com o modal */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Destaca o vídeo do fundo */
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 .modal-title {
@@ -105,107 +124,37 @@
   text-align: center;
 }
 
-.modal-description {
-  width: 100%;
-  color: #fff;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.main-desc {
-  margin-bottom: 20px;
-}
+.modal-description { width: 100%; color: #fff; font-size: 16px; line-height: 1.5; }
+.main-desc { margin-bottom: 20px; }
 
 /* =========================================
-   NOVO: NAVEGAÇÃO (SETAS DO CARROSSEL)
+   NAVEGAÇÃO (SETAS DO CARROSSEL) E FICHA TÉCNICA
    ========================================= */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 15px;
-}
+.modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px; }
 
-.nav-arrow {
-  background-color: transparent;
-  color: #fff;
-  border: 1px solid #4caf50; /* Borda neon verde */
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.nav-arrow:hover {
-  background-color: #4caf50;
-  color: #181818; /* Inverte a cor no hover */
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
-}
-
-/* =========================================
-   NOVO: FICHA TÉCNICA (Especificações)
-   ========================================= */
 .tech-specs {
-  background-color: #222; /* Fundo levemente mais claro que o base para destacar */
+  background-color: #222;
   padding: 15px;
-  border-left: 4px solid #f50505; /* Destaque vermelho lateral */
+  border-left: 4px solid #f50505;
   border-radius: 4px;
   margin: 15px 0;
   text-align: left;
   width: 100%;
 }
 
-.tech-specs h4 {
-  color: #4caf50;
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-.tech-specs ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tech-specs li {
-  margin-bottom: 8px;
-  color: #ccc; /* Texto das infos um pouco mais suave */
-}
-
-.tech-specs strong {
-  color: #fff; /* Títulos fortes (Linguagem, Framework) em branco */
-}
+.tech-specs h4 { color: #4caf50; margin-top: 0; margin-bottom: 15px; font-size: 18px; }
+.tech-specs ul { list-style-type: none; padding: 0; margin: 0; }
+.tech-specs li { margin-bottom: 8px; color: #ccc; }
+.tech-specs strong { color: #fff; }
 
 /* =========================================
    LINKS
    ========================================= */
-.modal-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
+.modal-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 15px; flex-wrap: wrap; }
+.modal-links li { margin: 10px 0; }
+.modal-links a { color: #4caf50; text-decoration: none; transition: color 0.3s ease; border-bottom: 1px solid transparent; font-weight: bold;}
+.modal-links a:hover { color: #f50505; border-bottom: 1px solid #f50505; }
 
-.modal-links li {
-  margin: 10px 0;
-}
-
-.modal-links a {
-  color: #4caf50;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  border-bottom: 1px solid transparent;
-}
-
-.modal-links a:hover {
-  color: #f50505;
-  border-bottom: 1px solid #f50505;
-}
 /* =========================================
    SETAS FLUTUANTES E PISCANTES
    ========================================= */
@@ -225,92 +174,43 @@
   justify-content: center;
 }
 
-/* Responsividade: No celular ficam embaixo/dentro, no PC flutuam */
 @media (max-width: 768px) {
-  .nav-arrow {
-    position: relative;
-    display: inline-flex;
-    margin: 10px;
-  }
+  .nav-arrow { position: relative; display: inline-flex; margin: 10px; }
 }
 
 @media (min-width: 769px) {
   .nav-arrow {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    animation: piscaAlerta 1.5s infinite; /* A mágica de piscar */
+    position: fixed; top: 50%; transform: translateY(-50%);
+    animation: piscaAlerta 1.5s infinite;
   }
-  
   .left-arrow { left: 5%; }
   .right-arrow { right: 5%; }
 }
 
 @keyframes piscaAlerta {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
-    opacity: 1;
-  }
-  50% {
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
-    opacity: 0.5;
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); opacity: 1; }
+  50% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.2); opacity: 0.5; }
 }
 
 .nav-arrow:hover {
-  background-color: #4caf50;
-  color: #181818;
-  animation: none; /* Para de piscar quando o mouse está em cima */
-  transform: translateY(-50%) scale(1.1); /* Dá uma leve crescida */
+  background-color: #4caf50; color: #181818;
+  animation: none; transform: translateY(-50%) scale(1.1);
 }
 
 /* =========================================
    COMO RODAR (TERMINAL DE COMANDOS)
    ========================================= */
-.setup-section {
-  margin-top: 25px;
-  width: 100%;
-  text-align: left;
-}
-
-.setup-section h4 {
-  color: #4caf50;
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-.setup-obs {
-  color: #f50505; /* Destaque vermelho para a observação do Docker */
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
+.setup-section { margin-top: 25px; width: 100%; text-align: left; }
+.setup-section h4 { color: #4caf50; font-size: 18px; margin-bottom: 5px; }
+.setup-obs { color: #f50505; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
 
 .terminal-box {
-  background-color: #0d0d0d;
-  border: 1px solid #333;
-  border-left: 4px solid #4caf50;
-  padding: 15px;
-  border-radius: 5px;
-  font-family: 'Courier New', Courier, monospace; /* Fonte com cara de código */
+  background-color: #0d0d0d; border: 1px solid #333; border-left: 4px solid #4caf50;
+  padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace;
 }
-
-.step-item {
-  margin-bottom: 15px;
-}
-
-.step-item p {
-  color: #ccc;
-  margin: 0 0 5px 0;
-  font-size: 15px;
-}
-
+.step-item { margin-bottom: 15px; }
+.step-item p { color: #ccc; margin: 0 0 5px 0; font-size: 15px; }
 .step-item code {
-  display: block;
-  background-color: #222;
-  color: #19c9e8; /* Vermelho padrão do seu tema */
-  padding: 8px;
-  border-radius: 4px;
-  user-select: all; /* Facilita a cópia com um clique */
-  word-wrap: break-word;
+  display: block; background-color: #222; color: #19c9e8;
+  padding: 8px; border-radius: 4px; user-select: all; word-wrap: break-word;
 }

@@ -1,129 +1,177 @@
+/* =========================================
+   FONTES CUSTOMIZADAS MANTIDAS
+   ========================================= */
 @font-face {
     font-family: 'fsex300';
-    /* Nome que você vai usar no CSS */
     src: url('../../public/fonts/FSEX300.ttf') format('truetype');
-    /* Caminho relativo ao CSS */
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'perfectdos';
-    /* Nome que você vai usar no CSS */
     src: url('../../public/fonts/perfectdos.ttf') format('truetype');
-    /* Caminho relativo ao CSS */
     font-weight: normal;
     font-style: normal;
 }
 
+/* =========================================
+   ESTRUTURA PRINCIPAL
+   ========================================= */
 .modal-wrapper {
     background-color: transparent;
     width: 100%;
     height: 100%;
-}
-.titulo-apresentacao {
-        font-size: 40px;
-        text-align: center;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, #ffffff, #00ff00, #1a3c1a, #333);
-        background-size: 300% 300%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: waveDiagonal 5s ease-in-out infinite;
-        text-shadow:
-            0 0 8px rgba(0, 255, 0, 0.9),
-            0 0 15px rgba(0, 255, 0, 0.7),
-            0 0 25px rgba(0, 255, 0, 0.5),
-            0 0 40px rgba(255, 255, 255, 0.3),
-            0 0 60px rgba(255, 255, 255, 0.1);
-        letter-spacing: 2px;
-        filter: brightness(1.2);
-    }
-@keyframes waveDiagonal {
-    0% {
-        background-position: 0% 0%;
-    }
-
-    50% {
-        background-position: 100% 100%;
-    }
-
-    100% {
-        background-position: 0% 0%;
-    }
-}
-
-
-.modal-apresentacao {
-    width: 100%;
-    height: 100%;
-    padding: 10px 20px;
-    border-radius: 10px;
-}
-
-.par-container {
-
-    padding: 0px 70px;
-}
-
-
-
-
-.par-boas-vindas {
-    background-color: rgb(44, 43, 43);
-    font-size: 18px;
-    text-align: justify;
-    border: solid rgb(3, 3, 3) 10px ;
-    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
 }
 
-.span-emoji-final {
-    position: fixed;
-    font-size: 30px;
+/* =========================================
+   TÍTULO (Neon Hacker)
+   ========================================= */
+.titulo-apresentacao {
+    font-family: 'perfectdos', monospace; /* Aplicando a sua fonte customizada */
+    font-size: 45px;
     text-align: center;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #4caf50, #81c784, #ffffff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: waveDiagonal 4s ease-in-out infinite;
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    letter-spacing: 2px;
+}
+
+@keyframes waveDiagonal {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* =========================================
+   CAIXA DE TEXTO (Efeito Vidro / Glassmorphism)
+   ========================================= */
+.modal-apresentacao {
+    width: 100%;
+    max-width: 700px;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 35px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+}
+
+.par-boas-vindas {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #e0e0e0;
+    text-align: center; /* Centralizado fica mais elegante para convites */
+    margin-bottom: 20px;
+}
+
+.par-boas-vindas:last-child {
+    margin-bottom: 0;
+}
+
+.par-boas-vindas strong {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* =========================================
+   ÁREA DO FOGUETE
+   ========================================= */
+.foguete-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    height: 120px; /* Garante que o layout não pule quando o foguete sumir */
+}
+
+.instrucao-foguete {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: piscarLento 2s infinite;
+    transition: opacity 0.3s ease;
+}
+
+.instrucao-foguete.escondido {
+    opacity: 0;
+}
+
+.span-emoji-final {
+    font-size: 50px; /* Foguete maior para ser um botão claro */
     cursor: pointer;
-    color: #0fac0f;
-    left: 50%;
-    top: 85%;
-    transform: translate(-50%, -50%);
-    animation: pulsar 1.5s ease-in-out infinite;
-    z-index: 1000;
+    animation: pulsar 2s ease-in-out infinite;
+    transition: transform 0.2s;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.3));
+}
+
+.span-emoji-final:hover {
+    animation: none;
+    transform: scale(1.2) translateY(-5px);
+    filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.8));
+}
+
+/* =========================================
+   ANIMAÇÕES DE VOO
+   ========================================= */
+@keyframes piscarLento {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
 }
 
 @keyframes pulsar {
-    0% {
-        transform: translate(-50%, -50%) scale(1.5);
-        /* Ajustado para usar translate */
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(3);
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(1.5);
-    }
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.1) translateY(-5px); }
+    100% { transform: scale(1) translateY(0); }
 }
 
+/* Animação de voo saindo da tela para cima e para a direita */
 @keyframes decolar {
     0% {
-        transform: translate(-50%, -50%) scale(2);
-        /* Mantém a centralização */
+        transform: scale(1.2);
     }
-
-    30% {
-        transform: translate(300px, -300px) scale(6);
+    20% {
+        transform: translateY(20px) scale(1); /* Pega impulso pra baixo */
     }
-
     100% {
-        transform: translate(1200px, -1200px) scale(10);
+        transform: translate(500px, -800px) scale(3); /* Voa alto */
         opacity: 0;
-        /* Adicionado para o foguete desaparecer */
     }
 }
 
 .decolando {
-    animation: decolar 1s ease-in-out forwards;
+    /* Congela a animação no último frame (opacity 0) */
+    animation: decolar 1.2s cubic-bezier(0.5, 0, 0.2, 1) forwards !important;
+    pointer-events: none; /* Impede múltiplos cliques */
+}
+
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+@media (max-width: 768px) {
+    .titulo-apresentacao {
+        font-size: 32px;
+    }
+    .modal-apresentacao {
+        padding: 25px 20px;
+    }
+    .par-boas-vindas {
+        font-size: 1rem;
+    }
+    .span-emoji-final {
+        font-size: 40px;
+    }
 }

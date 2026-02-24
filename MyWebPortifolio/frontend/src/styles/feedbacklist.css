@@ -1,324 +1,182 @@
-/* Variáveis para cores e tamanhos */
-:root {
-  --primary-bg: #181818;
-  --bubble-bg: #1e2a2f;
-  --bubble-alt-bg: #24353c;
-  --highlight-color: #4caf50;
-  --error-color: #f50505;
-  --star-color: #ffcc00;
-  --text-primary: #fff;
-  --text-secondary: #bbb;
-  --text-muted: #585a58;
-  --font-size-base: 16px;
-  --font-size-small: 12px;
-  --font-size-title: 24px;
-}
-
-/* Container principal */
+/* =========================================
+   CONTAINER PRINCIPAL
+   ========================================= */
 .feedback-list-container {
-  background-color: var(--primary-bg);
-  padding: 20px;
-  border-radius: 10px;
-  color: var(--text-primary);
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid rgba(76, 175, 80, 0.15);
+  color: #fff;
   margin: 20px auto;
   max-width: 800px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  font-size: var(--font-size-base);
-  transition: border 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-.feedback-list-container:hover {
-  border: 2px solid var(--highlight-color);
-}
-
-/* Cabeçalho */
 .feedback-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
 }
 
 .feedback-list-title {
-  font-size: var(--font-size-title);
-  font-weight: bold;
-  color: var(--text-primary);
+  font-size: 1.8rem;
+  color: #4caf50;
   margin: 0;
 }
 
-/* Botão de recarregar */
 .reload-button {
-  background-color: var(--highlight-color);
-  color: var(--text-primary);
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+  background: transparent;
+  color: #a0aec0;
+  border: 1px solid #a0aec0;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: var(--font-size-base);
-  transition: background-color 0.3s ease;
+  transition: all 0.3s;
 }
 
 .reload-button:hover:not(:disabled) {
-  background-color: var(--error-color);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: #fff;
 }
 
-.reload-button:disabled {
-  background-color: var(--text-muted);
-  cursor: not-allowed;
-}
-
-/* Barra de carregamento */
-.loading-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(72, 187, 120, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 16px;
-}
-
-.loading-bar::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  height: 100%;
-  background: #48bb78;
-  animation: loading 1.5s ease-in-out infinite;
-}
-
-/* Lista de feedbacks */
+/* =========================================
+   LISTA E SCROLL
+   ========================================= */
 .feedback-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  max-height: 500px;
+  gap: 20px; /* Mais espaço entre as avaliações */
+  max-height: 600px;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 15px;
 }
 
-.feedback-list::-webkit-scrollbar {
-  width: 8px;
-}
+.feedback-list::-webkit-scrollbar { width: 8px; }
+.feedback-list::-webkit-scrollbar-track { background: transparent; }
+.feedback-list::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 4px; }
 
-.feedback-list::-webkit-scrollbar-track {
-  background: #222;
-  border-radius: 4px;
-}
-
-.feedback-list::-webkit-scrollbar-thumb {
-  background: var(--highlight-color);
-  border-radius: 4px;
-}
-
-.feedback-list::-webkit-scrollbar-thumb:hover {
-  background: var(--error-color);
-}
-
-/* Bolha de feedback */
+/* =========================================
+   CARDS DE AVALIAÇÃO (Adeus Bolhas, Olá Cards)
+   ========================================= */
 .whatsapp-bubble-container {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
+  width: 100%;
 }
 
 .whatsapp-bubble {
   position: relative;
-  background-color: var(--bubble-bg);
-  padding: 16px; /* Aumentei o padding para respirar mais */
+  background: rgba(30, 30, 30, 0.5); /* Fundo de vidro escuro */
+  padding: 24px;
   border-radius: 12px;
   width: 100%;
-  max-width: 90%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Efeito Premium no Hover: Apenas a borda brilha verde, o texto continua branco e legível */
 .whatsapp-bubble:hover {
-  background-color: var(--highlight-color);
-  color: #000;
+  transform: translateY(-4px);
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
 }
 
+/* Card alternado um pouco mais claro para quebrar a monotonia */
 .whatsapp-bubble.whatsapp-bubble-alt {
-  background-color: var(--bubble-alt-bg);
-}
-
-.whatsapp-bubble.whatsapp-bubble-alt:hover {
-  background-color: var(--highlight-color);
-  color: #000;
+  background: rgba(40, 40, 40, 0.4);
 }
 
 /* =========================================
-   NOVO: CABEÇALHO DO FEEDBACK (FOTO + NOME)
+   CONTEÚDO DO CARD
    ========================================= */
 .feedback-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 10px;
+  gap: 15px;
+  margin-bottom: 15px;
 }
 
-/* A foto redonda (Avatar) */
 .feedback-avatar {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--highlight-color);
-  background-color: #222;
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); /* Brilho na foto */
 }
 
-/* Container que empilha o nome e as estrelas */
 .feedback-user-info {
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
-/* Ajuste no nome para alinhar com as estrelas */
 .feedback-item-username {
-  font-size: 15px;
+  font-size: 1.1rem;
   font-weight: bold;
-  color: var(--highlight-color);
-  margin: 0 0 2px 0;
-  word-wrap: break-word;
+  color: #fff;
+  margin: 0 0 4px 0;
 }
 
-/* Quando passa o mouse na bolha, o nome tem que ficar preto pra dar leitura */
-.whatsapp-bubble:hover .feedback-item-username {
-  color: #000; 
-}
-
-/* ========================================= */
-
-/* Estrelas de avaliação */
 .feedback-item-rating {
-  display: flex;
-  gap: 2px;
-  font-size: 16px; /* Reduzi um pouco a estrela pra caber bonitinho debaixo do nome */
+  font-size: 16px;
   margin: 0;
 }
+.full-stars { color: #ffd700; }
+.empty-stars { color: #555; }
 
-.feedback-item-rating .full-stars {
-  color: var(--star-color);
-}
-
-.feedback-item-rating .empty-stars {
-  color: var(--text-muted);
-}
-
-/* Comentário */
 .feedback-item-comment {
-  font-size: var(--font-size-base);
-  color: inherit; /* Herda a cor para funcionar bem no hover */
-  margin: 0;
-  line-height: 1.5;
-  word-wrap: break-word;
+  font-size: 1.05rem;
+  color: #d1d5db;
+  line-height: 1.6;
+  margin: 0 0 15px 0;
+  text-align: justify;
 }
 
-/* Hora */
 .feedback-time {
-  font-size: var(--font-size-small);
-  color: var(--text-secondary);
+  font-size: 0.85rem;
+  color: #888;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10px;
   text-align: right;
-  margin-top: 10px;
 }
 
-/* O texto da hora tem que escurecer quando a bolha fica verde */
-.whatsapp-bubble:hover .feedback-time,
-.whatsapp-bubble:hover .feedback-item-rating .empty-stars {
-  color: #333; 
-}
-
-/* Botão de delete */
+/* Botão de Delete (Exclusivo Admin) */
 .delete-button {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: var(--error-color);
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: var(--font-size-small);
-  transition: background-color 0.3s ease;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
 .delete-button:hover {
-  background-color: #d32f2f;
+  background-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
-/* Estados de carregamento e erro */
-.loading-text,
-.error-text,
-.no-feedback-text {
-  font-size: var(--font-size-base);
-  text-align: center;
-  padding: 20px;
-  background-color: #222;
-  border-radius: 5px;
-}
-
-.loading-text {
-  color: var(--highlight-color);
-}
-
-.error-text {
-  color: var(--error-color);
-}
-
-.no-feedback-text {
-  color: var(--text-secondary);
-}
-
-/* Responsividade */
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
 @media (max-width: 600px) {
-  .feedback-list-container {
-    padding: 15px;
-    margin: 10px;
-  }
-
-  .feedback-list-title {
-    font-size: 20px;
-  }
-
-  .reload-button {
-    padding: 8px 15px;
-    font-size: 14px;
-  }
-
-  .whatsapp-bubble {
-    max-width: 100%;
-    padding: 12px;
-  }
-
-  .feedback-avatar {
-    width: 38px;
-    height: 38px;
-  }
-
-  .feedback-item-username {
-    font-size: 14px;
-  }
-
-  .feedback-item-rating {
-    font-size: 14px;
-  }
-
-  .feedback-item-comment {
-    font-size: 14px;
-  }
-
-  .feedback-time {
-    font-size: 11px;
-  }
-}
-
-/* Animações */
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
+  .feedback-list-container { padding: 20px; }
+  .feedback-list-title { font-size: 1.4rem; }
+  .whatsapp-bubble { padding: 15px; }
+  .feedback-avatar { width: 40px; height: 40px; }
+  .feedback-item-username { font-size: 1rem; }
+  .feedback-item-comment { font-size: 0.95rem; }
 }

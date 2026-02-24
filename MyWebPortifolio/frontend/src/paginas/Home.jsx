@@ -24,9 +24,10 @@ const Home = () => {
   const [userRole, setUserRole] = useState(null);
   const [userName, setUserName] = useState(null);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [openAdminPanel, setOpenAdminPanel] = useState(false); // AJUSTE: Novo estado para a foto
+  const [openAdminPanel, setOpenAdminPanel] = useState(false);
 
   const [currentView, setCurrentView] = useState("home"); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     setActiveModalContent(1); 
@@ -34,14 +35,13 @@ const Home = () => {
 
   const closeModal = () => setActiveModalContent(null);
   const openAuthModal = () => setActiveModalContent("auth");
-  const navigate = useNavigate();
 
   const handleLogin = (data) => {
     setIsAuthenticated(true);
     setToken(data.token);
     setUserRole(data.user.role);
     setUserName(data.user.userName);
-    setUserPhoto(data.user.fotoPerfil); // AJUSTE: Salva a foto que vem do login
+    setUserPhoto(data.user.fotoPerfil);
     closeModal();
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
@@ -52,44 +52,36 @@ const Home = () => {
     setToken(null);
     setUserRole(null);
     setUserName(null);
-    setUserPhoto(null); // AJUSTE: Limpa a foto ao sair
+    setUserPhoto(null);
     goHome(); 
   };
 
   const handleAdminNavigation = async (e) => {
-  e.preventDefault();
-  const token = localStorage.getItem("token");
+    e.preventDefault();
+    const currentToken = localStorage.getItem("token");
 
-  if (!token) {
-    alert("Você precisa estar logado!");
-    return;
-  }
-
-  // Coloque um estado de "loading" no botão se quiser, para o usuário saber que está pensando
-  try {
-    // Vamos bater em um endpoint do seu Java que SÓ aceita ADMIN3
-    const response = await fetch(import.meta.env.VITE_API_URL + "/auth/validar-admin", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    if (response.ok) {
-      // O Java disse OK (Status 200). A catraca abriu!
-      setIsMenuOpen(false);
-      navigate('/admin');
-    } else {
-      // O Java barrou (Status 403 Forbidden ou 401 Unauthorized)
-      alert("Acesso negado: Tentativa de fraude detectada ou sem permissão.");
-      // Opcional: handleLogout() para deslogar o espertinho na hora
+    if (!currentToken) {
+      alert("Você precisa estar logado!");
+      return;
     }
-  } catch (error) {
-    console.error("Erro ao validar:", error);
-    alert("Servidor indisponível no momento.");
-  }
-};
-  // AJUSTE: Função para atualizar a foto no Header após editar o perfil
+
+    try {
+      const response = await fetch(import.meta.env.VITE_API_URL + "/auth/validar-admin", {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${currentToken}` }
+      });
+
+      if (response.ok) {
+        navigate('/admin');
+      } else {
+        alert("Acesso negado: Tentativa de fraude detectada ou sem permissão.");
+      }
+    } catch (error) {
+      console.error("Erro ao validar:", error);
+      alert("Servidor indisponível no momento.");
+    }
+  };
+
   const handleUpdateUserPhoto = (newPhotoUrl) => {
     setUserPhoto(newPhotoUrl);
   };
@@ -105,39 +97,41 @@ const Home = () => {
   };
 
   const renderMainContent = () => {
-    switch (currentView) {
-      case "editProfile":
-        return (
-          <EditProfile 
-            onClose={goHome} 
-            userName={userName} 
-            token={token} 
-            onUpdateSuccess={handleUpdateUserPhoto} // Passamos a função de atualização
-          />
-        );
-      
-      case "home":
-      default:
-        return (
-          <>
-            <section className="section-about" id="about"><About /></section>
-            <hr className="separator" />
-            <section id="skills"><Skills /></section>
-            <hr className="separator" />
-            <section id="projects"><Projects /></section>
-            <hr className="separator" />
-            <section id="contact"><Contact /></section>
-            <hr className="separator" />
-            <section id="feedback">
-              <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
-            </section>
-            <hr className="separator" />
-            <section id="feedbackList">
-              <FeedbackList userRole={userRole} token={token} />
-            </section>
-          </>
-        );
+    if (currentView === "editProfile") {
+      return (
+        <EditProfile 
+          onClose={goHome} 
+          userName={userName} 
+          token={token} 
+          onUpdateSuccess={handleUpdateUserPhoto} 
+        />
+      );
     }
+
+    return (
+      <>
+        <section className="section-about" id="about"><About /></section>
+        <hr className="separator" />
+        
+        <section className="section-skills" id="skills"><Skills /></section>
+        <hr className="separator" />
+        
+        <section className="section-projects" id="projects"><Projects /></section>
+        <hr className="separator" />
+        
+        <section className="section-contact" id="contact"><Contact /></section>
+        <hr className="separator" />
+        
+        <section className="section-feedback" id="feedback">
+          <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
+        </section>
+        <hr className="separator" />
+        
+        <section className="section-feedback-list" id="feedbackList">
+          <FeedbackList userRole={userRole} token={token} />
+        </section>
+      </>
+    );
   };
 
   return (
@@ -154,17 +148,22 @@ const Home = () => {
         openAuthModal={openAuthModal}
         openEditProfile={openEditProfile}
         goHome={goHome}
+        handleAdminNavigation={handleAdminNavigation}
       />
       
       <div className="content">
         <Modal isOpen={activeModalContent === 1} onClose={closeModal}>
           <ModalApresentacao onClose={closeModal} />
         </Modal>
+        
         <Modal isOpen={activeModalContent === "auth"} onClose={closeModal}>
           <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
         </Modal>
 
-        <Sidebar />
+        {/* A Sidebar agora ficará grudada na tela enquanto o usuário rola o Main Content */}
+        <div className="sidebar-wrapper">
+          <Sidebar />
+        </div>
         
         <main className="main-content">
           <div className="main-container">
@@ -172,6 +171,7 @@ const Home = () => {
           </div>
         </main>
       </div>
+      
       <Footer />
     </div>
   );
