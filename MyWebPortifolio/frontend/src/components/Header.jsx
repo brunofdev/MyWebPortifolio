@@ -72,15 +72,7 @@ const Header = ({
             <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contato</a>
             <a href="#feedback" className="nav-link" onClick={() => setIsMenuOpen(false)}>Deixe seu Feedback</a>
             
-            {/* O ÚNICO BOTÃO ADMIN: Fica junto com os outros links */}
-            {isAdminMaster && (
-              <button 
-                className="nav-link admin-nav-btn" 
-                onClick={handleAdminNavigation}
-              >
-                ⚙️ Painel Admin
-              </button>
-            )}
+           
           </div>
 
           <div className="nav-footer">
@@ -109,6 +101,15 @@ const Header = ({
 
         {/* SEÇÃO DIREITA (Apenas Avatar e Login) */}
         <div className={`right-section ${isMenuOpen ? "hide-on-mobile" : ""}`}>
+           {/* O ÚNICO BOTÃO ADMIN: Fica junto com os outros links */}
+            {isAdminMaster && (
+              <button 
+                className="nav-link admin-nav-btn" 
+                onClick={handleAdminNavigation}
+              >
+                ⚙️ Painel Admin
+              </button>
+            )}
           {isAuthenticated && userName ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
