@@ -9,14 +9,15 @@ import ResetPasswordForm from "./ResetPasswordForm";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net";
 
+// 🚨 CORREÇÃO APLICADA: Chaves exatas correspondentes aos nomes das abas (activeTab)
 const API_URLS = {
   login: `${BASE_URL}/auth/login`,
   register: `${BASE_URL}/usuario/cadastro`,
   verify: `${BASE_URL}/usuario/ativar-conta`,
   resend: `${BASE_URL}/usuario/reenviar-codigo`,
-  forgotPassword: `${BASE_URL}/usuario/senha/recuperacao`,
-  verifyRecovery: `${BASE_URL}/usuario/senha/recuperacao/validar-codigo`,
-  resetPassword: `${BASE_URL}/usuario/senha/recuperacao/alterar-senha`,
+  "forgot-password": `${BASE_URL}/usuario/senha/recuperacao`,
+  "verify-recovery": `${BASE_URL}/usuario/senha/recuperacao/validar-codigo`,
+  "reset-password": `${BASE_URL}/usuario/senha/recuperacao/alterar-senha`,
 };
 
 // ==========================================
@@ -161,7 +162,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           email: formData.email || "",
           userName: formData.userName,
           senha: formData.password,
-          // 💡 A REGRA DO NOME PÚBLICO
           nomePublico: formData.nomePublico ? formData.nomePublico.trim() : null 
         };
       
@@ -239,7 +239,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     setIsLoading(true);
 
     try {
-      const url = API_URLS[activeTab.replace("-", "")]; // Ex: "forgot-password" vira "forgotpassword"
+      // 🚨 CORREÇÃO APLICADA: Busca direta pela URL usando o activeTab
+      const url = API_URLS[activeTab]; 
+      
       const payload = getRequestPayload();
       
       const isPlainText = activeTab === "forgot-password";
