@@ -180,6 +180,20 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     return filteredText;
   };
 
+  // ==========================================
+  // 🧹 NOVO: LIMPEZA DA MESA AO MUDAR USUÁRIO
+  // ==========================================
+  useEffect(() => {
+    // Se o token mudar (usuário deslogou ou outro usuário logou), reseta tudo para o estado inicial
+    setSubmitted(false);
+    setRating(0);
+    setHoverRating(0);
+    setComment("");
+    setSubmissionError("");
+    setWarning("");
+  }, [token]); 
+  // ==========================================
+
   useEffect(() => {
     if (warning) {
       const timer = setTimeout(() => setWarning(""), 3000);
@@ -224,24 +238,26 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     const feedbackData = {
       descricao: comment,
       avaliacao: rating,
+      tipoFeedback: "GERAL",
+      referenciaId: 0,
     };
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-   try {
-  const response = await fetchWithRetry(
-    `${import.meta.env.VITE_API_URL}/feedback/criar`, 
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(feedbackData),
-      signal: controller.signal,
-    }
-  );
+    try {
+      const response = await fetchWithRetry(
+        `${import.meta.env.VITE_API_URL}/feedback/geral/criar`, 
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(feedbackData),
+          signal: controller.signal,
+        }
+      );
       clearTimeout(timeoutId);
       const data = await response.json();
 

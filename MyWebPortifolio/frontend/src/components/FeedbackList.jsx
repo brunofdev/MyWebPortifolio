@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/feedbacklist.css';
 
 // --- Utilitário de API ---
-const API_BASE = `${import.meta.env.VITE_API_URL}/feedback`;
+const API_BASE = `${import.meta.env.VITE_API_URL}/feedback/geral`;
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -22,8 +22,9 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
 };
 
 // --- Sub-componente: Item da Lista ---
-const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) => {
-  const { id, comentario, notaAvaliacao, dataDeCriacao, criadoPor, fotoUsuario } = feedback;
+const FeedbackItem = ({ feedback, colorClass, isAdmin, currentUserName, handleDelete }) => {
+  // 1. Desestruturamos a nova propriedade isAnonimo do DTO
+  const { id, comentario, notaAvaliacao, dataDeCriacao, criadoPor, userName, fotoUsuario, isAnonimo } = feedback;
 
   const formatDateTime = (dateString) => {
     if (!dateString) return 'Data não disponível';
@@ -44,19 +45,33 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
 
   const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
+  // ==========================================
+  // 🎭 A MÁGICA DA MÁSCARA (ANONIMATO)
+  // ==========================================
+  const nomeExibicao = isAnonimo ? "Anônimo" : (criadoPor || 'Usuário');
+  const fotoExibicao = isAnonimo ? defaultAvatar : (fotoUsuario || defaultAvatar);
+
+  // 🔐 REGRA DE SEGURANÇA:
+  // A validação de quem pode deletar continua usando o 'criadoPor' real vindo do banco!
+  const podeDeletar = isAdmin || (currentUserName && currentUserName === userName);
+
   return (
     <div className="whatsapp-bubble-container">
       <div className={`whatsapp-bubble ${colorClass}`} role="article">
         <div className="feedback-header">
-          <img src={fotoUsuario || defaultAvatar} alt={criadoPor} className="feedback-avatar" />
+          {/* Usamos a foto mascarada */}
+          <img src={fotoExibicao} alt={nomeExibicao} className="feedback-avatar" />
           <div className="feedback-user-info">
-            <p className="feedback-item-username">{criadoPor || 'Usuário'}</p>
+            {/* Usamos o nome mascarado */}
+            <p className="feedback-item-username">{nomeExibicao}</p>
             {renderRating(notaAvaliacao)}
           </div>
         </div>
         <p className="feedback-item-comment">{comentario || 'Sem comentário'}</p>
         <div className="feedback-time">{formatDateTime(dataDeCriacao)}</div>
-        {isAdmin && (
+        
+        {/* Renderização Condicional do Botão */}
+        {podeDeletar && (
           <button className="delete-button" onClick={() => handleDelete(id)}>delete</button>
         )}
       </div>
@@ -65,12 +80,14 @@ const FeedbackItem = ({ feedback, colorClass, isAdmin, token, handleDelete }) =>
 };
 
 // --- Componente Principal ---
-const FeedbackList = ({ userRole, token }) => {
+// Adicionada a prop refreshTrigger para a lista se auto-atualizar
+const FeedbackList = ({ userRole, token, currentUserName, refreshTrigger }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const isAdmin = userRole?.includes("ADMIN");
+  // Verificamos se é ADMIN3
+  const isAdmin = userRole === "ADMIN3" || userRole?.includes("ADMIN3");
 
   const fetchFeedbacks = useCallback(async () => {
     setIsLoading(true);
@@ -90,17 +107,24 @@ const FeedbackList = ({ userRole, token }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Deseja realmente apagar este feedback?")) return;
     try {
-      const resp = await fetch(`${API_BASE}/deletefeedback/${id}`, {
+      const resp = await fetch(`${API_BASE}/excluir/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (resp.ok) fetchFeedbacks();
+      if (resp.ok) {
+          fetchFeedbacks();
+      } else {
+          alert("Erro: Você não tem permissão para apagar este feedback.");
+      }
     } catch {
-      alert("Erro ao deletar.");
+      alert("Erro ao tentar conectar com o servidor.");
     }
   };
 
-  useEffect(() => { fetchFeedbacks(); }, [fetchFeedbacks]);
+  // 👈 O fetchFeedbacks será chamado ao montar o componente ou sempre que refreshTrigger mudar!
+  useEffect(() => { 
+    fetchFeedbacks(); 
+  }, [fetchFeedbacks, refreshTrigger]);
 
   return (
     <section className="feedback-list-container">
@@ -116,8 +140,14 @@ const FeedbackList = ({ userRole, token }) => {
        feedbacks.length === 0 ? <p className="no-feedback-text">Nenhum feedback encontrado.</p> : (
         <div className="feedback-list">
           {feedbacks.map((fb, i) => (
-            <FeedbackItem key={fb.id || i} feedback={fb} isAdmin={isAdmin} token={token} 
-              handleDelete={handleDelete} colorClass={i % 2 === 0 ? '' : 'whatsapp-bubble-alt'} />
+            <FeedbackItem 
+              key={fb.id || i} 
+              feedback={fb} 
+              isAdmin={isAdmin} 
+              currentUserName={currentUserName} 
+              handleDelete={handleDelete} 
+              colorClass={i % 2 === 0 ? '' : 'whatsapp-bubble-alt'} 
+            />
           ))}
         </div>
       )}

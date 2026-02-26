@@ -96,13 +96,28 @@ const ManageProjects = () => {
     setFormData({ ...formData, setup: { ...formData.setup, steps: renumberedSteps } });
   };
 
+  // =========================================
+  // AJUSTES NA GESTÃO DE IMAGENS E LEGENDAS
+  // =========================================
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
     const novasImagens = files.map(file => ({
-      file: file, url: URL.createObjectURL(file), isNova: true
+      file: file, 
+      url: URL.createObjectURL(file), 
+      isNova: true,
+      legenda: "" // 👈 AQUI: Imagem nova nasce com legenda vazia
     }));
     setFormData((prev) => ({ ...prev, imagens: [...prev.imagens, ...novasImagens] }));
+  };
+
+  // 👈 AQUI: Função para atualizar o texto da legenda de uma imagem específica
+  const handleLegendChange = (index, text) => {
+    const updatedImages = formData.imagens.map((img, i) => {
+      if (i === index) return { ...img, legenda: text };
+      return img;
+    });
+    setFormData({ ...formData, imagens: updatedImages });
   };
 
   const dragStart = (e, position) => { dragItem.current = position; };
@@ -154,8 +169,12 @@ const ManageProjects = () => {
         })
       );
 
+      // 👈 AQUI: Agora montamos o galeriaComOrdem enviando a legenda pro Java!
       const galeriaComOrdem = imagensProcessadas.map((url, index) => ({
-        urlImagem: url, ordemExibicao: index, isCapa: index === 0
+        urlImagem: url, 
+        ordemExibicao: index, 
+        isCapa: index === 0,
+        legenda: formData.imagens[index].legenda || "" // Pega a legenda que o usuário digitou
       }));
 
       const payload = {
@@ -183,7 +202,7 @@ const ManageProjects = () => {
       if (response.ok) {
         showMessage("success", apiData?.message || "🎉 Projeto salvo com sucesso!");
         resetForm();
-        fetchProjetos(); // Atualiza a lista lá embaixo automaticamente
+        fetchProjetos();
       } else {
         const errorMsg = apiData?.message || "Erro desconhecido ao salvar.";
         if (response.status === 401 || response.status === 403) {
@@ -213,7 +232,11 @@ const ManageProjects = () => {
     if (projeto.galeria && projeto.galeria.length > 0) {
       imagensFormatadas = [...projeto.galeria]
         .sort((a, b) => a.ordemExibicao - b.ordemExibicao)
-        .map(img => ({ url: img.urlImagem, isNova: false }));
+        .map(img => ({ 
+          url: img.urlImagem, 
+          isNova: false, 
+          legenda: img.legenda || "" // 👈 AQUI: Puxa a legenda do banco na hora de editar
+        }));
     }
     setFormData({
       title: projeto.title || "", video: projeto.video || "", description: projeto.description || "",
@@ -225,7 +248,6 @@ const ManageProjects = () => {
       links: projeto.links || [],
       imagens: imagensFormatadas
     });
-    // Rola a tela suavemente de volta para o topo (pro formulário)
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -245,9 +267,6 @@ const ManageProjects = () => {
 
   return (
     <div className="manage-projects-container">
-      {/* =========================================================
-          SESSÃO SUPERIOR: FORMULÁRIO (INTACTO)
-          ========================================================= */}
       <div className="admin-form-section">
         <div className="section-header">
           <h2>{isEditing ? "✏️ Editar Projeto" : "🚀 Adicionar Novo Projeto"}</h2>
@@ -352,13 +371,35 @@ const ManageProjects = () => {
             {formData.imagens.length > 0 && (
               <div className="image-manager-grid">
                 {formData.imagens.map((imgObj, index) => (
-                  <div key={index} className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`} draggable onDragStart={(e) => dragStart(e, index)} onDragEnter={(e) => dragOverItem.current = index} onDragEnd={drop} onDragOver={(e) => e.preventDefault()}>
+                  <div 
+                    key={index} 
+                    className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`} 
+                    draggable 
+                    onDragStart={(e) => dragStart(e, index)} 
+                    onDragEnter={(e) => dragOverItem.current = index} 
+                    onDragEnd={drop} 
+                    onDragOver={(e) => e.preventDefault()}
+                    style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '220px' }} // Ajuste pro grid caber o input
+                  >
                     {index === 0 && <span className="cover-badge">★ CAPA</span>}
-                    <img src={imgObj.url} alt={`Preview ${index}`} className="thumbnail-img" />
-                    <div className="thumbnail-actions">
-                      <button type="button" onClick={() => setAsCover(index)} title="Definir Capa">⭐</button>
-                      <button type="button" className="btn-trash" onClick={() => removeImage(index)}>🗑️</button>
+                    <div style={{ position: 'relative', width: '100%', height: '150px' }}>
+                      <img src={imgObj.url} alt={`Preview ${index}`} className="thumbnail-img" />
+                      <div className="thumbnail-actions">
+                        <button type="button" onClick={() => setAsCover(index)} title="Definir Capa">⭐</button>
+                        <button type="button" className="btn-trash" onClick={() => removeImage(index)}>🗑️</button>
+                      </div>
                     </div>
+                    {/* 👇 O NOVO INPUT DE LEGENDA AQUI 👇 */}
+                    <input 
+                      type="text" 
+                      placeholder="Adicione uma legenda..." 
+                      value={imgObj.legenda || ""} 
+                      onChange={(e) => handleLegendChange(index, e.target.value)}
+                      style={{ 
+                        width: '100%', padding: '8px', border: 'none', borderTop: '1px solid #333', 
+                        background: '#111', color: '#fff', fontSize: '0.85rem', outline: 'none' 
+                      }}
+                    />
                   </div>
                 ))}
               </div>
@@ -385,9 +426,6 @@ const ManageProjects = () => {
         </form>
       </div>
 
-      {/* =========================================================
-          SESSÃO INFERIOR: LISTAGEM E EDIÇÃO (NOVIDADE)
-          ========================================================= */}
       <div className="admin-list-section" style={{ marginTop: '50px' }}>
         <div className="section-header" style={{ borderBottom: '1px solid rgba(72, 187, 120, 0.3)', paddingBottom: '15px' }}>
           <h2 style={{ color: '#48bb78', margin: 0, fontSize: '1.5rem' }}>🗂️ Projetos Cadastrados</h2>
@@ -403,7 +441,6 @@ const ManageProjects = () => {
             marginTop: '20px' 
           }}>
             {projetos.map((projeto) => {
-              // Pega a capa para mostrar no card
               const capaObj = projeto.galeria?.find(img => img.isCapa) || projeto.galeria?.[0];
               const capaUrl = capaObj ? capaObj.urlImagem : "https://via.placeholder.com/300x200?text=Sem+Imagem";
 
@@ -452,7 +489,6 @@ const ManageProjects = () => {
           </div>
         )}
       </div>
-
     </div>
   );
 };

@@ -14,12 +14,14 @@ const API_URLS = {
   register: `${BASE_URL}/usuario/cadastro`,
   verify: `${BASE_URL}/usuario/ativar-conta`,
   resend: `${BASE_URL}/usuario/reenviar-codigo`,
-
   forgotPassword: `${BASE_URL}/usuario/senha/recuperacao`,
   verifyRecovery: `${BASE_URL}/usuario/senha/recuperacao/validar-codigo`,
   resetPassword: `${BASE_URL}/usuario/senha/recuperacao/alterar-senha`,
 };
 
+// ==========================================
+// UTILS
+// ==========================================
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -37,20 +39,25 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   throw new Error("Número máximo de tentativas excedido.");
 };
 
+// ==========================================
+// COMPONENTE PRINCIPAL
+// ==========================================
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [activeTab, setActiveTab] = useState("login");
   const [formData, setFormData] = useState({
-    name: "", userName: "", password: "", email: "", code: ""
+    name: "", nomePublico: "", userName: "", password: "", email: "", code: ""
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  const [tempUser, setTempUser] = useState(null);
-
-  // Estado para armazenar o email ofuscado retornado pela API
   const [maskedEmail, setMaskedEmail] = useState("");
 
+  const isLogin = activeTab === "login";
+
+  // ==========================================
+  // EFEITOS
+  // ==========================================
   useEffect(() => {
     let interval;
     if (resendTimer > 0) {
@@ -59,27 +66,42 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  const isLogin = activeTab === "login";
+  // ==========================================
+  // VALIDAÇÕES VISUAIS (Para os Inputs)
+  // ==========================================
+  const isValidName = () => {
+    return formData.name && formData.name.length >= 5 && formData.name.length <= 100 && /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
+  };
 
-  // VALIDAÇÕES VISUAIS
-  const isNameValid = !isLogin && activeTab === "register" && formData.name &&
-    formData.name.length >= 5 && formData.name.length <= 100 &&
-    /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
+  const isValidUserName = () => {
+    if (!formData.userName) return false;
+    if (activeTab !== "register") return true;
+    return formData.userName.length >= 5 && formData.userName.length <= 20 && /^\S+$/.test(formData.userName);
+  };
 
-  const isUserNameValid = formData.userName &&
-    (activeTab !== "register" ? true : formData.userName.length >= 5) &&
-    (activeTab !== "register" || (formData.userName.length <= 20 && /^\S+$/.test(formData.userName)));
+  const isValidPassword = () => {
+    if (!formData.password) return false;
+    if (activeTab !== "register" && activeTab !== "reset-password") return true;
+    return formData.password.length >= 8 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/.test(formData.password);
+  };
 
-  const isPasswordValid = formData.password &&
-    (activeTab !== "register" && activeTab !== "reset-password" ? true : formData.password.length >= 8) &&
-    (activeTab !== "register" && activeTab !== "reset-password" || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password));
+  const isValidEmail = () => {
+    if (activeTab !== "register" || !formData.email) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && /^\S+$/.test(formData.email);
+  };
 
-  const isEmailValid = (activeTab !== "register") || !formData.email || (
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && /^\S+$/.test(formData.email)
-  );
+  const isNameValid = !isLogin && activeTab === "register" && isValidName();
+  const isUserNameValid = isValidUserName();
+  const isPasswordValid = isValidPassword();
+  const isEmailValid = isValidEmail();
 
+  // ==========================================
+  // MANIPULADORES DE EVENTO
+  // ==========================================
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Filtros em tempo real para Cadastro
     if (activeTab === "register") {
       if (name === "name" && value && !/^[A-Za-zÀ-ú\s'-]*$/.test(value)) {
         setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
@@ -90,6 +112,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         return;
       }
     }
+    
     setFormData({ ...formData, [name]: value });
     setError("");
   };
@@ -97,8 +120,8 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     if (tab === "login" || tab === "register") {
-      setFormData({ name: "", userName: "", password: "", email: "", code: "" });
-      setMaskedEmail(""); // Limpa o email mascarado ao sair do fluxo de recuperação
+      setFormData({ name: "", nomePublico: "", userName: "", password: "", email: "", code: "" });
+      setMaskedEmail("");
     }
     setError("");
     setSuccessMessage("");
@@ -122,82 +145,103 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     }
   };
 
-  const validateForm = () => {
-    if (activeTab === "verify" || activeTab === "verify-recovery") {
-      if (formData.code.length !== 6) {
-        setError("O código deve ter exatamente 6 dígitos.");
-        return false;
-      }
-      return true;
+  // ==========================================
+  // LÓGICA DE SUBMISSÃO (O CÉREBRO)
+  // ==========================================
+  
+  // 1. Gera o pacote de dados exato que a API espera
+  const getRequestPayload = () => {
+    switch (activeTab) {
+      case "login":
+        return { userName: formData.userName, senha: formData.password };
+      
+      case "register":
+        return {
+          nome: formData.name,
+          email: formData.email || "",
+          userName: formData.userName,
+          senha: formData.password,
+          // 💡 A REGRA DO NOME PÚBLICO
+          nomePublico: formData.nomePublico ? formData.nomePublico.trim() : null 
+        };
+      
+      case "verify":
+      case "verify-recovery":
+        return { userName: formData.userName, codigo: formData.code };
+      
+      case "forgot-password":
+        return formData.userName; // Envia só a string pura
+      
+      case "reset-password":
+        return { userName: formData.userName, codigoVerificado: formData.code, novaSenha: formData.password };
+      
+      default:
+        return {};
     }
-
-    if (activeTab === "forgot-password") {
-      if (!formData.userName) { setError("Informe o usuário ou e-mail para recuperar a senha."); return false; }
-      return true;
-    }
-
-    if (activeTab === "reset-password") {
-      if (formData.password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
-        setError("A senha não atende aos requisitos de segurança.");
-        return false;
-      }
-      return true;
-    }
-
-    if (!formData.userName || !formData.password) {
-      setError("Nome de usuário (CPF) e senha são obrigatórios.");
-      return false;
-    }
-    if (isLogin) return true;
-
-    if (!formData.name) { setError("O nome não pode estar em branco."); return false; }
-    if (formData.userName.length < 5 || formData.userName.length > 20) { setError("O nome de usuário deve ter entre 5 e 20 caracteres."); return false; }
-    if (!/^\S+$/.test(formData.userName)) { setError("O nome de usuário não pode conter espaços em branco."); return false; }
-    if (formData.password.length < 8) { setError("A senha deve ter no mínimo 8 caracteres."); return false; }
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
-      setError("A senha não atende aos requisitos de segurança.");
-      return false;
-    }
-    return true;
   };
 
+  // 2. Decide o que fazer quando a API responde com sucesso (OK)
+  const handleSuccessResponse = (data) => {
+    switch (activeTab) {
+      case "forgot-password":
+        if (data?.dados?.email) setMaskedEmail(data.dados.email);
+        setActiveTab("verify-recovery");
+        setSuccessMessage("Código de recuperação enviado!");
+        break;
+
+      case "verify-recovery":
+        setActiveTab("reset-password");
+        setSuccessMessage("Código validado! Escolha sua nova senha.");
+        break;
+
+      case "reset-password":
+        setFormData({ name: "", nomePublico: "", userName: "", password: "", email: "", code: "" });
+        setActiveTab("login");
+        setSuccessMessage("Senha alterada com sucesso! Faça login.");
+        break;
+
+      case "register":
+        setFormData((prev) => ({ ...prev, email: data?.dados?.email || prev.email }));
+        setActiveTab("verify");
+        setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
+        break;
+
+      case "verify":
+        setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
+        setTimeout(() => {
+          const userObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
+          handleLoginSuccess({ token: data.dados.token, user: userObj });
+          onClose();
+        }, 1500);
+        break;
+
+      case "login":
+        const loginUserObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
+        if (loginUserObj.contaAtiva === false) {
+          setActiveTab("verify");
+          setSuccessMessage("Sua conta não está ativa. Enviamos um novo código para o seu e-mail.");
+        } else {
+          handleLoginSuccess({ token: data.dados.token, user: loginUserObj });
+          onClose();
+        }
+        break;
+        
+      default:
+        break;
+    }
+  };
+
+  // 3. A Função principal que dispara o botão
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
     setIsLoading(true);
 
-    if (!validateForm()) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      let url;
-      let payload;
-
-      if (activeTab === "login") {
-        url = API_URLS.login;
-        payload = { userName: formData.userName, senha: formData.password };
-      } else if (activeTab === "register") {
-        url = API_URLS.register;
-        // Envia os dados normais de cadastro
-        payload = { nome: formData.name, email: formData.email || "", userName: formData.userName, senha: formData.password };
-      } else if (activeTab === "verify") {
-        url = API_URLS.verify;
-        // O Endpoint agora espera o DTO AutenticarUsuarioDTO (userName e codigo)
-        payload = { userName: formData.userName, codigo: formData.code };
-      } else if (activeTab === "forgot-password") {
-        url = API_URLS.forgotPassword;
-        payload = formData.userName;
-      } else if (activeTab === "verify-recovery") {
-        url = API_URLS.verifyRecovery;
-        payload = { userName: formData.userName, codigo: formData.code };
-      } else if (activeTab === "reset-password") {
-        url = API_URLS.resetPassword;
-        payload = { userName: formData.userName, codigoVerificado: formData.code, novaSenha: formData.password };
-      }
-
+      const url = API_URLS[activeTab.replace("-", "")]; // Ex: "forgot-password" vira "forgotpassword"
+      const payload = getRequestPayload();
+      
       const isPlainText = activeTab === "forgot-password";
       const headers = { "Content-Type": isPlainText ? "text/plain" : "application/json" };
       const body = isPlainText ? payload : JSON.stringify(payload);
@@ -211,59 +255,11 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
       if (!response.ok) {
         setError(data.erro?.message || data.message || "Erro na solicitação.");
-        setIsLoading(false);
         return;
       }
 
-      // =========================================================
-      // TRATAMENTO DE SUCESSO POR ABA (MÁGICA ACONTECE AQUI)
-      // =========================================================
-      
-      if (activeTab === "forgot-password") {
-        if (data.dados && data.dados.email) setMaskedEmail(data.dados.email);
-        setActiveTab("verify-recovery");
-        setSuccessMessage("Código de recuperação enviado!");
-      } 
-      else if (activeTab === "verify-recovery") {
-        setActiveTab("reset-password");
-        setSuccessMessage("Código validado! Escolha sua nova senha.");
-      } 
-      else if (activeTab === "reset-password") {
-        setFormData({ name: "", userName: "", password: "", email: "", code: "" });
-        setActiveTab("login");
-        setSuccessMessage("Senha alterada com sucesso! Faça login.");
-      } 
-      // 👇 O BLOCO DE CADASTRO FICOU LIMPO E DIRETO:
-      else if (activeTab === "register") {
-        setFormData((prev) => ({ ...prev, email: data.dados?.email || prev.email }));
-        setActiveTab("verify");
-        setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
-      } 
-      // 👇 O BLOCO DE VERIFICAÇÃO AGORA RECEBE O TOKEN DO JAVA:
-      else if (activeTab === "verify") {
-        setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
-        setTimeout(() => {
-          // Extrai o usuário, buscando a chave certa do seu UsuarioLoginResponseDTO
-          const userObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
-          
-          handleLoginSuccess({ 
-            token: data.dados.token, // Puxa o token zerinho que o Java mandou
-            user: userObj 
-          });
-          onClose(); // Fecha o modal e entra no site
-        }, 1500);
-      } 
-      // 👇 O BLOCO DE LOGIN CONTINUA O MESMO
-      else if (activeTab === "login") {
-        const userObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
-        if (userObj.contaAtiva === false) {
-          setActiveTab("verify");
-          setSuccessMessage("Sua conta não está ativa. Enviamos um novo código para o seu e-mail.");
-        } else {
-          handleLoginSuccess({ token: data.dados.token, user: userObj });
-          onClose();
-        }
-      }
+      // Se deu tudo certo, chama a função que decide a próxima tela
+      handleSuccessResponse(data);
 
     } catch (error) {
       console.error('❌ Erro na execução:', error);
@@ -273,6 +269,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     }
   };
 
+  // ==========================================
+  // RENDERIZAÇÃO DA INTERFACE
+  // ==========================================
   const getTitle = () => {
     switch (activeTab) {
       case "verify": return "Validar E-mail";
@@ -304,7 +303,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           <h2>{getTitle()}</h2>
           {isLoading && <div className="loading-bar" />}
 
-          {/* RENDERIZAÇÃO CONDICIONAL DOS COMPONENTES */}
+          {/* RENDERIZAÇÃO DOS FORMULÁRIOS ESPECÍFICOS */}
           {activeTab === "verify" && <VerifyForm formData={formData} handleChange={handleChange} resendTimer={resendTimer} handleResendCode={handleResendCode} />}
           {activeTab === "verify-recovery" && <VerifyRecoveryForm formData={formData} handleChange={handleChange} maskedEmail={maskedEmail} />}
           {activeTab === "login" && <LoginForm formData={formData} handleChange={handleChange} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} handleTabChange={handleTabChange} />}
@@ -320,7 +319,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
               {isLoading ? "Processando..." : (activeTab === "verify" || activeTab === "verify-recovery") ? "Confirmar" : activeTab === "forgot-password" ? "Enviar Código" : activeTab === "reset-password" ? "Salvar Senha" : isLogin ? "Entrar" : "Cadastrar"}
             </button>
 
-            {(activeTab === "forgot-password" || activeTab === "verify-recovery" || activeTab === "reset-password") && (
+            {["forgot-password", "verify-recovery", "reset-password"].includes(activeTab) && (
               <button type="button" className="cancel-button" onClick={() => handleTabChange("login")} disabled={isLoading}>
                 Cancelar / Voltar
               </button>

@@ -1,112 +1,146 @@
+/* =========================================
+   BASE E CONTAINER (Glassmorphism)
+   ========================================= */
 .edit-profile-container {
   display: block;
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   color: #fff;
-  padding: 20px 40px 40px;
+  padding: 40px;
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+  max-width: 900px;
+  margin: 0 auto;
 }
+
 .edit-profile-container .edit-form {
   display: block;
   width: 100%;
-  max-width: 100%; /* Quebra qualquer limite invisível herdado */
   margin: 0;
   padding: 0;
 }
 
+/* =========================================
+   CABEÇALHO
+   ========================================= */
 .edit-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  border-bottom: 2px solid rgba(76, 175, 80, 0.3);
-  padding-bottom: 15px;
+  margin-bottom: 40px;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.edit-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4caf50, transparent);
 }
 
 .edit-header h2 {
   color: #4caf50;
   margin: 0;
-  text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-  font-size: 1.8rem;
+  text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 900;
 }
 
 .btn-close {
   background: transparent;
-  color: #ccc;
+  color: rgba(255, 255, 255, 0.5);
   border: none;
   cursor: pointer;
-  font-size: 1rem;
-  transition: color 0.3s;
-  padding: 5px 10px;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  padding: 5px 15px;
+  border-radius: 8px;
 }
 
 .btn-close:hover {
   color: #f50505;
+  background: rgba(245, 5, 5, 0.1);
+  transform: scale(1.1);
 }
 
-/* FOTO UPLOAD - Aumentei o tamanho da foto para combinar com o layout largo */
+/* =========================================
+   FOTO UPLOAD (Efeito Neon)
+   ========================================= */
 .foto-upload-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
 .foto-preview {
   position: relative;
-  width: 140px; /* Aumentado */
-  height: 140px; /* Aumentado */
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #4caf50; /* Borda um pouco mais grossa */
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  border: 4px solid #4caf50;
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.foto-preview:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 40px rgba(76, 175, 80, 0.6);
 }
 
 .foto-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background-color: #222; /* Fundo escuro caso a imagem demore a carregar */
+  background-color: #111;
+  transition: filter 0.3s ease;
+}
+
+.foto-preview:hover img {
+  filter: brightness(0.7);
 }
 
 .foto-overlay {
   position: absolute;
-  bottom: 0;
+  bottom: -50px;
   left: 0;
   width: 100%;
-  background: rgba(0, 0, 0, 0.8); /* Mais escuro para melhor leitura */
-  color: #fff;
+  background: rgba(0, 0, 0, 0.85);
+  color: #4caf50;
   text-align: center;
-  padding: 12px 0;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  padding: 15px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .foto-preview:hover .foto-overlay {
-  opacity: 1;
+  bottom: 0;
 }
 
 .foto-preview input[type="file"] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+  display: none;
 }
 
-/* GRID E INPUTS - O segredo da largura está aqui */
+/* =========================================
+   GRID E INPUTS (Estilo Terminal)
+   ========================================= */
 .form-grid {
   display: grid;
-  /* Cria duas colunas largas e iguais. No celular, vira 1 coluna. */
   grid-template-columns: repeat(2, 1fr); 
-  gap: 25px; /* Aumentei o espaço entre os inputs */
-  margin-bottom: 30px;
-}
-
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr; /* Responsivo para celular */
-  }
+  gap: 30px;
+  margin-bottom: 40px;
 }
 
 .input-group {
@@ -116,40 +150,53 @@
 
 .input-group label {
   font-size: 0.95rem;
-  color: #ddd;
-  margin-bottom: 10px;
-  font-weight: 500;
+  color: #a0aec0;
+  margin-bottom: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .input-group input,
 .input-group textarea {
-  background: #111;
-  border: 1px solid #333;
-  color: #fff;
-  padding: 15px; /* Mais "gordinho" e confortável de clicar */
-  border-radius: 8px; /* Arredondamento mais suave */
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  transition: border 0.3s, box-shadow 0.3s;
+  background: rgba(5, 5, 5, 0.8);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #e0e0e0;
+  padding: 16px;
+  border-radius: 10px;
+  font-family: 'Courier New', Courier, monospace; /* Toque hacker */
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .input-group input:focus,
 .input-group textarea:focus {
   outline: none;
   border-color: #4caf50;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+  background: rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.2), inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: #444;
+  font-family: 'Inter', sans-serif;
 }
 
 .input-group.disabled input {
-  background: #0a0a0a;
+  background: rgba(255, 255, 255, 0.02);
   color: #555;
   cursor: not-allowed;
-  border-color: #1f1f1f;
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
 
-/* A BIO DEVE OCUPAR AS DUAS COLUNAS */
+/* =========================================
+   BIO SECTION (Ocupa as duas colunas)
+   ========================================= */
 .bio-group {
   grid-column: 1 / -1; 
   margin-bottom: 40px;
@@ -157,48 +204,118 @@
 
 .bio-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 150px;
+  font-family: 'Inter', sans-serif; /* Texto longo fica melhor sem ser Courier */
 }
 
-/* BOTÕES DE AÇÃO - Maiores e mais chamativos */
+.char-count {
+  text-align: right;
+  color: #666;
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+/* =========================================
+   BOTÕES DE AÇÃO
+   ========================================= */
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 20px;
-  border-top: 1px solid #333;
-  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 30px;
 }
 
 .btn-cancel {
   background: transparent;
-  color: #ccc;
-  border: 1px solid #555;
-  padding: 12px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-.btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-color: #888;
-}
-
-.btn-save {
-  background: linear-gradient(135deg, #48bb78, #2f855a);
-  color: #fff;
-  border: none;
-  padding: 12px 35px;
-  border-radius: 8px;
+  color: #a0aec0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 14px 30px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.btn-save:hover {
+.btn-cancel:hover {
+  background: rgba(245, 5, 5, 0.1);
+  color: #f50505;
+  border-color: #f50505;
+}
+
+.btn-save {
+  background: transparent;
+  color: #4caf50;
+  border: 1px solid #4caf50;
+  padding: 14px 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-save:not(:disabled):hover {
+  background: #4caf50;
+  color: #000;
+  box-shadow: 0 0 25px rgba(76, 175, 80, 0.5);
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.5);
+}
+
+.btn-save:disabled {
+  border-color: #333;
+  color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================================
+   ANIMAÇÕES E RESPONSIVIDADE
+   ========================================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 768px) {
+  .edit-profile-container {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+  .form-grid {
+  
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .edit-header h2 {
+    font-size: 1.6rem;
+  }
+  .foto-preview {
+    width: 130px;
+    height: 130px;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+  .btn-cancel, .btn-save {
+    width: 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 380px) {
+  .edit-profile-container {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }

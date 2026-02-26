@@ -18,8 +18,12 @@ const EditProfile = ({ onClose, token }) => {
   const [fotoUrl, setFotoUrl] = useState(defaultImage);
   const [fotoFile, setFotoFile] = useState(null);
 
-  // Estados dos Campos (Agrupados para melhor performance)
+  // Estado para controlar a caixinha de "Anônimo" (Booleano independente)
+  const [isAnonimo, setIsAnonimo] = useState(false);
+
+  // Estados dos Campos
   const [formData, setFormData] = useState({
+    nomePublico: "", 
     telefone: "",
     pais: "",
     cidade: "",
@@ -44,8 +48,12 @@ const EditProfile = ({ onClose, token }) => {
           setUserData(user);
           setFotoUrl(user.fotoPerfil || defaultImage);
           
+          // Lendo o booleano diretamente do banco de dados
+          setIsAnonimo(user.isAnonimo || false);
+
           // Preenche o formulário com o que já existe no banco
           setFormData({
+            nomePublico: user.nomePublico || "", 
             telefone: user.telefone || "",
             pais: user.pais || "",
             cidade: user.cidade || "",
@@ -99,24 +107,25 @@ const EditProfile = ({ onClose, token }) => {
     try {
       let urlImagemFinal = userData?.fotoPerfil || null;
 
-      // 1. Se tem foto nova, sobe primeiro
       if (fotoFile) {
         urlImagemFinal = await uploadImagem(fotoFile);
       }
 
-      // 2. Prepara o Payload (Limpando strings vazias para null)
+      // Prepara o Payload (Agora enviamos o nome e o booleano separadamente, igual ao seu DTO)
       const payload = {
+        nomePublico: formData.nomePublico || null, 
+        isAnonimo: isAnonimo, // 👈 Enviando o booleano pro Java
         profissao: formData.profissao || null,
         telefone: formData.telefone || null,
         pais: formData.pais || null,
         cidade: formData.cidade || null,
-        gitHub: formData.github || null,
+        gitHub: formData.github || null, // No DTO está gitHub, mantemos o padrão
         linkedin: formData.linkedin || null,
         bio: formData.bio || null,
         fotoPerfil: urlImagemFinal
       };
 
-      // 3. Patch na API
+      // Patch na API
       const response = await fetch(`${API_BASE_URL}/meus-dados/atualizar`, {
         method: "PATCH",
         headers: {
@@ -131,7 +140,8 @@ const EditProfile = ({ onClose, token }) => {
         onClose();
       } else {
         const error = await response.json();
-        alert(`Erro: ${error.message || "Falha ao atualizar"}`);
+        // Caso o Spring Boot retorne os erros de validação (ex: telefone inválido)
+        alert(`Erro: ${error.message || "Verifique os dados informados e tente novamente."}`);
       }
     } catch (err) {
       alert("Erro de conexão ou no upload da imagem.");
@@ -177,13 +187,38 @@ const EditProfile = ({ onClose, token }) => {
             <input type="text" value={userData?.email || ""} disabled />
           </div>
 
+          {/* Campo Nome Público + Checkbox Anônimo */}
+          <div className="input-group">
+            <label>Nome Público</label>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <input 
+                type="text" 
+                name="nomePublico" 
+                value={formData.nomePublico} 
+                onChange={handleChange} 
+                placeholder="Como quer ser chamado?" 
+                style={{ flex: 1 }}
+              />
+              
+            </div>
+            <label style={{margin: "10px 0 0 0", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", color: isAnonimo ? "#4caf50" : "#a0aec0", whiteSpace: "nowrap", fontWeight: isAnonimo ? "bold" : "normal" , textTransform: "none"}}>
+                <input 
+                  type="checkbox" 
+                  checked={isAnonimo} 
+                  onChange={(e) => setIsAnonimo(e.target.checked)} 
+                  style={{ cursor: "pointer", width: "16px", height: "16px" }}
+                />
+                Ocultar Nome e Foto do Perfil
+              </label>
+          </div>
+
           <div className="input-group">
             <label>Profissão</label>
             <input type="text" name="profissao" value={formData.profissao} onChange={handleChange} placeholder="Ex: Backend Developer" />
           </div>
           <div className="input-group">
             <label>Telefone</label>
-            <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="48999999999" />
+            <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="+5548999999999" />
           </div>
           <div className="input-group">
             <label>País</label>

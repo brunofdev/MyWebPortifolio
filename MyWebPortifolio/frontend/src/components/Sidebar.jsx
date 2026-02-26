@@ -27,18 +27,37 @@ const Sidebar = ({ isMobile, isOpen }) => {
         <p>Florianopolis, Santa Catarina, Brasil</p>
         <p>Telefone: (51) 98904-3802</p>
       </div>
-      
+
       {/* SEU BOTÃO ORIGINAL INTACTO: Adicionamos apenas o onClick */}
       <button className="btn1" onClick={handleDownloadLocal}>
         Baixar Curriculum
       </button>
-      
+
       <div className="img-qr-code">
         <img src="https://imgur.com/r6LylG9.png" alt="QR Code" referrerPolicy="no-referrer" />
       </div>
       <div className="redes-icons">
-        <img href="https://www.linkedin.com/in/bruno-fraga-dev/" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png" />
-        <img href="https://github.com/brunofdev" src="https://cdn.worldvectorlogo.com/logos/github-icon-2.svg" />
+        <a
+          href="https://www.linkedin.com/in/bruno-fraga-dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png"
+            alt="LinkedIn"
+          />
+        </a>
+
+        <a
+          href="https://github.com/brunofdev"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://cdn.worldvectorlogo.com/logos/github-icon-2.svg"
+            alt="GitHub"
+          />
+        </a>
       </div>
     </aside>
   );

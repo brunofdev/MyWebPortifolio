@@ -1,216 +1,866 @@
 /* =========================================
-   BASE E GRID DOS PROJETOS (Responsivo)
+   BASE E TÍTULO
    ========================================= */
 .projects {
-  background-color: transparent; /* Deixa o fundo do site fluir melhor */
-  padding: 20px 0;
+  background-color: transparent;
+  padding: 40px 20px;
   color: #fff;
-  margin-top: 20px;
+  margin-top: 30px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .projects h2 {
   color: #4caf50;
-  font-size: 2rem;
-  margin-bottom: 30px;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  border-left: 4px solid #f50505;
-  padding-left: 15px;
+  letter-spacing: 3px;
+  border-left: 5px solid #f50505;
+  padding-left: 20px;
+  display: inline-block;
+  text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+  position: relative;
 }
 
+.projects h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4caf50, transparent);
+}
+
+/* =========================================
+   O GRID DE PROJETOS (Cartazes Gigantes)
+   ========================================= */
 .projects-grid {
   display: grid;
-  /* MÁGICA RESPONSIVA: Cria colunas automáticas. Nunca quebra a tela! */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 40px;
   align-items: stretch;
 }
 
 /* =========================================
-   CARDS DOS PROJETOS (O visual do quadro)
+   CARDS DOS PROJETOS (Moldura Glassmorphism)
    ========================================= */
 .project-item {
   cursor: pointer;
   position: relative;
-  border-radius: 12px;
-  overflow: hidden; /* Garante que a imagem não vaze as bordas arredondadas */
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  transition: transform 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
 }
 
 .project-item img {
-  width: 100%; /* Preenche todo o card */
-  height: 250px; /* Altura fixa para manter todos os cards alinhados */
-  object-fit: cover; /* Corta a imagem com elegância sem achatar */
-  display: block;
-  animation: tvStatic 3s infinite;
-  transition: transform 0.4s ease, filter 0.4s ease;
-}
-
-/* O título que fica escondido e sobe no hover */
-.project-title-overlay {
-  position: absolute;
-  bottom: -100px; /* Esconde o texto para baixo */
-  left: 0;
   width: 100%;
-  padding: 30px 20px 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: center;
-  transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* EFEITOS DE HOVER (Quando o mouse passa por cima) */
-.project-item:hover {
-  transform: translateY(-8px); /* Card "flutua" para cima */
-  border-color: #4caf50; /* Borda brilha em verde */
-  box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
-}
-
-.project-item:hover img {
-  filter: none; /* Desliga o chuvisco de TV */
-  transform: scale(1.08); /* Dá um zoom suave na imagem */
-  animation: none;
-}
-
-.project-item:hover .project-title-overlay {
-  bottom: 0; /* Título desliza para cima */
-}
-
-/* A Animação Hacker (Mantida, mas ajustada para ser mais suave) */
-@keyframes tvStatic {
-  0%, 70% { filter: url(#static-noise); opacity: 0.9; }
-  75%, 90% { filter: none; opacity: 1; }
-  95%, 100% { filter: url(#static-noise); opacity: 0.9; }
+  height: 350px;
+  object-fit: cover;
+  display: block;
+  animation: tvStatic 5s infinite alternate;
+  transition: transform 0.6s ease, filter 0.6s ease;
 }
 
 /* =========================================
-   MODAL - ESTRUTURA E TEXTOS (Mantido)
+   EFEITOS DE HOVER NOS CARDS
+   ========================================= */
+.project-item:hover {
+  transform: translateY(-15px) scale(1.02);
+  border-color: rgba(76, 175, 80, 0.6);
+  box-shadow: 0 20px 40px rgba(76, 175, 80, 0.3);
+}
+
+.project-item:hover img {
+  filter: brightness(1.1);
+  transform: scale(1.1);
+  animation: none;
+}
+
+.project-title-overlay {
+  position: absolute;
+  bottom: -120px;
+  left: 0;
+  width: 100%;
+  padding: 50px 25px 25px;
+  background: linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.75) 50%, transparent 100%);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.project-item:hover .project-title-overlay {
+  bottom: 0;
+}
+
+@keyframes tvStatic {
+  0%, 50% { filter: url(#static-noise); opacity: 0.9; }
+  55%, 80% { filter: none; opacity: 1; }
+  85%, 100% { filter: url(#static-noise); opacity: 0.9; }
+}
+
+/* =========================================
+   ESTRUTURA INTERNA DO MODAL (Pop-up)
    ========================================= */
 .modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
   width: 100%;
-  max-height: 70vh;
+  max-width: 900px;
+  margin: 0 auto;
+  max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 10px;
+  padding: 20px;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }
 
 .modal-content::-webkit-scrollbar { width: 8px; }
-.modal-content::-webkit-scrollbar-track { background: transparent; }
-.modal-content::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; }
-.modal-content::-webkit-scrollbar-thumb:hover { background: #f50505; }
+.modal-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 10px; }
+.modal-content::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; box-shadow: 0 0 10px rgba(76,175,80,0.5); }
 
+.modal-title {
+  font-size: 2.2rem;
+  color: #4caf50;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.modal-description { 
+  width: 100%; 
+  color: #d1d5db; 
+  font-size: 1.15rem; 
+  line-height: 1.8; 
+  text-align: justify;
+  padding: 0 10px;
+}
+
+.main-desc { margin-bottom: 30px; }
+
+/* =========================================
+   CARROSSEL DE IMAGENS NO MODAL (Otimizado)
+   ========================================= */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 300px;
+  margin-bottom: 30px;
+  cursor: zoom-in;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.carousel-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Botões de Navegação do Carrossel */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.4s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(76, 175, 80, 0.9);
+  border-color: #4caf50;
+  transform: translateY(-50%) scale(1.2);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.carousel-btn.prev { left: 20px; }
+.carousel-btn.next { right: 20px; }
+
+/* Contador do Carrossel */
+.carousel-counter {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  z-index: 10;
+  letter-spacing: 1.5px;
+}
+
+/* Legenda do Carrossel (Degradê) */
+.carousel-legend {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 50px 25px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9);
+  font-style: italic;
+}
+
+.expand-hint {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.carousel-container:hover .expand-hint {
+  opacity: 1;
+  transform: translateY(-8px);
+}
+
+/* =========================================
+   IFRAME DO VÍDEO NO MODAL
+   ========================================= */
 .modal-content iframe {
   width: 100%;
   aspect-ratio: 16 / 9;
   height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
-
-.modal-title {
-  font-size: 24px;
-  color: #4caf50;
-  text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
-  margin: 0;
-  text-align: center;
-}
-
-.modal-description { width: 100%; color: #fff; font-size: 16px; line-height: 1.5; }
-.main-desc { margin-bottom: 20px; }
 
 /* =========================================
-   NAVEGAÇÃO (SETAS DO CARROSSEL) E FICHA TÉCNICA
+   FICHA TÉCNICA E LINKS
    ========================================= */
-.modal-header { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px; }
-
 .tech-specs {
-  background-color: #222;
-  padding: 15px;
-  border-left: 4px solid #f50505;
-  border-radius: 4px;
-  margin: 15px 0;
-  text-align: left;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 25px;
+  border-left: 5px solid #f50505;
+  border-radius: 10px;
+  margin: 25px 0;
   width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
-.tech-specs h4 { color: #4caf50; margin-top: 0; margin-bottom: 15px; font-size: 18px; }
-.tech-specs ul { list-style-type: none; padding: 0; margin: 0; }
-.tech-specs li { margin-bottom: 8px; color: #ccc; }
-.tech-specs strong { color: #fff; }
+.tech-specs h4 { color: #4caf50; margin-top: 0; margin-bottom: 20px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
+.tech-specs ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.tech-specs li { color: #a0aec0; font-size: 1.05rem; }
+.tech-specs strong { color: #fff; font-weight: 700; }
+
+.modal-links { list-style: none; padding: 0; margin: 25px 0 0 0; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
+.modal-links a { 
+  color: #4caf50; 
+  text-decoration: none; 
+  font-weight: bold; 
+  border-bottom: 3px solid transparent; 
+  padding-bottom: 5px;
+  transition: all 0.4s ease; 
+  font-size: 1.1rem;
+}
+.modal-links a:hover { color: #f50505; border-color: #f50505; transform: translateY(-3px); }
 
 /* =========================================
-   LINKS
-   ========================================= */
-.modal-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 15px; flex-wrap: wrap; }
-.modal-links li { margin: 10px 0; }
-.modal-links a { color: #4caf50; text-decoration: none; transition: color 0.3s ease; border-bottom: 1px solid transparent; font-weight: bold;}
-.modal-links a:hover { color: #f50505; border-bottom: 1px solid #f50505; }
-
-/* =========================================
-   SETAS FLUTUANTES E PISCANTES
+   NAVEGAÇÃO DO MODAL (SETAS EXTERNAS)
    ========================================= */
 .nav-arrow {
-  background-color: #181818;
+  background-color: rgba(24, 24, 24, 0.95);
+  backdrop-filter: blur(6px);
   color: #4caf50;
   border: 2px solid #4caf50;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 24px;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
   cursor: pointer;
   z-index: 9999;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 15px rgba(76,175,80,0.3);
+}
+
+.nav-arrow:disabled {
+  color: #555;
+  border-color: #333;
+  cursor: not-allowed;
+  opacity: 0.6;
+  animation: none;
 }
 
 @media (max-width: 768px) {
-  .nav-arrow { position: relative; display: inline-flex; margin: 10px; }
+  .nav-arrow { 
+    position: absolute; 
+    bottom: -50px; 
+    transform: none;
+    margin: 0;
+    width: 50px; 
+    height: 50px; 
+    font-size: 24px; 
+  }
+  .left-arrow { left: calc(50% - 60px); }
+  .right-arrow { right: calc(50% - 60px); }
 }
 
 @media (min-width: 769px) {
   .nav-arrow {
     position: fixed; top: 50%; transform: translateY(-50%);
-    animation: piscaAlerta 1.5s infinite;
+    animation: piscaAlerta 2s infinite;
   }
   .left-arrow { left: 5%; }
   .right-arrow { right: 5%; }
 }
 
 @keyframes piscaAlerta {
-  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); opacity: 1; }
-  50% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.2); opacity: 0.5; }
+  0%, 100% { box-shadow: 0 0 25px rgba(76, 175, 80, 0.7); opacity: 1; }
+  50% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); opacity: 0.7; }
 }
 
-.nav-arrow:hover {
-  background-color: #4caf50; color: #181818;
-  animation: none; transform: translateY(-50%) scale(1.1);
+.nav-arrow:hover:not(:disabled) {
+  background-color: #4caf50; color: #1a1a1a;
+  animation: none; transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 0 30px rgba(76,175,80,0.6);
 }
 
 /* =========================================
-   COMO RODAR (TERMINAL DE COMANDOS)
+   TUTORIAL DE SETUP (CAIXA DE COMANDOS)
    ========================================= */
-.setup-section { margin-top: 25px; width: 100%; text-align: left; }
-.setup-section h4 { color: #4caf50; font-size: 18px; margin-bottom: 5px; }
-.setup-obs { color: #f50505; font-size: 14px; font-weight: bold; margin-bottom: 15px; }
+.setup-section { margin-top: 40px; width: 100%; text-align: left; padding: 0 10px; }
+.setup-section h4 { color: #4caf50; font-size: 1.3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.setup-obs { color: #f50505; font-size: 1rem; font-weight: bold; margin-bottom: 25px; background: rgba(245,5,5,0.05); padding: 10px; border-radius: 5px; }
 
 .terminal-box {
-  background-color: #0d0d0d; border: 1px solid #333; border-left: 4px solid #4caf50;
-  padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace;
+  background-color: #050505; 
+  border: 1px solid #333; 
+  border-left: 5px solid #4caf50;
+  padding: 25px; 
+  border-radius: 10px; 
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.9);
 }
-.step-item { margin-bottom: 15px; }
-.step-item p { color: #ccc; margin: 0 0 5px 0; font-size: 15px; }
+.step-item { margin-bottom: 25px; }
+.step-item:last-child { margin-bottom: 0; }
+.step-item p { color: #a0aec0; margin: 0 0 10px 0; font-size: 1.05rem; }
 .step-item code {
-  display: block; background-color: #222; color: #19c9e8;
-  padding: 8px; border-radius: 4px; user-select: all; word-wrap: break-word;
+  display: block; 
+  background-color: #1a1a1a; 
+  color: #19c9e8; 
+  padding: 15px; 
+  border-radius: 8px; 
+  user-select: all; 
+  word-wrap: break-word;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* =========================================
+   SISTEMA DE LIGHTBOX (TELA CHEIA) E LEGENDA
+   ========================================= */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 999999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 50px;
+  cursor: pointer;
+  transition: color 0.4s, transform 0.4s;
+  z-index: 20;
+}
+
+.lightbox-close:hover {
+  color: #f50505;
+  transform: scale(1.15);
+}
+
+/* Navegação Tela Cheia */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 80px;
+  cursor: pointer;
+  z-index: 20;
+  padding: 25px;
+  transition: all 0.4s ease;
+}
+
+.lightbox-nav:hover {
+  color: #4caf50;
+  transform: translateY(-50%) scale(1.15);
+  text-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
+}
+
+.lightbox-nav.left { left: 4%; }
+.lightbox-nav.right { right: 4%; }
+
+/* Container da Foto + Legenda */
+.lightbox-content-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90vw;
+  height: 95vh;
+  cursor: default;
+  animation: popImage 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 0 60px rgba(76, 175, 80, 0.2);
+}
+
+/* Legenda Flutuante (Pílula) */
+.lightbox-legend {
+  position: absolute;
+  bottom: 40px;
+  background: rgba(18, 18, 18, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  color: #fff;
+  padding: 15px 35px;
+  border-radius: 35px;
+  font-size: 1.2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+  max-width: 85%;
+  text-align: center;
+  letter-spacing: 1px;
+  z-index: 15;
+  font-style: italic;
+}
+
+.lightbox-counter {
+  position: absolute;
+  top: -40px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+}
+
+/* =========================================
+   SISTEMA DE FEEDBACK (NOVO)
+   ========================================= */
+
+.modal-divider {
+  width: 100%;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.6), transparent);
+ 
+}
+
+.project-feedback-section {
+  justify-items: center;
+  width: 100%;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  margin-top: 20px;
+}
+
+.project-feedback-section h4 {
+  color: #4caf50;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px rgba(76,175,80,0.3);
+}
+
+/* Estrelas Interativas */
+.star-rating-selector {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.star {
+  transition: transform 0.3s ease, color 0.3s ease;
+  user-select: none;
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.star.selected {
+  color: #ffc107;
+  text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+}
+
+.star:hover {
+  transform: scale(1.4);
+  color: #ffc107;
+}
+
+/* Área de Texto Estilizada */
+.feedback-textarea {
+  width: 100%;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #e0e0e0;
+  font-family: inherit;
+  transition: all 0.4s ease;
+  outline: none;
+  padding: 15px;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 120px;
+  font-size: 1.05rem;
+}
+
+.feedback-textarea:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+  background: rgba(0, 0, 0, 0.95);
+}
+
+/* Botão de Envio Cyber */
+.submit-feedback-btn {
+  align-self: flex-start;
+  padding: 15px 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: transparent;
+  border: 1px solid #4caf50;
+  color: #4caf50;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.submit-feedback-btn:not(:disabled):hover {
+  background: #4caf50;
+  color: #000;
+  box-shadow: 0 0 25px rgba(76, 175, 80, 0.5);
+  transform: translateY(-3px);
+}
+
+.submit-feedback-btn:disabled {
+  border-color: #333;
+  color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Mensagens de Status */
+.feedback-status-msg {
+  font-size: 1rem;
+  padding: 12px;
+  border-radius: 6px;
+  animation: fadeIn 0.5s ease;
+  margin-top: 15px;
+  text-align: center;
+  background: rgba(76,175,80,0.1);
+  color: #4caf50;
+  border: 1px solid rgba(76,175,80,0.3);
+}
+
+.login-prompt {
+  background: rgba(245, 5, 5, 0.08);
+  border-left: 4px solid #f50505;
+  padding: 20px;
+  color: #a0aec0;
+  font-style: italic;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+/* =========================================
+   LISTA DE FEEDBACKS
+   ========================================= */
+.project-feedbacks-list {
+  justify-items: center;
+  width: 100%;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  margin-top: 20px;
+}
+
+.project-feedbacks-list h4 {
+  color: #4caf50;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px rgba(76,175,80,0.3);
+}
+
+.project-feedbacks-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.feedback-item:hover {
+  background: rgba(76,175,80,0.05);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 0 15px rgba(76,175,80,0.2);
+}
+
+.feedback-user-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 10px rgba(76,175,80,0.3);
+}
+
+.project-feedbacklist-header{
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.feedback-content {
+  flex: 1;
+}
+
+.feedback-user-name {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.feedback-rating {
+  margin-left: 15px;
+  color: #ffc107;
+  font-size: 1.1rem;
+}
+
+.feedback-date {
+  margin-left: 15px;
+  color: #888;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.feedback-comment {
+  margin-top: 10px;
+  color: #d1d5db;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.no-feedbacks {
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.delete-feedback-btn {
+  background: #f50505;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+  margin-left: 10px;
+}
+
+.delete-feedback-btn:hover {
+  background: darkred;
+}
+
+/* Animações */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popImage { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Responsivo Geral */
+@media (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+  }
+  .project-item img {
+    height: 300px;
+  }
+  .modal-content {
+    max-height: 85vh;
+    padding: 15px;
+  }
+  .carousel-container {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects {
+    padding: 30px 15px;
+  }
+  .projects h2 {
+    font-size: 2rem;
+  }
+  .projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  .project-item img {
+    height: 280px;
+  }
+  .modal-title {
+    font-size: 1.8rem;
+  }
+  .modal-description {
+    font-size: 1rem;
+  }
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+  .carousel-counter, .expand-hint {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  .carousel-legend {
+    font-size: 0.95rem;
+    padding: 30px 15px 10px;
+  }
+  .tech-specs, .setup-section {
+    padding: 15px;
+  }
+  .modal-links {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .project-feedback-section, .project-feedbacks-list {
+    padding: 20px;
+  }
+  .star {
+    font-size: 1.8rem;
+  }
+  .submit-feedback-btn {
+    width: 100%;
+    align-self: center;
+  }
+  .feedback-user-photo {
+    width: 40px;
+    height: 40px;
+  }
+  .lightbox-nav { font-size: 50px; padding: 15px; }
+  .lightbox-nav.left { left: 0; }
+  .lightbox-nav.right { right: 0; }
+  .lightbox-content-wrapper { width: 100vw; height: 90vh; }
+  .lightbox-legend { bottom: 15px; font-size: 1rem; padding: 12px 25px; width: 95%; }
+  .lightbox-close { right: 30px; font-size: 40px; }
+}
+
+@media (max-width: 480px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  .project-item img {
+    height: 250px;
+  }
+  .modal-content {
+    padding: 10px;
+  }
+  .carousel-container {
+    min-height: 200px;
+  }
 }

@@ -133,12 +133,12 @@
   box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
 }
 
-.form-group input[aria-invalid="true"] {
+.form-group input.invalid {
   border-color: #ef4444;
 }
 
 /* Ícones de validação */
-.form-group:has(input[aria-invalid="true"]) .input-wrapper::after {
+.form-group:has(input.invalid) .input-wrapper::after {
   content: "✕";
   position: absolute;
   right: 16px;
@@ -157,9 +157,6 @@
   color: #48bb78;
   font-weight: bold;
 }
-
-
-
 
 /* ==========================================================================
    4. TEXTOS DE AJUDA E AVISOS (O SEGREDO DA UI LIMPA)
@@ -189,6 +186,13 @@
   font-size: 0.85rem;
   text-align: left;
   margin: 4px 0 0 0; 
+}
+
+.error-text {
+  font-size: 0.85rem;
+  color: #ef4444;
+  margin-top: 4px;
+  text-align: left;
 }
 
 /* ==========================================================================

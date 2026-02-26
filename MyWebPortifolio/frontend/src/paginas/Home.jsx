@@ -1,3 +1,4 @@
+// Home.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom'; 
 import Header from "../components/Header";
@@ -17,6 +18,25 @@ import EditProfile from "../components/EditProfile";
 import "../styles/global.css";
 import "../styles/home.css";
 
+// ==========================================
+// UTILS: Validação de Expiração do JWT
+// ==========================================
+const isTokenValid = (token) => {
+  try {
+    // O payload é a segunda parte do token (índice 1)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    
+    // O 'exp' está em segundos. Multiplicamos por 1000 para virar milissegundos
+    const expirationTime = payload.exp * 1000; 
+    
+    // Retorna true se a hora atual for MENOR que a hora de expiração
+    return Date.now() < expirationTime;
+  } catch (error) {
+    // Se der qualquer erro ao ler (token corrompido, vazio, etc), consideramos inválido
+    return false; 
+  }
+};
+
 const Home = () => {
   const [activeModalContent, setActiveModalContent] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,8 +49,31 @@ const Home = () => {
   const [currentView, setCurrentView] = useState("home"); 
   const navigate = useNavigate();
 
+  // ==========================================
+  // INICIALIZAÇÃO E RECUPERAÇÃO DE SESSÃO
+  // ==========================================
   useEffect(() => {
     setActiveModalContent(1); 
+    
+    const savedToken = localStorage.getItem("token");
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    
+    if (savedToken && savedUser) {
+      // 🛡️ TRAVA ZUMBI: Valida se o tempo da pulseira ainda não acabou
+      if (isTokenValid(savedToken)) {
+        setIsAuthenticated(true);
+        setToken(savedToken);
+        setUserRole(savedUser.role);
+        setUserName(savedUser.userName);
+        setUserPhoto(savedUser.fotoPerfil);
+      } else {
+        // 🧹 Limpa os dados velhos se o token expirou (Logout Silencioso)
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
+        setToken(null);
+      }
+    }
   }, []);
 
   const closeModal = () => setActiveModalContent(null);
@@ -53,6 +96,8 @@ const Home = () => {
     setUserRole(null);
     setUserName(null);
     setUserPhoto(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     goHome(); 
   };
 
@@ -116,7 +161,13 @@ const Home = () => {
         <section className="section-skills" id="skills"><Skills /></section>
         <hr className="separator" />
         
-        <section className="section-projects" id="projects"><Projects /></section>
+        <section className="section-projects" id="projects">
+          <Projects 
+            token={token} 
+            userName={userName} 
+            userRole={userRole} 
+          />
+        </section>
         <hr className="separator" />
         
         <section className="section-contact" id="contact"><Contact /></section>
@@ -128,7 +179,11 @@ const Home = () => {
         <hr className="separator" />
         
         <section className="section-feedback-list" id="feedbackList">
-          <FeedbackList userRole={userRole} token={token} />
+          <FeedbackList 
+            userRole={userRole} 
+            token={token} 
+            currentUserName={userName} 
+          />
         </section>
       </>
     );
@@ -160,7 +215,6 @@ const Home = () => {
           <AuthModal handleLoginSuccess={handleLogin} onClose={closeModal} />
         </Modal>
 
-        {/* A Sidebar agora ficará grudada na tela enquanto o usuário rola o Main Content */}
         <div className="sidebar-wrapper">
           <Sidebar />
         </div>
