@@ -191,7 +191,7 @@ const Home = () => {
 
   return (
     <div className="container">
-      <MatrixBackground />
+      
       <Header
         isAuthenticated={isAuthenticated}
         userName={userName}

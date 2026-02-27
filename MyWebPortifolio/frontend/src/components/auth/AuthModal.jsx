@@ -9,7 +9,6 @@ import ResetPasswordForm from "./ResetPasswordForm";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "https://api-java-brunof-dkaqbfaheabebcbh.eastus-01.azurewebsites.net";
 
-// 🚨 CORREÇÃO APLICADA: Chaves exatas correspondentes aos nomes das abas (activeTab)
 const API_URLS = {
   login: `${BASE_URL}/auth/login`,
   register: `${BASE_URL}/usuario/cadastro`,
@@ -45,9 +44,12 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
 // ==========================================
 const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const [activeTab, setActiveTab] = useState("login");
+  
+  // 🚨 ADICIONADOS: confirmPassword e confirmEmail no estado inicial
   const [formData, setFormData] = useState({
-    name: "", nomePublico: "", userName: "", password: "", email: "", code: ""
+    name: "", nomePublico: "", userName: "", password: "", confirmPassword: "", email: "", confirmEmail: "", code: ""
   });
+  
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -56,9 +58,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
 
   const isLogin = activeTab === "login";
 
-  // ==========================================
-  // EFEITOS
-  // ==========================================
   useEffect(() => {
     let interval;
     if (resendTimer > 0) {
@@ -67,9 +66,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     return () => clearInterval(interval);
   }, [resendTimer]);
 
-  // ==========================================
-  // VALIDAÇÕES VISUAIS (Para os Inputs)
-  // ==========================================
   const isValidName = () => {
     return formData.name && formData.name.length >= 5 && formData.name.length <= 100 && /^[A-Za-zÀ-ú\s'-]+$/.test(formData.name);
   };
@@ -96,13 +92,9 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const isPasswordValid = isValidPassword();
   const isEmailValid = isValidEmail();
 
-  // ==========================================
-  // MANIPULADORES DE EVENTO
-  // ==========================================
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Filtros em tempo real para Cadastro
     if (activeTab === "register") {
       if (name === "name" && value && !/^[A-Za-zÀ-ú\s'-]*$/.test(value)) {
         setError("O nome deve conter apenas letras, espaços, hífens ou apóstrofos.");
@@ -121,7 +113,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     if (tab === "login" || tab === "register") {
-      setFormData({ name: "", nomePublico: "", userName: "", password: "", email: "", code: "" });
+      setFormData({ name: "", nomePublico: "", userName: "", password: "", confirmPassword: "", email: "", confirmEmail: "", code: "" });
       setMaskedEmail("");
     }
     setError("");
@@ -146,16 +138,10 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     }
   };
 
-  // ==========================================
-  // LÓGICA DE SUBMISSÃO (O CÉREBRO)
-  // ==========================================
-  
-  // 1. Gera o pacote de dados exato que a API espera
   const getRequestPayload = () => {
     switch (activeTab) {
       case "login":
         return { userName: formData.userName, senha: formData.password };
-      
       case "register":
         return {
           nome: formData.name,
@@ -164,23 +150,18 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           senha: formData.password,
           nomePublico: formData.nomePublico ? formData.nomePublico.trim() : null 
         };
-      
       case "verify":
       case "verify-recovery":
         return { userName: formData.userName, codigo: formData.code };
-      
       case "forgot-password":
-        return formData.userName; // Envia só a string pura
-      
+        return formData.userName; 
       case "reset-password":
         return { userName: formData.userName, codigoVerificado: formData.code, novaSenha: formData.password };
-      
       default:
         return {};
     }
   };
 
-  // 2. Decide o que fazer quando a API responde com sucesso (OK)
   const handleSuccessResponse = (data) => {
     switch (activeTab) {
       case "forgot-password":
@@ -188,24 +169,20 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         setActiveTab("verify-recovery");
         setSuccessMessage("Código de recuperação enviado!");
         break;
-
       case "verify-recovery":
         setActiveTab("reset-password");
         setSuccessMessage("Código validado! Escolha sua nova senha.");
         break;
-
       case "reset-password":
-        setFormData({ name: "", nomePublico: "", userName: "", password: "", email: "", code: "" });
+        setFormData({ name: "", nomePublico: "", userName: "", password: "", confirmPassword: "", email: "", confirmEmail: "", code: "" });
         setActiveTab("login");
         setSuccessMessage("Senha alterada com sucesso! Faça login.");
         break;
-
       case "register":
         setFormData((prev) => ({ ...prev, email: data?.dados?.email || prev.email }));
         setActiveTab("verify");
         setSuccessMessage("Cadastro realizado! Enviamos um código para seu e-mail.");
         break;
-
       case "verify":
         setSuccessMessage("Conta ativada com sucesso! Bem-vindo(a)!");
         setTimeout(() => {
@@ -214,7 +191,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           onClose();
         }, 1500);
         break;
-
       case "login":
         const loginUserObj = data.dados.clienteDTO || data.dados.usuarioDTO || data.dados.usuario || data.dados;
         if (loginUserObj.contaAtiva === false) {
@@ -225,25 +201,49 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           onClose();
         }
         break;
-        
       default:
         break;
     }
   };
 
-  // 3. A Função principal que dispara o botão
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 🎯 ÂNCORA SUAVE PARA CAMPOS INVÁLIDOS
+    const form = e.target;
+    if (!form.checkValidity()) {
+      const firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid) {
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstInvalid.focus();
+      }
+      return;
+    }
+
+    // 🛡️ VALIDAÇÃO DE DIGITAÇÃO DUPLA (ANTES DE CHAMAR A API)
+    if (activeTab === "register") {
+      if (formData.email !== formData.confirmEmail) {
+        setError("Os endereços de e-mail não coincidem.");
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError("As senhas não coincidem.");
+        return;
+      }
+    } else if (activeTab === "reset-password") {
+      if (formData.password !== formData.confirmPassword) {
+        setError("As senhas não coincidem.");
+        return;
+      }
+    }
+
     setError("");
     setSuccessMessage("");
     setIsLoading(true);
 
     try {
-      // 🚨 CORREÇÃO APLICADA: Busca direta pela URL usando o activeTab
       const url = API_URLS[activeTab]; 
-      
       const payload = getRequestPayload();
-      
       const isPlainText = activeTab === "forgot-password";
       const headers = { "Content-Type": isPlainText ? "text/plain" : "application/json" };
       const body = isPlainText ? payload : JSON.stringify(payload);
@@ -260,7 +260,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
         return;
       }
 
-      // Se deu tudo certo, chama a função que decide a próxima tela
       handleSuccessResponse(data);
 
     } catch (error) {
@@ -271,9 +270,6 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
     }
   };
 
-  // ==========================================
-  // RENDERIZAÇÃO DA INTERFACE
-  // ==========================================
   const getTitle = () => {
     switch (activeTab) {
       case "verify": return "Validar E-mail";
@@ -301,31 +297,37 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        {/* 🚨 ADICIONADO: noValidate para o react assumir o controle do scroll */}
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <h2>{getTitle()}</h2>
           {isLoading && <div className="loading-bar" />}
 
-          {/* RENDERIZAÇÃO DOS FORMULÁRIOS ESPECÍFICOS */}
-          {activeTab === "verify" && <VerifyForm formData={formData} handleChange={handleChange} resendTimer={resendTimer} handleResendCode={handleResendCode} />}
-          {activeTab === "verify-recovery" && <VerifyRecoveryForm formData={formData} handleChange={handleChange} maskedEmail={maskedEmail} />}
-          {activeTab === "login" && <LoginForm formData={formData} handleChange={handleChange} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} handleTabChange={handleTabChange} />}
-          {activeTab === "register" && <RegisterForm formData={formData} handleChange={handleChange} isNameValid={isNameValid} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} isEmailValid={isEmailValid} />}
-          {activeTab === "forgot-password" && <ForgotPasswordForm formData={formData} handleChange={handleChange} />}
-          {activeTab === "reset-password" && <ResetPasswordForm formData={formData} handleChange={handleChange} isPasswordValid={isPasswordValid} />}
+          {/* 👇 CORPO ROLÁVEL (SÓ OS INPUTS) */}
+          <div className="form-scrollable-body">
+            {activeTab === "verify" && <VerifyForm formData={formData} handleChange={handleChange} resendTimer={resendTimer} handleResendCode={handleResendCode} />}
+            {activeTab === "verify-recovery" && <VerifyRecoveryForm formData={formData} handleChange={handleChange} maskedEmail={maskedEmail} />}
+            {activeTab === "login" && <LoginForm formData={formData} handleChange={handleChange} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} handleTabChange={handleTabChange} />}
+            {activeTab === "register" && <RegisterForm formData={formData} handleChange={handleChange} isNameValid={isNameValid} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} isEmailValid={isEmailValid} />}
+            {activeTab === "forgot-password" && <ForgotPasswordForm formData={formData} handleChange={handleChange} />}
+            {activeTab === "reset-password" && <ResetPasswordForm formData={formData} handleChange={handleChange} isPasswordValid={isPasswordValid} />}
+          </div>
 
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
+          {/* 👇 RODAPÉ FIXO (MENSAGENS E BOTÕES) */}
+          <div className="form-fixed-footer">
+            {error && <div className="error-message">{error}</div>}
+            {successMessage && <div className="success-message">{successMessage}</div>}
 
-          <div className="form-actions">
-            <button type="submit" className="submit-button" disabled={isLoading}>
-              {isLoading ? "Processando..." : (activeTab === "verify" || activeTab === "verify-recovery") ? "Confirmar" : activeTab === "forgot-password" ? "Enviar Código" : activeTab === "reset-password" ? "Salvar Senha" : isLogin ? "Entrar" : "Cadastrar"}
-            </button>
-
-            {["forgot-password", "verify-recovery", "reset-password"].includes(activeTab) && (
-              <button type="button" className="cancel-button" onClick={() => handleTabChange("login")} disabled={isLoading}>
-                Cancelar / Voltar
+            <div className="form-actions">
+              <button type="submit" className="submit-button" disabled={isLoading}>
+                {isLoading ? "Processando..." : (activeTab === "verify" || activeTab === "verify-recovery") ? "Confirmar" : activeTab === "forgot-password" ? "Enviar Código" : activeTab === "reset-password" ? "Salvar Senha" : isLogin ? "Entrar" : "Cadastrar"}
               </button>
-            )}
+
+              {["forgot-password", "verify-recovery", "reset-password"].includes(activeTab) && (
+                <button type="button" className="cancel-button" onClick={() => handleTabChange("login")} disabled={isLoading}>
+                  Cancelar / Voltar
+                </button>
+              )}
+            </div>
           </div>
         </form>
       </div>
