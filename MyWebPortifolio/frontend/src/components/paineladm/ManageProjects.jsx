@@ -24,15 +24,15 @@ const ManageProjects = () => {
     status: "Concluído",
     dataProjeto: "",
     papel: "",
-    repositorioUrl: "", 
-    liveUrl: "",        
-    techs: { 
+    repositorioUrl: "",
+    liveUrl: "",
+    techs: {
       linguagem: "", paradigma: "", framework: "", bibliotecas: "", infraestrutura: ""
     },
-    setup: { 
-      obs: "", steps: [] 
+    setup: {
+      obs: "", steps: []
     },
-    links: [], 
+    links: [],
     imagens: []
   };
 
@@ -102,10 +102,10 @@ const ManageProjects = () => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
     const novasImagens = files.map(file => ({
-      file: file, 
-      url: URL.createObjectURL(file), 
+      file: file,
+      url: URL.createObjectURL(file),
       isNova: true,
-      legenda: "" 
+      legenda: ""
     }));
     setFormData((prev) => ({ ...prev, imagens: [...prev.imagens, ...novasImagens] }));
   };
@@ -168,8 +168,8 @@ const ManageProjects = () => {
       );
 
       const galeriaComOrdem = imagensProcessadas.map((url, index) => ({
-        urlImagem: url, 
-        ordemExibicao: index, 
+        urlImagem: url,
+        ordemExibicao: index,
         isCapa: index === 0,
         legenda: formData.imagens[index].legenda || ""
       }));
@@ -180,7 +180,7 @@ const ManageProjects = () => {
         links: [
           { text: "Repositório GitHub", url: formData.repositorioUrl },
           { text: "Site Online (Live)", url: formData.liveUrl }
-        ].filter(link => link.url) 
+        ].filter(link => link.url)
       };
 
       const token = localStorage.getItem("token");
@@ -229,17 +229,17 @@ const ManageProjects = () => {
     if (projeto.galeria && projeto.galeria.length > 0) {
       imagensFormatadas = [...projeto.galeria]
         .sort((a, b) => a.ordemExibicao - b.ordemExibicao)
-        .map(img => ({ 
-          url: img.urlImagem, 
-          isNova: false, 
+        .map(img => ({
+          url: img.urlImagem,
+          isNova: false,
           legenda: img.legenda || ""
         }));
     }
     setFormData({
       title: projeto.title || "", video: projeto.video || "", description: projeto.description || "",
       status: projeto.status || "Concluído", papel: projeto.papel || "", dataProjeto: projeto.dataProjeto || "",
-      repositorioUrl: projeto.repositorioUrl || "", 
-      liveUrl: projeto.liveUrl || "",               
+      repositorioUrl: projeto.repositorioUrl || "",
+      liveUrl: projeto.liveUrl || "",
       techs: projeto.techs || initialFormState.techs,
       setup: projeto.setup || initialFormState.setup,
       links: projeto.links || [],
@@ -253,11 +253,11 @@ const ManageProjects = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${BASE_URL}/paineladm/projetos/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
-      if (response.ok) { 
-        showMessage("success", "Projeto excluído!"); 
-        fetchProjetos(); 
-      } else { 
-        showMessage("error", "Erro ao excluir."); 
+      if (response.ok) {
+        showMessage("success", "Projeto excluído!");
+        fetchProjetos();
+      } else {
+        showMessage("error", "Erro ao excluir.");
       }
     } catch (error) { showMessage("error", "Erro de conexão."); }
   };
@@ -295,14 +295,14 @@ const ManageProjects = () => {
                 <span>Descrição Principal (Suporta Markdown) *</span>
                 <span style={{ fontSize: "0.8rem", color: "#48bb78" }}>Pré-visualização ao lado 👉</span>
               </label>
-              
+
               <div style={{ display: "flex", gap: "20px", alignItems: "stretch", minHeight: "250px" }}>
-                
+
                 {/* Lado Esquerdo: Área de Digitação */}
-                <textarea 
-                  name="description" 
-                  value={formData.description} 
-                  onChange={handleChange} 
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
                   required
                   placeholder="Descreva o projeto...\nUse **negrito**, ## Títulos ou * Listas."
                   style={{
@@ -318,9 +318,9 @@ const ManageProjects = () => {
                   }}
                 ></textarea>
 
-            {/* Lado Direito: Área de Pré-visualização em Tempo Real */}
-                <div 
-                  className="markdown-body" 
+                {/* Lado Direito: Área de Pré-visualização em Tempo Real */}
+                <div
+                  className="markdown-body"
                   style={{
                     flex: 1,
                     padding: "15px",
@@ -329,7 +329,7 @@ const ManageProjects = () => {
                     background: "#111111",
                     color: "#e0e0e0",
                     overflowY: "auto",
-                    maxHeight: "400px" 
+                    maxHeight: "400px"
                   }}
                 >
                   {/* 🚨 CORREÇÃO AQUI: Garantindo que o Markdown receba uma string limpa */}
@@ -418,15 +418,15 @@ const ManageProjects = () => {
             {formData.imagens.length > 0 && (
               <div className="image-manager-grid">
                 {formData.imagens.map((imgObj, index) => (
-                  <div 
-                    key={index} 
-                    className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`} 
-                    draggable 
-                    onDragStart={(e) => dragStart(e, index)} 
-                    onDragEnter={(e) => dragOverItem.current = index} 
-                    onDragEnd={drop} 
+                  <div
+                    key={index}
+                    className={`image-thumbnail-box ${index === 0 ? "is-cover" : ""}`}
+                    draggable
+                    onDragStart={(e) => dragStart(e, index)}
+                    onDragEnter={(e) => dragOverItem.current = index}
+                    onDragEnd={drop}
                     onDragOver={(e) => e.preventDefault()}
-                    style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '220px' }} 
+                    style={{ display: 'flex', flexDirection: 'column', height: 'auto', minHeight: '220px' }}
                   >
                     {index === 0 && <span className="cover-badge">★ CAPA</span>}
                     <div style={{ position: 'relative', width: '100%', height: '150px' }}>
@@ -436,14 +436,14 @@ const ManageProjects = () => {
                         <button type="button" className="btn-trash" onClick={() => removeImage(index)}>🗑️</button>
                       </div>
                     </div>
-                    <input 
-                      type="text" 
-                      placeholder="Adicione uma legenda..." 
-                      value={imgObj.legenda || ""} 
+                    <input
+                      type="text"
+                      placeholder="Adicione uma legenda..."
+                      value={imgObj.legenda || ""}
                       onChange={(e) => handleLegendChange(index, e.target.value)}
-                      style={{ 
-                        width: '100%', padding: '8px', border: 'none', borderTop: '1px solid #333', 
-                        background: '#111', color: '#fff', fontSize: '0.85rem', outline: 'none' 
+                      style={{
+                        width: '100%', padding: '8px', border: 'none', borderTop: '1px solid #333',
+                        background: '#111', color: '#fff', fontSize: '0.85rem', outline: 'none'
                       }}
                     />
                   </div>
@@ -451,7 +451,7 @@ const ManageProjects = () => {
               </div>
             )}
 
-            <div className="form-card" style={{marginTop: '20px'}}>
+            <div className="form-card" style={{ marginTop: '20px' }}>
               <h3>🔗 Links de Acesso</h3>
               <div className="form-row">
                 <div className="form-group">
@@ -480,47 +480,47 @@ const ManageProjects = () => {
         {projetos.length === 0 ? (
           <p style={{ color: '#a0aec0', marginTop: '20px' }}>Nenhum projeto cadastrado no banco de dados.</p>
         ) : (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-            gap: '20px', 
-            marginTop: '20px' 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '20px',
+            marginTop: '20px'
           }}>
             {projetos.map((projeto) => {
               const capaObj = projeto.galeria?.find(img => img.isCapa) || projeto.galeria?.[0];
               const capaUrl = capaObj ? capaObj.urlImagem : "https://via.placeholder.com/300x200?text=Sem+Imagem";
 
               return (
-                <div key={projeto.id} style={{ 
-                  background: '#1a1a1a', 
-                  borderRadius: '8px', 
-                  overflow: 'hidden', 
+                <div key={projeto.id} style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
                   border: '1px solid #333',
                   display: 'flex',
                   flexDirection: 'column'
                 }}>
                   <img src={capaUrl} alt={projeto.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
-                  
+
                   <div style={{ padding: '15px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     <h4 style={{ margin: '0 0 10px 0', color: '#fff', fontSize: '1.1rem' }}>{projeto.title}</h4>
-                    
+
                     <p style={{ margin: '0 0 15px 0', color: '#a0aec0', fontSize: '0.9rem', flexGrow: 1 }}>
                       Status: <strong style={{ color: projeto.status === 'Concluído' ? '#48bb78' : '#eab308' }}>{projeto.status}</strong>
                     </p>
-                    
+
                     <div style={{ display: 'flex', gap: '10px' }}>
-                      <button 
-                        type="button" 
-                        onClick={() => handleEditClick(projeto)} 
+                      <button
+                        type="button"
+                        onClick={() => handleEditClick(projeto)}
                         style={{ flex: 1, padding: '10px', background: 'transparent', color: '#48bb78', border: '1px solid #48bb78', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' }}
                         onMouseOver={(e) => { e.target.style.background = '#48bb78'; e.target.style.color = '#fff'; }}
                         onMouseOut={(e) => { e.target.style.background = 'transparent'; e.target.style.color = '#48bb78'; }}
                       >
                         ✏️ Editar
                       </button>
-                      <button 
-                        type="button" 
-                        onClick={() => handleDelete(projeto.id)} 
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(projeto.id)}
                         style={{ padding: '10px 15px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', transition: '0.2s' }}
                         onMouseOver={(e) => { e.target.style.background = '#dc2626'; }}
                         onMouseOut={(e) => { e.target.style.background = '#ef4444'; }}

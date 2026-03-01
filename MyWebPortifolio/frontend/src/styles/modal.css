@@ -13,18 +13,42 @@
   animation: fadeInOverlay 0.4s ease-out forwards;
 }
 
-/* ===== CONTAINER DO MODAL ===== */
 .container-modal {
   position: relative;
-  width: 100%;
-  max-width: 800px;
+  
+  /* 🚨 1. CONTROLE DE LARGURA */
+  width: 80vw; /* Ocupa 80% da largura da tela disponível */
+  max-width: 700px; /* Trava de segurança: em monitores gigantes, não passa de 800px para não ficar esticado e feio */
+  
+  /* 🚨 2. CONTROLE DE ALTURA E ROLAGEM */
+  max-height: 80vh; /* Nunca ultrapassa 80% da altura da tela */
+  overflow-y: auto; /* Se o conteúdo de dentro for maior que os 80%, cria uma barra de rolagem suave */
+  
+  /* 🎨 SEUS ESTILOS VISUAIS (Mantidos) */
   background-color: #1a1a1a;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 20px rgba(72, 187, 120, 0.3);
   border: 1px solid rgba(72, 187, 120, 0.2);
   z-index: 10000;
-  
+}
+
+/* =========================================
+   TOOLKIT DA BARRA DE ROLAGEM (Opcional, para ficar elegante no Dark Mode)
+   ========================================= */
+.container-modal::-webkit-scrollbar {
+  width: 8px;
+}
+.container-modal::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 12px;
+}
+.container-modal::-webkit-scrollbar-thumb {
+  background: #48bb78;
+  border-radius: 12px;
+}
+.container-modal::-webkit-scrollbar-thumb:hover {
+  background: #38a169;
 }
 
 /* ===== RESPONSIVIDADE ===== */
