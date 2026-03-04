@@ -19,14 +19,16 @@
    ESTRUTURA PRINCIPAL
    ========================================= */
 .modal-wrapper {
+    display: flex;
     background-color: transparent;
     width: 100%;
-    height: 100%;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
+   
 }
 
 /* =========================================
@@ -57,17 +59,36 @@
    CAIXA DE TEXTO (Efeito Vidro / Glassmorphism)
    ========================================= */
 .modal-apresentacao {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    max-width: 700px;
-    background: rgba(20, 20, 20, 0.6);
+    height: 40vh;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(76, 175, 80, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     padding: 35px 40px;
     border-radius: 16px;
     margin-bottom: 40px;
+    overflow-y: auto; 
+
 }
+/* =========================================
+   TOOLKIT DA BARRA DE ROLAGEM (Opcional, para ficar elegante no Dark Mode)
+   ========================================= */
+.modal-apresentacao::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-apresentacao::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 12px;
+}
+.modal-apresentacao::-webkit-scrollbar-thumb {
+  background: #48bb78;
+  border-radius: 12px;
+}
+.modal-apresentacao::-webkit-scrollbar-thumb:hover {
+  background: #38a169;
+}
+
 
 .par-boas-vindas {
     font-size: 1.15rem;
@@ -163,15 +184,20 @@
    ========================================= */
 @media (max-width: 768px) {
     .titulo-apresentacao {
-        font-size: 32px;
+        font-size: 26px;
     }
     .modal-apresentacao {
         padding: 25px 20px;
     }
     .par-boas-vindas {
-        font-size: 1rem;
+        font-size: 0.8rem;
     }
     .span-emoji-final {
         font-size: 40px;
+    }
+    .foguete-container {
+        align-items: center;
+        text-align: center;
+        
     }
 }

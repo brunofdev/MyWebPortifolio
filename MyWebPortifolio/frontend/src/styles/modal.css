@@ -22,7 +22,6 @@
   
   /* 🚨 2. CONTROLE DE ALTURA E ROLAGEM */
   max-height: 80vh; /* Nunca ultrapassa 80% da altura da tela */
-  overflow-y: auto; /* Se o conteúdo de dentro for maior que os 80%, cria uma barra de rolagem suave */
   
   /* 🎨 SEUS ESTILOS VISUAIS (Mantidos) */
   background-color: #1a1a1a;
@@ -31,6 +30,7 @@
   box-shadow: 0 4px 20px rgba(72, 187, 120, 0.3);
   border: 1px solid rgba(72, 187, 120, 0.2);
   z-index: 10000;
+  
 }
 
 /* =========================================
