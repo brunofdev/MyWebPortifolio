@@ -117,16 +117,14 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 900px;
+  max-width: 800px;
   margin: 0 auto;
-  max-height: 80vh;
-  overflow-y: auto;
+  max-height: 70vh !important;
   overflow-x: hidden;
   padding: 20px;
-  background: rgba(18, 18, 18, 0.85);
   backdrop-filter: blur(15px);
   border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+ 
 }
 
 .modal-content::-webkit-scrollbar { width: 8px; }
@@ -716,23 +714,33 @@
 /* =========================================
    LISTA DE FEEDBACKS
    ========================================= */
-.project-feedbacks-list {
-  justify-items: center;
+/* ==========================================================================
+   SISTEMA DE FEEDBACK (ESTILO WHATSAPP DARK MODE)
+   ===============================================
+   =========================== */
+
+  .projects-feedback-container{
+    display: flex;
   width: 100%;
-  padding: 25px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  justify-content: end;
+ }  
+/* 1. O Fundo do Chat (Container) */
+.project-feedbacks-list {
+  width: 100%;
+  padding: 25px 15px; 
+
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .project-feedbacks-list h4 {
   color: #4caf50;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   margin-bottom: 25px;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
+  text-align: center;
   text-shadow: 0 0 10px rgba(76,175,80,0.3);
 }
 
@@ -740,91 +748,125 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espaço entre os balões de conversa */
 }
 
+/* 2. A Linha da Mensagem */
 .feedback-item {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
-  margin-bottom: 25px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  transition: all 0.3s ease;
+  gap: 12px; /* Espaço entre a foto e o balão */
+  width: 100%;
 }
 
-.feedback-item:hover {
-  background: rgba(76,175,80,0.05);
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 0 15px rgba(76,175,80,0.2);
-}
-
+/* 3. Avatar do Usuário (Fora do Balão) */
 .feedback-user-photo {
-  width: 50px;
-  height: 50px;
+  width: 40px; /* Um pouco menor, padrão de chat */
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #4caf50;
-  box-shadow: 0 0 10px rgba(76,175,80,0.3);
+  margin-top: 2px;
 }
 
-.project-feedbacklist-header{
-  justify-content: space-between;
+/* 4. O Balão de Conversa (A Mágica acontece aqui) */
+.feedback-content2 {
+  background-color: #202c33; 
+  border-radius: 0px 8px 8px 8px; 
+  padding: 8px 12px 10px 12px;
+  flex: none; 
+  width: 100%;
+  max-width: 85%; 
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
   display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
-.feedback-content {
-  flex: 1;
+/* Criando a "Pontinha" (Tail) do Balão do WhatsApp */
+.feedback-content2::before {
+  width: 100%;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -8px; 
+  border-top: 0px solid transparent;
+  border-right: 8px solid #202c33; 
+  border-bottom: 12px solid transparent;
 }
 
+/* 5. Cabeçalho dentro do Balão (Nome + Estrelas + Data) */
+.project-feedbacklist-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* O "disse:" vai sumir para ficar mais limpo, mas o nome ganha cor de contato */
 .feedback-user-name {
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.feedback-rating {
-  margin-left: 15px;
-  color: #ffc107;
-  font-size: 1.1rem;
-}
-
-.feedback-date {
-  margin-left: 15px;
-  color: #888;
+  color: #48bb78; /* O seu verde padrão (no WA seria cores sortidas) */
+  font-weight: 600;
   font-size: 0.95rem;
-  font-style: italic;
 }
 
-.feedback-comment {
-  margin-top: 10px;
-  color: #d1d5db;
-  line-height: 1.6;
-  font-size: 1.05rem;
+/* As estrelas ficam pequenininhas do lado do nome */
+.feedback-rating {
+  color: #ffc107;
+  font-size: 0.8rem;
+  margin-left: 4px;
 }
 
-.no-feedbacks {
-  color: #888;
-  font-style: italic;
-  text-align: center;
-  font-size: 1.05rem;
+/* A hora da mensagem colada na direita */
+.feedback-date {
+  color: #8696a0; /* Cinza clássico do horário do WA */
+  font-size: 0.75rem;
+  margin-left: auto; /* Empurra a data e o botão pro canto direito do balão */
 }
 
+/* 6. O Texto da Mensagem */
+.feedback-comment2 {
+  width: 100%;
+  height: fit-content; /* Permite que o balão cresça verticalmente conforme o texto */
+  margin: 0;
+  color: #e9edef; /* Texto quase branco do WA */
+  line-height: 1.4;
+  font-size: 0.95rem;
+  word-wrap: break-word; /* Evita que palavras grandes quebrem o balão */
+}
+
+/* 7. Botão de Excluir (Discreto dentro do chat) */
 .delete-feedback-btn {
-  background: #f50505;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 2px 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
-  margin-left: 10px;
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
 .delete-feedback-btn:hover {
-  background: darkred;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Mensagem de Vazio */
+.no-feedbacks {
+  background-color: rgba(32, 44, 51, 0.6); /* Balão central do WA de "As mensagens são criptografadas..." */
+  color: #ffd279;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  align-self: center;
+  width: fit-content;
+  margin: 0 auto;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
 }
 
 /* Animações */
@@ -891,6 +933,7 @@
   }
   .project-feedback-section, .project-feedbacks-list {
     padding: 20px;
+    justify-content: center;
   }
   .star {
     font-size: 1.8rem;

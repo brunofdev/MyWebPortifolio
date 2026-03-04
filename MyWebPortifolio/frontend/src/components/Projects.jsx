@@ -1,7 +1,7 @@
 // Projects.jsx
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import ReactMarkdown from "react-markdown"; 
+import ReactMarkdown from "react-markdown";
 import "../styles/projects.css";
 import Modal from "./Modal";
 
@@ -39,7 +39,7 @@ const Projects = ({ token, userName, userRole }) => {
   // ==========================================
   // EFEITOS (USE EFFECTS)
   // ==========================================
-  
+
   // 1. Carrega os projetos públicos ao iniciar
   useEffect(() => {
     const fetchPublicProjects = async () => {
@@ -159,7 +159,7 @@ const Projects = ({ token, userName, userRole }) => {
         setFeedbackMsg("✅ Feedback enviado com sucesso!");
         setDescricao("");
         setAvaliacao(5);
-        fetchFeedbacks(); 
+        fetchFeedbacks();
       } else {
         setFeedbackMsg("❌ Erro: " + (data.message || "Não foi possível enviar o feedback."));
       }
@@ -182,7 +182,7 @@ const Projects = ({ token, userName, userRole }) => {
       });
 
       if (response.ok) {
-        fetchFeedbacks(); 
+        fetchFeedbacks();
       } else {
         const data = await response.json();
         alert("❌ Erro: " + (data.message || "Não foi possível excluir o feedback."));
@@ -201,7 +201,7 @@ const Projects = ({ token, userName, userRole }) => {
   return (
     <section className="projects">
       <h2>Projetos em Destaque</h2>
-      
+
       {/* Filtro SVG para efeito visual de ruído */}
       <svg width="0" height="0">
         <filter id="static-noise">
@@ -240,16 +240,16 @@ const Projects = ({ token, userName, userRole }) => {
               {/* GALERIA CARROSSEL */}
               {activeProject.galeria && activeProject.galeria.length > 0 && (
                 <div className="carousel-container" onClick={() => setIsLightboxOpen(true)} title="Clique para ampliar">
-                  <img 
-                    src={activeProject.galeria[currentImageIndex].urlImagem} 
-                    alt={`Galeria ${currentImageIndex + 1}`} 
-                    className="carousel-main-image" 
+                  <img
+                    src={activeProject.galeria[currentImageIndex].urlImagem}
+                    alt={`Galeria ${currentImageIndex + 1}`}
+                    className="carousel-main-image"
                   />
-                  
+
                   {activeProject.galeria[currentImageIndex].legenda && (
                     <div className="carousel-legend">{activeProject.galeria[currentImageIndex].legenda}</div>
                   )}
-                  
+
                   {activeProject.galeria.length > 1 && (
                     <>
                       <button className="carousel-btn prev" onClick={prevImage}>‹</button>
@@ -263,15 +263,15 @@ const Projects = ({ token, userName, userRole }) => {
 
               {/* VÍDEO DO PROJETO */}
               {activeProject.video && (
-                <iframe 
-                  width="100%" height="315" src={activeProject.video} title={activeProject.title} 
+                <iframe
+                  width="100%" height="315" src={activeProject.video} title={activeProject.title}
                   frameBorder="0" allowFullScreen
                 ></iframe>
               )}
 
               {/* DESCRIÇÃO E DETALHES TÉCNICOS */}
               <div className="modal-description">
-                
+
                 {/* O TEXTO RENDERIZADO COM MARKDOWN */}
                 <div className="markdown-body">
                   <ReactMarkdown>{activeProject.description}</ReactMarkdown>
@@ -294,7 +294,7 @@ const Projects = ({ token, userName, userRole }) => {
                   <div className="setup-section">
                     <h4>Como rodar e testar o projeto?</h4>
                     {activeProject.setup.obs && <p className="setup-obs">⚠️ {activeProject.setup.obs}</p>}
-                    
+
                     <div className="terminal-box">
                       {activeProject.setup.steps.map((step) => (
                         <div key={step.num} className="step-item">
@@ -314,10 +314,10 @@ const Projects = ({ token, userName, userRole }) => {
               </div>
 
               <hr className="modal-divider" />
-              
+
               {/* FORMULÁRIO DE FEEDBACK DO PROJETO */}
               <div className="project-feedback-section">
-                <h4>Deixe sua avaliação sobre este projeto</h4>
+                <h4>Avalie este projeto</h4>
 
                 {!token ? (
                   <p className="login-prompt">Faça login no sistema para deixar um feedback.</p>
@@ -354,7 +354,7 @@ const Projects = ({ token, userName, userRole }) => {
               </div>
 
               <hr className="modal-divider" />
-              
+
               {/* LISTA DE FEEDBACKS ENVIADOS */}
               <div className="project-feedbacks-list">
                 <h4>Feedbacks sobre este projeto</h4>
@@ -367,20 +367,24 @@ const Projects = ({ token, userName, userRole }) => {
 
                       return (
                         <li key={fb.id}>
+                      
                           <div className="feedback-item">
                             <img src={fotoExibicao} alt={`Foto de ${nomeExibicao}`} className="feedback-user-photo" />
-                            <div className="feedback-content">
+                            <div className="feedback-content2">
                               <div className="project-feedbacklist-header">
                                 <strong className="feedback-user-name">{nomeExibicao} disse:</strong>
-                                <span className="feedback-rating">{'★'.repeat(fb.notaAvaliacao)}</span>
-                                <span className="feedback-date">{new Date(fb.dataDeCriacao).toLocaleString('pt-BR')}</span>
-                                {podeDeletar && (
-                                  <button className="delete-feedback-btn" onClick={() => handleDeleteFeedback(fb.id)}>Excluir</button>
-                                )}
+                                 <span className="feedback-date">{new Date(fb.dataDeCriacao).toLocaleString('pt-BR')}</span>
+
                               </div>
-                              <p className="feedback-comment">{fb.comentario}</p>
+                              <p className="feedback-comment2">{fb.comentario}</p>
+                                 {podeDeletar && (
+                              <button className="delete-feedback-btn" onClick={() => handleDeleteFeedback(fb.id)}>Apagar meu feedback</button>
+                            )}
+
                             </div>
+
                           </div>
+
                         </li>
                       );
                     })}
