@@ -306,7 +306,7 @@ const AuthModal = ({ handleLoginSuccess, onClose }) => {
           <div className="form-scrollable-body">
             {activeTab === "verify" && <VerifyForm formData={formData} handleChange={handleChange} resendTimer={resendTimer} handleResendCode={handleResendCode} />}
             {activeTab === "verify-recovery" && <VerifyRecoveryForm formData={formData} handleChange={handleChange} maskedEmail={maskedEmail} />}
-            {activeTab === "login" && <LoginForm formData={formData} handleChange={handleChange} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} handleTabChange={handleTabChange} />}
+            {activeTab === "login" && <LoginForm formData={formData} handleChange={handleChange} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} handleTabChange={handleTabChange} handleLoginSuccess={handleLoginSuccess} onClose={onClose} />}
             {activeTab === "register" && <RegisterForm formData={formData} handleChange={handleChange} isNameValid={isNameValid} isUserNameValid={isUserNameValid} isPasswordValid={isPasswordValid} isEmailValid={isEmailValid} />}
             {activeTab === "forgot-password" && <ForgotPasswordForm formData={formData} handleChange={handleChange} />}
             {activeTab === "reset-password" && <ResetPasswordForm formData={formData} handleChange={handleChange} isPasswordValid={isPasswordValid} />}

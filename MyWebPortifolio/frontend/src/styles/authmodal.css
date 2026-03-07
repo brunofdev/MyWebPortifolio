@@ -410,6 +410,11 @@
   transform: translateY(-50%);
   color: #48bb78;
 }
+.google-login{
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
 /* ==========================================================================
    8. RESPONSIVIDADE (MOBILE)
