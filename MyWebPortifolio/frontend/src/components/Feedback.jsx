@@ -191,7 +191,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
     setComment("");
     setSubmissionError("");
     setWarning("");
-  }, [token]); 
+  }, [token]);
   // ==========================================
 
   useEffect(() => {
@@ -227,8 +227,8 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
       setSubmissionError("O comentário não pode estar vazio.");
       return;
     }
-    if (comment.trim().length < 15) {
-      setSubmissionError("O comentário deve ter no mínimo 15 caracteres.");
+    if (comment.trim().length < 10) {
+      setSubmissionError("O comentário deve ter no mínimo 10 caracteres.");
       return;
     }
 
@@ -247,7 +247,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
 
     try {
       const response = await fetchWithRetry(
-        `${import.meta.env.VITE_API_URL}/feedback/geral/criar`, 
+        `${import.meta.env.VITE_API_URL}/feedback/geral/criar`,
         {
           method: "POST",
           headers: {
@@ -273,7 +273,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
           setSubmissionError("Servidor indisponível após várias tentativas.");
         } else {
           setSubmissionError(
-            data?.message || "Ocorreu um erro ao enviar o feedback."
+            data?.erro?.message || "Ocorreu um erro ao enviar o feedback."
           );
         }
       }
@@ -330,7 +330,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               </p>
             </div>
           ) : (
-            <form className="feedback-form"onSubmit={handleSubmit}>
+            <form className="feedback-form" onSubmit={handleSubmit}>
               <div className="feedback-stars">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
@@ -349,7 +349,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
                 placeholder="Escreva seu comentário (mínimo 10 caracteres, máximo 500)"
                 value={comment}
                 onChange={handleCommentChange}
-                maxLength={1000}
+                maxLength={500}
                 required
               />
               <div className="instruction-message">
@@ -362,7 +362,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               <button
                 type="submit"
                 className="feedback-submit"
-                disabled={rating === 0 || comment.trim().length < 15 || isLoading}
+                disabled={rating === 0 || comment.trim().length < 10 || isLoading}
               >
                 {isLoading ? (
                   <>
