@@ -32,7 +32,7 @@ const EditProfile = ({ onClose, token }) => {
     linkedin: "",
     bio: "",
   });
-
+ //teste
   // Busca inicial dos dados
   useEffect(() => {
     const carregarPerfil = async () => {
