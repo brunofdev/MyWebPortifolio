@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@tiptap/extension-code-block-lowlight": "^3.21.0",
+    "lowlight": "^3.3.0",
+    "react-markdown": "^10.1.0"
+  }
+}

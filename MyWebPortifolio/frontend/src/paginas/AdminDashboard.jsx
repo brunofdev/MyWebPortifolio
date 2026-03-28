@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MatrixBackground from "../components/MatrixBackground";
 import ManageProjects from "../components/paineladm/ManageProjects";
+import ArticleEditor from "../components/paineladm/ArticleEditor";
 import "../styles/admindashboard.css";
 
 const AdminDashboard = () => {
@@ -29,6 +30,20 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
+  // ==========================================
+  // FUNÇÕES DO EDITOR DE ARTIGOS (Fios na Tomada)
+  // ==========================================
+  const handleSaveArticle = async (articleData) => {
+    // Aqui vai o fetch para o seu Spring Boot no futuro
+    console.log("Rascunho salvo automaticamente:", articleData);
+  };
+
+  const handlePublishArticle = async (articleData) => {
+    // Aqui vai o fetch para publicar
+    console.log("Artigo publicado:", articleData);
+    alert("Artigo gerado com sucesso! Verifique o console do navegador (F12).");
+  };
+
   // Trava de Segurança Extra
   if (!isAuthenticated || userRole !== "ADMIN3") {
     return (
@@ -44,9 +59,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard-wrapper">
       <MatrixBackground />
       
-      {/* =========================================
-          NOVA TOPBAR EXCLUSIVA DO ADMIN
-          ========================================= */}
+      {/* NOVA TOPBAR EXCLUSIVA DO ADMIN */}
       <header className="admin-topbar">
         <div className="topbar-left">
           <span className="admin-brand">⚙️ Painel de Controle</span>
@@ -101,9 +114,11 @@ const AdminDashboard = () => {
 
           {activeModule === "artigos" && (
             <div className="admin-module">
-              <h1>Artigos do Blog</h1>
-              <p>Área reservada para criar publicações técnicas.</p>
-              <div className="placeholder-box">Área do Editor de Textos (Em breve)</div>
+              {/* O Editor renderiza o próprio cabeçalho, então tiramos o h1 e p daqui */}
+              <ArticleEditor 
+                onSave={handleSaveArticle} 
+                onPublish={handlePublishArticle} 
+              />
             </div>
           )}
         </main>
