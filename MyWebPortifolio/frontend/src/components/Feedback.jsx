@@ -349,7 +349,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
                 placeholder="Escreva seu comentário (mínimo 10 caracteres, máximo 500)"
                 value={comment}
                 onChange={handleCommentChange}
-                maxLength={1000}
+                maxLength={500}
                 required
               />
               <div className="instruction-message">
@@ -362,7 +362,7 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
               <button
                 type="submit"
                 className="feedback-submit"
-                disabled={rating === 0 || comment.trim().length < 15 || isLoading}
+                disabled={rating === 0 || comment.trim().length < 10 || isLoading}
               >
                 {isLoading ? (
                   <>
