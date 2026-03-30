@@ -691,9 +691,9 @@ const MetaBar = React.memo(({
                 <label className="ae-label">Status</label>
                 <select className="ae-select" value={formData.status}
                   onChange={(e) => setField("status")(e.target.value)}>
-                  <option>Rascunho</option>
-                  <option>Agendado</option>
-                  <option>Publicado</option>
+                  <option>RASCUNHO</option>
+                  <option>AGENDADO</option>
+                  <option>PUBLICADO</option>
                 </select>
               </div>
               <div className="ae-field ae-field--row">

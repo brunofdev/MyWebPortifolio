@@ -45,6 +45,9 @@ const ManageArticles = () => {
 
   const handlePublish = async (payload) => {
     setLoading(true);
+    // Aqui você une os dados do formulário com o ID necessário para o PUT
+    const finalPayload = isEditing ? { ...payload, id: editData.id } : payload;
+    
     showMessage("success", "⏳ Enviando artigo para o servidor...");
 
     try {
@@ -58,7 +61,8 @@ const ManageArticles = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        // 👉 CORREÇÃO: Enviamos o finalPayload (com o ID) e não o payload original
+        body: JSON.stringify(finalPayload), 
       });
 
       let apiData = {};
@@ -68,17 +72,15 @@ const ManageArticles = () => {
       }
 
       if (response.ok) {
-        showMessage("success", "🎉 Artigo salvo com sucesso!");
+        showMessage("success", `🎉 Artigo ${isEditing ? 'atualizado' : 'criado'} com sucesso!`);
         resetForm();
         fetchArticles();
       } else {
-        const errorMsg = apiData.message || apiData.error || `Erro HTTP ${response.status}: O Java recusou.`;
+        const errorMsg = apiData.message || apiData.error || `Erro HTTP ${response.status}`;
         showMessage("error", `❌ ${errorMsg}`);
-        throw new Error(errorMsg); 
       }
     } catch (error) {
       showMessage("error", "🌐 Falha na comunicação: " + error.message);
-      throw error; 
     } finally {
       setLoading(false);
     }

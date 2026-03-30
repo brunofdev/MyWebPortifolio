@@ -6,7 +6,13 @@
   padding: 0 12px;
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
-
+.kc-header {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #48bb78;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
 /* ─── Viewport ────────────────────────────────────────────────────────────── */
 .kc-viewport {
   position: relative;

@@ -96,7 +96,11 @@ const ArticleCarousel = () => {
   if (articles.length === 0) return null;
 
   return (
+
     <div className="kc-wrapper">
+      <div className="kc-header">
+        Ultimos artigos publicados
+      </div>
       <div
         className="kc-viewport"
         onMouseEnter={() => setIsHovered(true)}

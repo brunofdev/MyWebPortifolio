@@ -451,7 +451,7 @@ export function useArticleEditor({
     slug:       initialData.slug       ?? "",
     tags:       initialData.tags       ?? [],
     coverImage: initialData.coverImage ?? "",
-    status:     initialData.status     ?? "Rascunho",
+    status:     initialData.status     ?? "RASCUNHO",
     fontFamily: initialData.fontFamily ?? EDITOR_FONTS[0].value,
   });
 
@@ -487,7 +487,7 @@ export function useArticleEditor({
       Placeholder.configure({ placeholder: "Comece a escrever seu artigo aqui…" }),
       CodeBlockLowlight.configure({ lowlight }),
     ],
-    content:  initialData.content ?? "",
+    content:  initialData.contentHtml ?? "",
     onUpdate: () => { if (isMountedRef.current) scheduleAutoSave(); },
   });
 
