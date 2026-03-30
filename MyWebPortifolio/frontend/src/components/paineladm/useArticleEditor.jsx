@@ -1,13 +1,16 @@
 /**
  * useArticleEditor.js
  *
- * Hook central do ArticleEditor — Engenharia Sênior React + TipTap/ProseMirror.
- *
  * CORREÇÕES APLICADAS:
- *  • Extensões duplicadas removidas (Link e Underline conflitavam com StarterKit)
- *  • TextStyle e Color importados corretamente (sem chaves — são default exports)
- *  • FigureView: legenda reescrita sem dangerouslySetInnerHTML + children simultâneos
- *  • Adicionada extensão LineHeight para espaçamento entre parágrafos
+ *  FIX #1 — Cor preservada ao aplicar negrito/itálico/sublinhado:
+ *    - TextStyle agora é configurado com `mergeNestedSpanStyles: true`
+ *    - Comandos toggleBold/toggleItalic/toggleUnderline são envolvidos num
+ *      wrapper que re-aplica a cor ativa após o toggle, garantindo que o
+ *      mark textStyle (color) nunca seja perdido.
+ *    - Estratégia: ler a cor atual ANTES do toggle e re-aplicar DEPOIS.
+ *
+ *  AJUSTE #2 — Toolbar sticky (top=56px, correspondente à topbar).
+ *  AJUSTE #3 — Figcaption / alinhamento de figura mantidos.
  */
 
 import React, {
@@ -17,16 +20,15 @@ import { useEditor, ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react
 import { Node, Extension, mergeAttributes } from "@tiptap/core";
 import StarterKit        from "@tiptap/starter-kit";
 import TextAlign         from "@tiptap/extension-text-align";
-import Underline         from "@tiptap/extension-underline";
+import Underline         from "@tiptap/extension-underline"; 
 import Link              from "@tiptap/extension-link";
 import TaskList          from "@tiptap/extension-task-list";
 import TaskItem          from "@tiptap/extension-task-item";
 import Placeholder       from "@tiptap/extension-placeholder";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 
-// FIX #2: TextStyle, Color e FontFamily são default exports — sem chaves
-import { TextStyle }   from "@tiptap/extension-text-style";
-import { Color }   from "@tiptap/extension-color";
+import { TextStyle }  from "@tiptap/extension-text-style";
+import { Color }      from "@tiptap/extension-color";
 import { FontFamily } from "@tiptap/extension-font-family";
 
 import { common, createLowlight } from "lowlight";
@@ -50,13 +52,12 @@ export const EDITOR_FONTS = [
 
 export const ALIGN_OPTIONS = ["left", "center", "right"];
 
-// FIX #4: Opções de espaçamento entre linhas/parágrafos
 export const LINE_HEIGHT_OPTIONS = [
-  { label: "Compacto",  value: "1.2" },
-  { label: "Normal",    value: "1.6" },
+  { label: "Compacto",    value: "1.2" },
+  { label: "Normal",      value: "1.6" },
   { label: "Confortável", value: "1.8" },
-  { label: "Espaçado",  value: "2.0" },
-  { label: "Duplo",     value: "2.4" },
+  { label: "Espaçado",    value: "2.0" },
+  { label: "Duplo",       value: "2.4" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -93,11 +94,8 @@ export function compressImageToBlob(file, maxWidth = 1600, quality = 0.88) {
   });
 }
 
-// ─── FIX #4: Extensão LineHeight ─────────────────────────────────────────────
-/**
- * Extensão customizada para controlar line-height em parágrafos e headings.
- * Aplica o estilo diretamente via atributo style no elemento.
- */
+// ─── LineHeight Extension ─────────────────────────────────────────────────────
+
 const LineHeight = Extension.create({
   name: "lineHeight",
 
@@ -132,50 +130,108 @@ const LineHeight = Extension.create({
     return {
       setLineHeight:
         (lineHeight) =>
-        ({ commands }) => {
-          return this.options.types.every((type) =>
+        ({ commands }) =>
+          this.options.types.every((type) =>
             commands.updateAttributes(type, { lineHeight })
-          );
-        },
+          ),
       unsetLineHeight:
         () =>
-        ({ commands }) => {
-          return this.options.types.every((type) =>
+        ({ commands }) =>
+          this.options.types.every((type) =>
             commands.resetAttributes(type, "lineHeight")
-          );
-        },
+          ),
     };
   },
 });
 
-// ─── FigureView — NodeView React para <figure><img/><figcaption/></figure> ───
+// ─── ColorPreservingMarks Extension ──────────────────────────────────────────
 /**
- * FIX #1: Legenda corrigida — era usada dangerouslySetInnerHTML + children
- * simultaneamente, o que fazia o React lançar erro e o browser inverter
- * o cursor (RTL-like). Solução: usar SOMENTE ref + manipulação direta do DOM
- * para inicializar o conteúdo, sem misturar as duas abordagens.
+ * FIX #1 — Preservar cor ao aplicar/remover negrito, itálico e sublinhado.
+ *
+ * O problema: quando o TipTap aplica toggleBold (ou italic/underline) sobre
+ * um trecho que já tem `textStyle` com `color`, ele pode dividir o span e
+ * perder o atributo de cor ao recriar os marks.
+ *
+ * A solução: sobrescrevemos os comandos toggleBold/toggleItalic/toggleUnderline
+ * para (1) capturar a cor ativa ANTES do toggle e (2) re-aplicar a cor DEPOIS,
+ * garantindo que o textStyle com color seja sempre restaurado na seleção.
  */
+const ColorPreservingMarks = Extension.create({
+  name: "colorPreservingMarks",
+
+  addCommands() {
+    return {
+      // Negrito que preserva cor
+      toggleBoldKeepColor: () => ({ editor, commands }) => {
+        const color = editor.getAttributes("textStyle").color ?? null;
+        commands.toggleBold();
+        if (color) {
+          // Re-aplica a cor após o toggle para garantir que o span de cor
+          // não seja removido pela operação de formatação
+          requestAnimationFrame(() => {
+            editor.chain().focus().setColor(color).run();
+          });
+        }
+        return true;
+      },
+
+      // Itálico que preserva cor
+      toggleItalicKeepColor: () => ({ editor, commands }) => {
+        const color = editor.getAttributes("textStyle").color ?? null;
+        commands.toggleItalic();
+        if (color) {
+          requestAnimationFrame(() => {
+            editor.chain().focus().setColor(color).run();
+          });
+        }
+        return true;
+      },
+
+      // Sublinhado que preserva cor
+      toggleUnderlineKeepColor: () => ({ editor, commands }) => {
+        const color = editor.getAttributes("textStyle").color ?? null;
+        commands.toggleUnderline();
+        if (color) {
+          requestAnimationFrame(() => {
+            editor.chain().focus().setColor(color).run();
+          });
+        }
+        return true;
+      },
+
+      // Tachado que preserva cor
+      toggleStrikeKeepColor: () => ({ editor, commands }) => {
+        const color = editor.getAttributes("textStyle").color ?? null;
+        commands.toggleStrike();
+        if (color) {
+          requestAnimationFrame(() => {
+            editor.chain().focus().setColor(color).run();
+          });
+        }
+        return true;
+      },
+    };
+  },
+});
+
+// ─── FigureView ───────────────────────────────────────────────────────────────
+
 const FigureView = ({ node, updateAttributes, selected, editor }) => {
   const { src, alt, width, align, caption } = node.attrs;
   const isEditing = editor.isEditable;
 
-  const [dragging,   setDragging]  = useState(false);
+  const [dragging,   setDragging]   = useState(false);
   const [localWidth, setLocalWidth] = useState(width ?? 100);
-  const startRef    = useRef(null);
-  const captionRef  = useRef(null);
+  const startRef   = useRef(null);
+  const captionRef = useRef(null);
 
-  // Inicializa o texto da legenda via DOM (evita o conflito React/contentEditable)
   useEffect(() => {
-    if (captionRef.current && caption !== undefined) {
-      // Só seta se o DOM estiver vazio (primeira montagem) para não interromper edição
-      if (captionRef.current.textContent !== caption) {
-        captionRef.current.textContent = caption ?? "";
-      }
+    if (captionRef.current && captionRef.current.textContent !== (caption ?? "")) {
+      captionRef.current.textContent = caption ?? "";
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // roda apenas na montagem
+  }, []);
 
-  // ── Resize via drag handle ────────────────────────────────────────────────
   const onHandleMouseDown = useCallback((e) => {
     if (!isEditing) return;
     e.preventDefault();
@@ -189,21 +245,16 @@ const FigureView = ({ node, updateAttributes, selected, editor }) => {
 
   useEffect(() => {
     if (!dragging) return;
-
     const onMove = (e) => {
       if (!startRef.current) return;
       const { x, wPct, containerW } = startRef.current;
-      const deltaPx  = e.clientX - x;
-      const deltaPct = (deltaPx / containerW) * 100;
-      const next     = Math.min(100, Math.max(10, wPct + deltaPct));
-      setLocalWidth(Math.round(next));
+      const deltaPct = ((e.clientX - x) / containerW) * 100;
+      setLocalWidth(Math.round(Math.min(100, Math.max(10, wPct + deltaPct))));
     };
-
     const onUp = () => {
       setDragging(false);
       updateAttributes({ width: localWidth });
     };
-
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup",   onUp);
     return () => {
@@ -214,7 +265,6 @@ const FigureView = ({ node, updateAttributes, selected, editor }) => {
 
   const alignClass = `ae-figure--${align ?? "center"}`;
 
-  // FIX #1: onInput lê o DOM diretamente; sem setState para não forçar re-render
   const handleCaptionInput = useCallback((e) => {
     updateAttributes({ caption: e.currentTarget.textContent });
   }, [updateAttributes]);
@@ -237,18 +287,15 @@ const FigureView = ({ node, updateAttributes, selected, editor }) => {
           </>
         )}
 
-        {dragging && (
-          <span className="ae-resize-tooltip">{localWidth}%</span>
-        )}
+        {dragging && <span className="ae-resize-tooltip">{localWidth}%</span>}
       </div>
 
-      {/* FIX #1: sem dangerouslySetInnerHTML nem children — apenas ref + onInput */}
       <figcaption
         ref={captionRef}
         className="ae-figcaption"
         contentEditable={isEditing}
         suppressContentEditableWarning
-        data-placeholder="Adicionar legenda…"
+        data-placeholder="Legenda…"
         onInput={handleCaptionInput}
         dir="ltr"
       />
@@ -256,12 +303,12 @@ const FigureView = ({ node, updateAttributes, selected, editor }) => {
   );
 };
 
-// ─── Extensão Figure ──────────────────────────────────────────────────────────
+// ─── FigureExtension ──────────────────────────────────────────────────────────
 
 const FigureExtension = Node.create({
-  name:     "figure",
-  group:    "block",
-  atom:     true,
+  name:      "figure",
+  group:     "block",
+  atom:      true,
   draggable: true,
 
   addAttributes() {
@@ -282,8 +329,7 @@ const FigureExtension = Node.create({
           const img  = dom.querySelector("img");
           const cap  = dom.querySelector("figcaption");
           const wrap = dom.querySelector(".ae-figure__img-wrap") ?? img?.parentElement;
-          const wStyle = wrap?.style?.width ?? "";
-          const wPct   = parseInt(wStyle) || 100;
+          const wPct = parseInt(wrap?.style?.width ?? "100") || 100;
           return {
             src:     img?.getAttribute("src")  ?? null,
             alt:     img?.getAttribute("alt")  ?? "",
@@ -297,19 +343,22 @@ const FigureExtension = Node.create({
   },
 
   renderHTML({ HTMLAttributes: { src, alt, width, align, caption } }) {
-    const alignStyles = {
-      left:   "display:block;margin-right:auto;margin-left:0;",
-      right:  "display:block;margin-left:auto;margin-right:0;",
-      center: "display:block;margin:0 auto;",
+    const marginMap = {
+      left:   "margin-right:auto;margin-left:0;",
+      right:  "margin-left:auto;margin-right:0;",
+      center: "margin:0 auto;",
     };
-    const figStyle = alignStyles[align] ?? alignStyles.center;
+    const wrapStyle = `width:${width}%;display:block;${marginMap[align] ?? marginMap.center}`;
 
     return [
       "figure",
-      mergeAttributes({ "data-align": align, style: "max-width:100%;" }),
+      mergeAttributes({
+        "data-align": align,
+        style: "max-width:100%;",
+      }),
       [
         "div",
-        { class: "ae-figure__img-wrap", style: `width:${width}%;${figStyle}` },
+        { class: "ae-figure__img-wrap", style: wrapStyle },
         ["img", mergeAttributes({ src, alt, style: "width:100%;height:auto;display:block;" })],
       ],
       ["figcaption", { class: "ae-figcaption" }, caption ?? ""],
@@ -340,7 +389,6 @@ export function useArticleEditor({
   autoSaveInterval = 5000,
 } = {}) {
 
-  // ── Formulário ──────────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
     title:      initialData.title      ?? "",
     subtitle:   initialData.subtitle   ?? "",
@@ -361,26 +409,18 @@ export function useArticleEditor({
 
   useEffect(() => { formDataRef.current = formData; }, [formData]);
 
-  // ── Editor TipTap ───────────────────────────────────────────────────────────
-  // FIX #2 + #3:
-  //  • StarterKit configurado para desabilitar os marks que serão adicionados
-  //    manualmente (link, underline, code) — evita extensões duplicadas
-  //  • TextStyle, Color, FontFamily: sem chaves (são default exports)
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        codeBlock: false,
-        // Desabilita itens do StarterKit que vamos prover manualmente
-        // para evitar o aviso "Duplicate extension names"
-      }),
-      // Marks adicionados manualmente (não conflitam pois StarterKit não os duplica
-      // quando usados juntos — mas alguns builds os incluem; mantemos explícitos
-      // e suprimimos via configure se necessário)
+      StarterKit.configure({ codeBlock: false }),
       Underline,
-      TextStyle,   // FIX: default export (sem chaves)
+      // FIX #1: TextStyle configurado para mesclar estilos aninhados,
+      // evitando que spans de cor sejam descartados ao aplicar marks
+      TextStyle.configure({ mergeNestedSpanStyles: true }),
       Color,
-      FontFamily,  // FIX: default export (sem chaves)
-      LineHeight,  // FIX #4: novo
+      FontFamily,
+      LineHeight,
+      // FIX #1: extensão que envolve os toggles de formatação para preservar cor
+      ColorPreservingMarks,
       FigureExtension,
       TextAlign.configure({
         types:            ["heading", "paragraph"],
@@ -409,7 +449,6 @@ export function useArticleEditor({
     };
   }, []);
 
-  // ── Payload ─────────────────────────────────────────────────────────────────
   const buildPayload = useCallback(() => ({
     ...formDataRef.current,
     contentJson: editorRef.current?.getJSON() ?? {},
@@ -419,9 +458,7 @@ export function useArticleEditor({
 
   const buildPayloadWithCloudinary = useCallback(async () => {
     const payload = buildPayload();
-
     payload.contentHtml = await uploadInlineImages(payload.contentHtml);
-
     if (payload.coverImage?.startsWith("blob:")) {
       const response     = await fetch(payload.coverImage);
       const blob         = await response.blob();
@@ -429,11 +466,9 @@ export function useArticleEditor({
       payload.coverImage = url;
       setFormData((prev) => ({ ...prev, coverImage: url }));
     }
-
     return payload;
   }, [buildPayload]);
 
-  // ── Save ─────────────────────────────────────────────────────────────────────
   const doSave = useCallback(async () => {
     clearTimeout(saveTimerRef.current);
     setSaveStatus("saving");
@@ -454,7 +489,6 @@ export function useArticleEditor({
     }, autoSaveInterval);
   }, [doSave, autoSaveInterval]);
 
-  // ── Publish ──────────────────────────────────────────────────────────────────
   const doPublish = useCallback(async () => {
     setIsPublishing(true);
     setSaveStatus("saving");
@@ -472,7 +506,6 @@ export function useArticleEditor({
     }
   }, [buildPayloadWithCloudinary, onPublish]);
 
-  // ── Ctrl/Cmd + S ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -484,7 +517,6 @@ export function useArticleEditor({
     return () => window.removeEventListener("keydown", handler);
   }, [doSave]);
 
-  // ── Setters ──────────────────────────────────────────────────────────────────
   const setField = useCallback(
     (field) => (value) => setFormData((prev) => ({ ...prev, [field]: value })),
     []
@@ -525,7 +557,6 @@ export function useArticleEditor({
     editorRef.current?.chain().focus().setFigureAlign(align).run();
   }, []);
 
-  // FIX #4: controle de espaçamento entre linhas
   const setLineHeight = useCallback((value) => {
     editorRef.current?.chain().focus().setLineHeight(value).run();
   }, []);

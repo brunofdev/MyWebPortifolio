@@ -2,14 +2,11 @@
  * ArticleEditor.jsx
  *
  * CORREÇÕES APLICADAS:
- *  1. Legenda (figcaption) — sem texto invertido: removido conflito entre
- *     dangerouslySetInnerHTML e children no mesmo elemento contentEditable.
- *  2. Cor do texto — toolbar de cor funcional (TextStyle corretamente importado).
- *  3. Extensões duplicadas — Link/Underline não duplicam mais (aviso removido).
- *  4. Espaçamento entre parágrafos — nova ferramenta LineHeight na toolbar.
- *  5. Layout — metadados movidos para CIMA do editor (row → column), sidebar
- *     vira um painel colapsável horizontal em cima da área de escrita,
- *     aproveitando toda a largura da tela para o corpo do artigo.
+ *  FIX #1 — Negrito/itálico/sublinhado/tachado agora usam os comandos
+ *            toggleBoldKeepColor / toggleItalicKeepColor / etc., que
+ *            preservam a cor do textStyle após o toggle.
+ *  FIX #2 — Toolbar sticky com top: 56px (altura da topbar).
+ *  FIX #3 — CSS refatorado (ver articleeditor.css).
  */
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
@@ -81,7 +78,6 @@ const Icons = {
   Font:         () => <Icon d={["M4 7V4h16v3","M9 20h6","M12 4v16"]} />,
   ChevronDown:  () => <Icon d="M6 9l6 6 6-6" />,
   ChevronUp:    () => <Icon d="M18 15l-6-6-6 6" />,
-  // FIX #4: ícone de espaçamento entre linhas
   LineHeight:   () => (
     <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 5h18M3 19h18M8 9l-4 3 4 3M16 9l4 3-4 3" />
@@ -210,7 +206,7 @@ const FontPicker = React.memo(({ currentFont, onChange }) => {
   );
 });
 
-// ─── FIX #4: Line Height Picker ───────────────────────────────────────────────
+// ─── Line Height Picker ───────────────────────────────────────────────────────
 
 const LineHeightPicker = React.memo(({ currentLineHeight, onChange }) => {
   const [open, setOpen] = useState(false);
@@ -357,14 +353,10 @@ const Toolbar = React.memo(({
         alignRight:    e.isActive({ textAlign: "right" }),
         alignJustify:  e.isActive({ textAlign: "justify" }),
         figureActive:  e.isActive("figure"),
-        figureLeft:    e.isActive("figure", { align: "left" }),
-        figureCenter:  e.isActive("figure", { align: "center" }),
-        figureRight:   e.isActive("figure", { align: "right" }),
+        figureAlign:   e.getAttributes("figure").align ?? "center",
         canUndo:       e.can().undo(),
         canRedo:       e.can().redo(),
-        // FIX #2: leitura correta do atributo de cor via textStyle
         color:         e.getAttributes("textStyle").color ?? null,
-        // FIX #4: linha corrente de espaçamento
         lineHeight:    e.getAttributes("paragraph").lineHeight
                     ?? e.getAttributes("heading").lineHeight
                     ?? "1.6",
@@ -396,7 +388,6 @@ const Toolbar = React.memo(({
     if (src) editor.chain().focus().insertFigure({ src, alt, width: 100, align: "center", caption: "" }).run();
   };
 
-  // FIX #2: aplica cor — agora que TextStyle está corretamente registrado, funciona
   const handleColorApply = useCallback((c) => {
     editor.chain().focus().setColor(c).run();
     setShowColorPicker(false);
@@ -409,127 +400,130 @@ const Toolbar = React.memo(({
 
   return (
     <>
-      <div className="ae-toolbar" role="toolbar" aria-label="Ferramentas de formatação">
+      {/* FIX #2: wrapper sticky — top=56px para compensar a topbar fixa */}
+      <div className="ae-toolbar-sticky">
+        <div className="ae-toolbar" role="toolbar" aria-label="Ferramentas de formatação">
 
-        {/* Fonte */}
-        <div className="ae-toolbar__group">
-          <FontPicker currentFont={currentFont} onChange={onFontChange} />
-        </div>
+          {/* Fonte */}
+          <div className="ae-toolbar__group">
+            <FontPicker currentFont={currentFont} onChange={onFontChange} />
+          </div>
 
-        {/* FIX #4: Espaçamento entre linhas */}
-        <div className="ae-toolbar__group">
-          <LineHeightPicker
-            currentLineHeight={s.lineHeight}
-            onChange={onSetLineHeight}
-          />
-        </div>
-
-        {/* Headings */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={s.h1} label="H1" title="Título 1"
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><Icons.H1 /></ToolBtn>
-          <ToolBtn active={s.h2} label="H2" title="Título 2"
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Icons.H2 /></ToolBtn>
-          <ToolBtn active={s.h3} label="H3" title="Título 3"
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}><Icons.H3 /></ToolBtn>
-          <ToolBtn active={s.h4} label="H4" title="Título 4"
-            onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}><Icons.H4 /></ToolBtn>
-        </div>
-
-        {/* Formatação inline */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={s.bold}      label="Negrito"
-            onClick={() => editor.chain().focus().toggleBold().run()}><Icons.Bold /></ToolBtn>
-          <ToolBtn active={s.italic}    label="Itálico"
-            onClick={() => editor.chain().focus().toggleItalic().run()}><Icons.Italic /></ToolBtn>
-          <ToolBtn active={s.underline} label="Sublinhado"
-            onClick={() => editor.chain().focus().toggleUnderline().run()}><Icons.Underline /></ToolBtn>
-          <ToolBtn active={s.strike}    label="Tachado"
-            onClick={() => editor.chain().focus().toggleStrike().run()}><Icons.Strike /></ToolBtn>
-          <ToolBtn active={s.code}      label="Código inline"
-            onClick={() => editor.chain().focus().toggleCode().run()}><Icons.Code /></ToolBtn>
-        </div>
-
-        {/* FIX #2: Cor do texto — agora funcional */}
-        <div className="ae-toolbar__group" style={{ position: "relative" }}>
-          <ColorBtn currentColor={s.color} onClick={() => setShowColorPicker((v) => !v)} />
-          {showColorPicker && (
-            <ColorPicker
-              currentColor={s.color}
-              onColor={handleColorApply}
-              onRemove={handleColorRemove}
-              onClose={() => setShowColorPicker(false)}
+          {/* Espaçamento entre linhas */}
+          <div className="ae-toolbar__group">
+            <LineHeightPicker
+              currentLineHeight={s.lineHeight}
+              onChange={onSetLineHeight}
             />
-          )}
-        </div>
+          </div>
 
-        {/* Alinhamento — texto OU figura */}
-        <div className="ae-toolbar__group">
-          <ToolBtn
-            active={s.figureActive ? s.figureLeft : s.alignLeft}
-            label="Alinhar à esquerda"
-            onClick={() => s.figureActive
-              ? onSetFigureAlign("left")
-              : editor.chain().focus().setTextAlign("left").run()
-            }><Icons.AlignLeft /></ToolBtn>
-          <ToolBtn
-            active={s.figureActive ? s.figureCenter : s.alignCenter}
-            label="Centralizar"
-            onClick={() => s.figureActive
-              ? onSetFigureAlign("center")
-              : editor.chain().focus().setTextAlign("center").run()
-            }><Icons.AlignCenter /></ToolBtn>
-          <ToolBtn
-            active={s.figureActive ? s.figureRight : s.alignRight}
-            label="Alinhar à direita"
-            onClick={() => s.figureActive
-              ? onSetFigureAlign("right")
-              : editor.chain().focus().setTextAlign("right").run()
-            }><Icons.AlignRight /></ToolBtn>
-          <ToolBtn
-            active={s.alignJustify}
-            disabled={s.figureActive}
-            label="Justificar"
-            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-          ><Icons.AlignJustify /></ToolBtn>
-        </div>
+          {/* Headings */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={s.h1} label="H1" title="Título 1"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><Icons.H1 /></ToolBtn>
+            <ToolBtn active={s.h2} label="H2" title="Título 2"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Icons.H2 /></ToolBtn>
+            <ToolBtn active={s.h3} label="H3" title="Título 3"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}><Icons.H3 /></ToolBtn>
+            <ToolBtn active={s.h4} label="H4" title="Título 4"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}><Icons.H4 /></ToolBtn>
+          </div>
 
-        {/* Listas */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={s.bulletList}  label="Lista"
-            onClick={() => editor.chain().focus().toggleBulletList().run()}><Icons.ListUl /></ToolBtn>
-          <ToolBtn active={s.orderedList} label="Lista numerada"
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}><Icons.ListOl /></ToolBtn>
-          <ToolBtn active={s.taskList}    label="Checklist"
-            onClick={() => editor.chain().focus().toggleTaskList().run()}><Icons.CheckSquare /></ToolBtn>
-        </div>
+          {/* FIX #1: Formatação inline — usa comandos *KeepColor para preservar cor */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={s.bold} label="Negrito"
+              onClick={() => editor.chain().focus().toggleBoldKeepColor().run()}><Icons.Bold /></ToolBtn>
+            <ToolBtn active={s.italic} label="Itálico"
+              onClick={() => editor.chain().focus().toggleItalicKeepColor().run()}><Icons.Italic /></ToolBtn>
+            <ToolBtn active={s.underline} label="Sublinhado"
+              onClick={() => editor.chain().focus().toggleUnderlineKeepColor().run()}><Icons.Underline /></ToolBtn>
+            <ToolBtn active={s.strike} label="Tachado"
+              onClick={() => editor.chain().focus().toggleStrikeKeepColor().run()}><Icons.Strike /></ToolBtn>
+            <ToolBtn active={s.code} label="Código inline"
+              onClick={() => editor.chain().focus().toggleCode().run()}><Icons.Code /></ToolBtn>
+          </div>
 
-        {/* Blocos */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={s.blockquote} label="Citação"
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}><Icons.Quote /></ToolBtn>
-          <ToolBtn active={false}        label="Separador horizontal"
-            onClick={() => editor.chain().focus().setHorizontalRule().run()}><Icons.Minus /></ToolBtn>
-          <ToolBtn active={s.codeBlock}  label="Bloco de código"
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}><Icons.Code /></ToolBtn>
-        </div>
+          {/* Cor do texto */}
+          <div className="ae-toolbar__group" style={{ position: "relative" }}>
+            <ColorBtn currentColor={s.color} onClick={() => setShowColorPicker((v) => !v)} />
+            {showColorPicker && (
+              <ColorPicker
+                currentColor={s.color}
+                onColor={handleColorApply}
+                onRemove={handleColorRemove}
+                onClose={() => setShowColorPicker(false)}
+              />
+            )}
+          </div>
 
-        {/* Inserir */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={s.link} label="Link"
-            onClick={() => setShowLinkModal(true)}><Icons.Link /></ToolBtn>
-          <ToolBtn active={false} label="Imagem (upload)"
-            onClick={triggerImageUpload}><Icons.Image /></ToolBtn>
-          <ToolBtn active={false} label="Imagem (URL)"
-            onClick={() => setShowImageUrlModal(true)}><Icons.Image /></ToolBtn>
-        </div>
+          {/* Alinhamento — texto OU figura */}
+          <div className="ae-toolbar__group">
+            <ToolBtn
+              active={s.figureActive ? s.figureAlign === "left"   : s.alignLeft}
+              label="Alinhar à esquerda"
+              onClick={() => s.figureActive
+                ? onSetFigureAlign("left")
+                : editor.chain().focus().setTextAlign("left").run()
+              }><Icons.AlignLeft /></ToolBtn>
+            <ToolBtn
+              active={s.figureActive ? s.figureAlign === "center" : s.alignCenter}
+              label="Centralizar"
+              onClick={() => s.figureActive
+                ? onSetFigureAlign("center")
+                : editor.chain().focus().setTextAlign("center").run()
+              }><Icons.AlignCenter /></ToolBtn>
+            <ToolBtn
+              active={s.figureActive ? s.figureAlign === "right"  : s.alignRight}
+              label="Alinhar à direita"
+              onClick={() => s.figureActive
+                ? onSetFigureAlign("right")
+                : editor.chain().focus().setTextAlign("right").run()
+              }><Icons.AlignRight /></ToolBtn>
+            <ToolBtn
+              active={s.alignJustify}
+              disabled={s.figureActive}
+              label="Justificar"
+              onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            ><Icons.AlignJustify /></ToolBtn>
+          </div>
 
-        {/* Histórico */}
-        <div className="ae-toolbar__group">
-          <ToolBtn active={false} disabled={!s.canUndo} label="Desfazer"
-            onClick={() => editor.chain().focus().undo().run()}><Icons.Undo /></ToolBtn>
-          <ToolBtn active={false} disabled={!s.canRedo} label="Refazer"
-            onClick={() => editor.chain().focus().redo().run()}><Icons.Redo /></ToolBtn>
+          {/* Listas */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={s.bulletList}  label="Lista"
+              onClick={() => editor.chain().focus().toggleBulletList().run()}><Icons.ListUl /></ToolBtn>
+            <ToolBtn active={s.orderedList} label="Lista numerada"
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}><Icons.ListOl /></ToolBtn>
+            <ToolBtn active={s.taskList}    label="Checklist"
+              onClick={() => editor.chain().focus().toggleTaskList().run()}><Icons.CheckSquare /></ToolBtn>
+          </div>
+
+          {/* Blocos */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={s.blockquote} label="Citação"
+              onClick={() => editor.chain().focus().toggleBlockquote().run()}><Icons.Quote /></ToolBtn>
+            <ToolBtn active={false}        label="Separador horizontal"
+              onClick={() => editor.chain().focus().setHorizontalRule().run()}><Icons.Minus /></ToolBtn>
+            <ToolBtn active={s.codeBlock}  label="Bloco de código"
+              onClick={() => editor.chain().focus().toggleCodeBlock().run()}><Icons.Code /></ToolBtn>
+          </div>
+
+          {/* Inserir */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={s.link} label="Link"
+              onClick={() => setShowLinkModal(true)}><Icons.Link /></ToolBtn>
+            <ToolBtn active={false} label="Imagem (upload)"
+              onClick={triggerImageUpload}><Icons.Image /></ToolBtn>
+            <ToolBtn active={false} label="Imagem (URL)"
+              onClick={() => setShowImageUrlModal(true)}><Icons.Image /></ToolBtn>
+          </div>
+
+          {/* Histórico */}
+          <div className="ae-toolbar__group">
+            <ToolBtn active={false} disabled={!s.canUndo} label="Desfazer"
+              onClick={() => editor.chain().focus().undo().run()}><Icons.Undo /></ToolBtn>
+            <ToolBtn active={false} disabled={!s.canRedo} label="Refazer"
+              onClick={() => editor.chain().focus().redo().run()}><Icons.Redo /></ToolBtn>
+          </div>
         </div>
       </div>
 
@@ -643,12 +637,8 @@ const CoverUpload = React.memo(({ src, isPublishing, onUpload, onRemove }) => {
   );
 });
 
-// ─── FIX #5: MetaBar — painel de metadados compacto em linha ─────────────────
-/**
- * Substitui o sidebar lateral por um painel colapsável horizontal
- * posicionado ACIMA do editor. Recolhido, ocupa apenas ~48px de altura;
- * expandido, mostra todos os campos em um grid de 2 colunas.
- */
+// ─── MetaBar ─────────────────────────────────────────────────────────────────
+
 const MetaBar = React.memo(({
   formData,
   isPublishing,
@@ -660,12 +650,10 @@ const MetaBar = React.memo(({
 
   return (
     <div className={`ae-metabar${open ? " ae-metabar--open" : ""}`}>
-      {/* Cabeçalho sempre visível */}
       <div className="ae-metabar__header" onClick={() => setOpen((v) => !v)}>
         <div className="ae-metabar__header-left">
           <Icons.Settings />
           <span className="ae-metabar__title">Metadados do artigo</span>
-          {/* Indicadores rápidos quando fechado */}
           {!open && (
             <div className="ae-metabar__pills">
               <span className={`ae-pill ae-pill--${formData.status.toLowerCase()}`}>
@@ -695,12 +683,9 @@ const MetaBar = React.memo(({
         </button>
       </div>
 
-      {/* Conteúdo expansível */}
       {open && (
         <div className="ae-metabar__body">
           <div className="ae-metabar__grid">
-
-            {/* Coluna 1 */}
             <div className="ae-metabar__col">
               <div className="ae-field ae-field--row">
                 <label className="ae-label">Status</label>
@@ -711,7 +696,6 @@ const MetaBar = React.memo(({
                   <option>Publicado</option>
                 </select>
               </div>
-
               <div className="ae-field ae-field--row">
                 <label className="ae-label">Slug (URL)</label>
                 <div className="ae-slug-field">
@@ -721,14 +705,11 @@ const MetaBar = React.memo(({
                     placeholder="meu-artigo" spellCheck={false} />
                 </div>
               </div>
-
               <div className="ae-field ae-field--row">
                 <label className="ae-label">Tags</label>
                 <TagInput tags={formData.tags} onChange={setField("tags")} />
               </div>
             </div>
-
-            {/* Coluna 2 — Capa */}
             <div className="ae-metabar__col">
               <div className="ae-field">
                 <label className="ae-label">Imagem de Capa</label>
@@ -740,7 +721,6 @@ const MetaBar = React.memo(({
                 />
               </div>
             </div>
-
           </div>
         </div>
       )}
@@ -814,7 +794,7 @@ export default function ArticleEditor({
     handleCoverRemove,
     handleEditorImageUpload,
     setFigureAlign,
-    setLineHeight,       // FIX #4
+    setLineHeight,
     doSave,
     doPublish,
   } = useArticleEditor({ initialData, onSave, onPublish, autoSaveInterval });
@@ -862,10 +842,8 @@ export default function ArticleEditor({
           onBack={() => setIsPreview(false)}
         />
       ) : (
-        // FIX #5: layout vertical — MetaBar no topo, editor abaixo (sem sidebar lateral)
         <div className="ae-editor-layout ae-editor-layout--stacked">
 
-          {/* ── MetaBar (metadados colapsáveis acima do editor) ─── */}
           <MetaBar
             formData={formData}
             isPublishing={isPublishing}
@@ -874,7 +852,6 @@ export default function ArticleEditor({
             handleCoverRemove={handleCoverRemove}
           />
 
-          {/* ── Área principal de escrita — largura total ────────── */}
           <main className="ae-main ae-main--full">
             <div className="ae-card ae-card--editor">
 
@@ -902,7 +879,7 @@ export default function ArticleEditor({
                 onFontChange={handleFontChange}
                 onEditorImageUpload={handleEditorImageUpload}
                 onSetFigureAlign={setFigureAlign}
-                onSetLineHeight={setLineHeight}   // FIX #4
+                onSetLineHeight={setLineHeight}
               />
 
               <div className="ae-editor-body editorial-content"
