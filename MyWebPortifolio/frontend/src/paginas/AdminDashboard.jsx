@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MatrixBackground from "../components/MatrixBackground";
 import ManageProjects from "../components/paineladm/ManageProjects";
-import ArticleEditor from "../components/paineladm/ArticleEditor";
+// 🚨 MUDANÇA AQUI: Importando o Pai (ManageArticles) em vez do Filho
+import ManageArticles from "../components/paineladm/ManageArticles"; 
 import "../styles/admindashboard.css";
 
 const AdminDashboard = () => {
@@ -28,20 +29,6 @@ const AdminDashboard = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
-  };
-
-  // ==========================================
-  // FUNÇÕES DO EDITOR DE ARTIGOS (Fios na Tomada)
-  // ==========================================
-  const handleSaveArticle = async (articleData) => {
-    // Aqui vai o fetch para o seu Spring Boot no futuro
-    console.log("Rascunho salvo automaticamente:", articleData);
-  };
-
-  const handlePublishArticle = async (articleData) => {
-    // Aqui vai o fetch para publicar
-    console.log("Artigo publicado:", articleData);
-    alert("Artigo gerado com sucesso! Verifique o console do navegador (F12).");
   };
 
   // Trava de Segurança Extra
@@ -113,12 +100,11 @@ const AdminDashboard = () => {
           )}
 
           {activeModule === "artigos" && (
-            <div className="admin-module">
-              {/* O Editor renderiza o próprio cabeçalho, então tiramos o h1 e p daqui */}
-              <ArticleEditor 
-                onSave={handleSaveArticle} 
-                onPublish={handlePublishArticle} 
-              />
+            <div className="admin-module" style={{ padding: "0" }}>
+              {/* 🚨 MUDANÇA AQUI: Chamando o ManageArticles. 
+                  Ele já tem o ArticleEditor dentro dele, junto com a lista e o fetch! 
+              */}
+              <ManageArticles />
             </div>
           )}
         </main>

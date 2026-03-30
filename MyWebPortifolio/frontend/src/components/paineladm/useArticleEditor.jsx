@@ -64,6 +64,66 @@ export const LINE_HEIGHT_OPTIONS = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+// ==============================================================================
+// 👉 FIX #2.1 — O Sincronizador de Imagens (Limpador de JSON)
+// Essa função varre o estado do editor, acha os blobs, sobe pro Cloudinary
+// e atualiza o próprio editor com as URLs finais, garantindo JSON limpo.
+// ==============================================================================
+// ==============================================================================
+// 👉 FIX #2.1 — O Sincronizador de Imagens (Motor ProseMirror)
+// ==============================================================================
+const syncEditorImagesWithCloudinary = async (editor) => {
+  if (!editor) return;
+
+  const replacements = [];
+
+  // 1. Varre o documento procurando os blobs
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name === 'figure') {
+      const { src } = node.attrs;
+      if (src && src.startsWith('blob:')) {
+        // Guardamos também o 'node' inteiro para não perder o alt, width, caption...
+        replacements.push({ pos, node, srcBlobUrl: src });
+      }
+    }
+    return true;
+  });
+
+  if (replacements.length === 0) return;
+
+  // 2. Faz o upload das imagens
+  const uploadPromises = replacements.map(async (item) => {
+    try {
+      const response = await fetch(item.srcBlobUrl);
+      const blob = await response.blob();
+      const { url } = await uploadImage(blob, { folder: "articles/content" });
+      return { pos: item.pos, node: item.node, newUrl: url };
+    } catch (error) {
+      console.error("Erro no upload da imagem interna:", error);
+      return null;
+    }
+  });
+
+  const uploadedResults = await Promise.all(uploadPromises);
+
+  // 3. O Pulo do Gato: Transação direta no motor do ProseMirror
+  let tr = editor.state.tr;
+  
+  uploadedResults.forEach((result) => {
+    if (result) {
+      // Pega os atributos antigos (alt, width, etc) e injeta SÓ a URL nova no src
+      const novosAtributos = { ...result.node.attrs, src: result.newUrl };
+      
+      // setNodeMarkup substitui o nó naquela exata posição sem depender do cursor
+      tr = tr.setNodeMarkup(result.pos, null, novosAtributos);
+    }
+  });
+
+  // 4. Aplica a transação no editor (isso limpa o JSON na mesma hora)
+  editor.view.dispatch(tr);
+  console.log("✅ Imagens sincronizadas cirurgicamente no Editor!");
+};
+
 export function toSlug(str) {
   return str
     .toLowerCase()
@@ -448,9 +508,8 @@ export function useArticleEditor({
     updatedAt:   new Date().toISOString(),
   }), []);
 
-  const buildPayloadWithCloudinary = useCallback(async () => {
+ const buildPayloadWithCloudinary = useCallback(async () => {
     const payload = buildPayload();
-    payload.contentHtml = await uploadInlineImages(payload.contentHtml);
     if (payload.coverImage?.startsWith("blob:")) {
       const response     = await fetch(payload.coverImage);
       const blob         = await response.blob();
@@ -485,13 +544,21 @@ export function useArticleEditor({
     setIsPublishing(true);
     setSaveStatus("saving");
     try {
+      console.log("1. Iniciando Cloudinary...");
+      
+     
+      await syncEditorImagesWithCloudinary(editorRef.current);
+    
       const payload  = await buildPayloadWithCloudinary();
       payload.status = "Publicado";
       setFormData((prev) => ({ ...prev, status: "Publicado" }));
+      
+      console.log("2. Cloudinary terminou! Payload pronto:", payload); 
+      
       await onPublish?.(payload);
       if (isMountedRef.current) setSaveStatus("idle");
     } catch (err) {
-      console.error("[ArticleEditor] Erro ao publicar:", err);
+      console.error("[ArticleEditor] Erro CRÍTICO interno ao publicar:", err);
       if (isMountedRef.current) setSaveStatus("error");
     } finally {
       if (isMountedRef.current) setIsPublishing(false);
