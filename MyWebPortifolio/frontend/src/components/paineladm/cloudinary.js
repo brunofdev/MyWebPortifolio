@@ -78,7 +78,7 @@ export function base64ToBlob(dataUrl) {
 }
 
 /**
- * Percorre o HTML do editor, faz upload de cada imagem base64 para o Cloudinary
+ * Percorre o HTML do editor, faz upload de cada imagem (blob:) para o Cloudinary
  * e retorna o HTML com os src substituídos pelas URLs definitivas.
  *
  * Deve ser chamado ANTES de enviar o payload ao backend.
@@ -90,15 +90,26 @@ export function base64ToBlob(dataUrl) {
 export async function uploadInlineImages(html, folder = "articles/content") {
   const parser = new DOMParser();
   const doc    = parser.parseFromString(html, "text/html");
-  const images = [...doc.querySelectorAll("img[src^='data:']")];
+  
+  // 1. O Detetive agora procura por 'blob:'
+  const images = [...doc.querySelectorAll("img[src^='blob:']")];
 
   if (images.length === 0) return html;
 
   await Promise.all(
     images.map(async (img) => {
-      const blob     = base64ToBlob(img.src);
-      const { url }  = await uploadImage(blob, { folder });
-      img.src        = url;
+      const blobUrl = img.src;
+      try {
+    
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+    
+        const { url } = await uploadImage(blob, { folder });
+        
+        img.src = url;
+      } catch (error) {
+        console.error("Erro ao subir imagem inline:", error);
+      }
     })
   );
 
