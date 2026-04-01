@@ -14,7 +14,7 @@
    ========================================= */
 .sidebar-wrapper {
   position: sticky;
-  top: 40px; /* Um respiro um pouco maior do topo */
+  top: 80px; /* Um respiro um pouco maior do topo */
   width: 300px; 
   flex-shrink: 0; 
   z-index: 100;
@@ -33,13 +33,10 @@
 /* O Efeito "Vidro Premium" */
 .main-container {
   width: 100%;
-  background: rgba(18, 18, 18, 0.65); /* Fundo sutilmente translúcido */
+
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05); /* Borda clarinha quase invisível para dar relevo */
+ 
   border-radius: 20px; /* Cantos bem arredondados e modernos */
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); /* Sombra difusa e profunda */
-  padding: 60px 50px; /* 👈 UX: MUITO respiro interno para não colar nas bordas */
   color: #e2e8f0;
 }
 
@@ -54,7 +51,7 @@
 }
 
 /* Animação em cascata (opcional, mas muito chique) */
-.section-articles { animation-delay: 0.1s; }
+.section-articles { animation-delay: 0.1s; width: 100% !important;  }
 .section-about { animation-delay: 0.2s; }
 .section-skills { animation-delay: 0.3s; }
 .section-projects { animation-delay: 0.4s; }

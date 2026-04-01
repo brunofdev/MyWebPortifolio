@@ -78,13 +78,13 @@ const AdminDashboard = () => {
               className={activeModule === "projetos" ? "active" : ""}
               onClick={() => setActiveModule("projetos")}
             >
-              🚀 Gerenciar Projetos
+              Gerenciar Projetos
             </li>
             <li 
               className={activeModule === "artigos" ? "active" : ""}
               onClick={() => setActiveModule("artigos")}
             >
-              📝 Gerenciar Artigos
+               Gerenciar Artigos
             </li>
           </ul>
         </aside>
@@ -101,9 +101,6 @@ const AdminDashboard = () => {
 
           {activeModule === "artigos" && (
             <div className="admin-module" style={{ padding: "0" }}>
-              {/* 🚨 MUDANÇA AQUI: Chamando o ManageArticles. 
-                  Ele já tem o ArticleEditor dentro dele, junto com a lista e o fetch! 
-              */}
               <ManageArticles />
             </div>
           )}

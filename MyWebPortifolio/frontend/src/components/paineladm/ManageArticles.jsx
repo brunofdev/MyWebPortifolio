@@ -138,7 +138,7 @@ const ManageArticles = () => {
     <div className="manage-projects-container">
       <div className="admin-form-section">
         <div className="section-header">
-          <h2>{isEditing ? "✏️ Editando Artigo" : "✍️ Novo Artigo"}</h2>
+          <h2>{isEditing ? "Editando Artigo" : "Novo Artigo"}</h2>
           {isEditing && (
             <button className="btn-cancel-small" onClick={resetForm}>
               Criar Novo

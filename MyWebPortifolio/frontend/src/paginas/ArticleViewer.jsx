@@ -108,41 +108,54 @@ const FloatingToolbar = ({ article }) => {
 };
 
 /* ─────────────────────────────────────────
-   TABLE OF CONTENTS
+   TABLE OF CONTENTS (Rastreamento Exato)
 ───────────────────────────────────────── */
 const TableOfContents = ({ headings }) => {
-  const [active, setActive] = useState("");
+  const [active, setActive] = useState("top");
 
   useEffect(() => {
     if (!headings || !headings.length) return;
-    
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find(e => e.isIntersecting);
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-100px 0px -60% 0px" } // Gatilho de leitura
-    );
-    
-    // Pequeno atraso para garantir que o DOM injetou o HTML processado
-    const timeoutId = setTimeout(() => {
-      headings.forEach(h => {
-        const el = document.getElementById(h.id);
-        if (el) obs.observe(el);
+
+    const handleScroll = () => {
+      // Offset de 150px garante que a tag ativa mude assim que o título passar do cabeçalho
+      const scrollPosition = window.scrollY + 150; 
+      let currentId = "top"; // Começa apontando pro topo
+
+      // Checa qual é o último título que já cruzou a linha superior da tela
+      headings.forEach((h) => {
+        const element = document.getElementById(h.id);
+        if (element && element.offsetTop <= scrollPosition) {
+          currentId = h.id;
+        }
       });
-    }, 150);
+
+      setActive(currentId);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     
+    // Pequeno delay para garantir que a página renderizou antes do primeiro cálculo
+    const timeoutId = setTimeout(handleScroll, 150);
+
     return () => {
+      window.removeEventListener("scroll", handleScroll);
       clearTimeout(timeoutId);
-      obs.disconnect();
     };
   }, [headings]);
 
-  const handleScroll = (e, id) => {
+  const handleScrollTo = (e, id) => {
     e.preventDefault();
+
+    if (id === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.pushState(null, "", window.location.pathname);
+      setActive("top");
+      return;
+    }
+
     const el = document.getElementById(id);
     if (el) {
-      // 100px de offset para o título não ficar grudado no topo
+      // 100px de offset para o título não ficar grudado no topo da tela ao clicar
       const y = el.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: y, behavior: "smooth" });
       window.history.pushState(null, "", `#${id}`);
@@ -150,18 +163,32 @@ const TableOfContents = ({ headings }) => {
     }
   };
 
-  if (!headings || headings.length < 2) return null;
-
+  // Renderiza mesmo sem títulos (para poder usar o botão de voltar ao topo)
   return (
     <aside className="av-toc">
-      <p className="av-toc-label">Neste artigo</p>
+      <p className="av-toc-label">Navegação</p>
       <nav>
-        {headings.map(h => (
+        {/* ── BOTÃO DE VOLTAR AO TOPO ── */}
+        <a
+          href="#top"
+          className={`av-toc-item ${active === "top" ? "av-toc-item--active" : ""}`}
+          onClick={(e) => handleScrollTo(e, "top")}
+          style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"/>
+            <polyline points="5 12 12 5 19 12"/>
+          </svg>
+          Início do Artigo
+        </a>
+
+        {/* ── LISTA DE TÍTULOS ── */}
+        {headings?.map(h => (
           <a
             key={h.id}
             href={`#${h.id}`}
             className={`av-toc-item av-toc-item--${h.level} ${active === h.id ? "av-toc-item--active" : ""}`}
-            onClick={(e) => handleScroll(e, h.id)}
+            onClick={(e) => handleScrollTo(e, h.id)}
           >
             {h.text}
           </a>
@@ -215,21 +242,21 @@ const ArticleViewer = () => {
           setArticle(art);
           setReadTime(estimateReadTime(art.contentHtml));
 
-          // 🚀 Injeta os IDs semânticos no HTML recebido do backend
           if (art.contentHtml) {
             const doc = new DOMParser().parseFromString(art.contentHtml, "text/html");
-            const nodes = Array.from(doc.querySelectorAll("h2, h3"));
+            // Agora buscando H1, H2 e H3
+            const nodes = Array.from(doc.querySelectorAll("h1, h2, h3"));
             const newHeadings = [];
 
             nodes.forEach((n, i) => {
               const text = n.textContent.trim();
               const id = slugify(text) || `av-h-${i}`;
-              n.id = id; // Embutindo o ID fisicamente na tag H2/H3
+              n.id = id; 
               newHeadings.push({ id, text, level: n.tagName.toLowerCase() });
             });
 
             setHeadings(newHeadings);
-            setProcessedHtml(doc.body.innerHTML); // Guarda o HTML atualizado
+            setProcessedHtml(doc.body.innerHTML);
           }
         } else {
           navigate("/");
@@ -328,7 +355,6 @@ const ArticleViewer = () => {
           <section
             className="av-content"
             style={{ fontFamily: article.fontFamily || "inherit" }}
-            // Renderiza o HTML modificado com os IDs
             dangerouslySetInnerHTML={{ __html: processedHtml || article.contentHtml }}
           />
 
@@ -365,7 +391,7 @@ const ArticleViewer = () => {
           )}
 
           <footer className="av-footer">
-            <button className="av-back-btn" onClick={() => navigate("/")}>
+            <button className="av-back-btn" onClick={() => navigate("/artigos")}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
               </svg>

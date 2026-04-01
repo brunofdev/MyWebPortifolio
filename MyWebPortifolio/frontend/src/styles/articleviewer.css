@@ -71,10 +71,12 @@
     0 0 0 1px rgba(255,255,255,0.03);
 }
 
+/*Deve ser habilitado quando o backend estiver preparado*/
 .av-toolbar--visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: all;
+  display: none; /*painel elegante que aparece quando o usuário interage, oferecendo ações como "Curtir", "Salvar" e "Compartilhar" para engajamento social. */
 }
 
 .av-tool-btn {
@@ -137,7 +139,7 @@
   position: relative;
   min-height: 100vh;
   background-color: #10111096;
-  border-radius: 100px;
+  border-radius: 100px; /* Considere revisar esse border-radius gigante num container principal */
 }
 
 /* TOC ocupa a coluna esquerda */
@@ -158,47 +160,47 @@
 
 .av-toc-label {
   font-family: var(--av-mono);
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: var(--av-text-faint);
+  font-size: 0.68rem; /* Aumentei um pouco */
+  font-weight: 700; /* Mais peso */
+  color: var(--av-text-3); /* Cor mais clara que a anterior (faint) */
   text-transform: uppercase;
-  letter-spacing: 1.2px;
-  margin: 0 0 12px;
+  letter-spacing: 1.5px; /* Mais espaçamento para elegância */
+  margin: 0 0 16px;
+  border-bottom: 1px solid var(--av-border); /* Linha sutil de separação */
+  padding-bottom: 8px;
 }
 
 .av-toc-item {
   display: block;
   font-family: var(--av-sans);
-  font-size: 0.78rem;
-  color: var(--av-text-faint);
+  font-size: 0.85rem; /* Aumentei o tamanho da fonte */
+  color: var(--av-text-muted); /* Cor base mais legível (antes era faint) */
   text-decoration: none;
-  padding: 5px 0 5px 12px;
-  border-left: 2px solid transparent;
+  padding: 6px 0 6px 14px;
+  border-left: 2px solid var(--av-border); /* Linha base visível em todos */
   line-height: 1.4;
-  transition: all 0.18s ease;
-  margin-bottom: 2px;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
 }
 
 .av-toc-item--h3 {
-  padding-left: 22px;
-  font-size: 0.73rem;
+  padding-left: 24px;
+  font-size: 0.78rem;
+  color: var(--av-text-faint); /* H3 fica um pouquinho mais discreto que H2 */
 }
 
 .av-toc-item:hover {
-  color: var(--av-text-muted);
-  border-left-color: var(--av-border-2);
+  color: var(--av-text-2); /* Fica quase branco no hover */
+  border-left-color: rgba(63, 185, 80, 0.4); /* Linha verde apagada */
+  background: rgba(255, 255, 255, 0.02); /* Fundo muito sutil no hover */
 }
 
+/* O item que o usuário está lendo agora */
 .av-toc-item--active {
   color: var(--av-accent) !important;
+  font-weight: 600; /* Negrito quando ativo */
   border-left-color: var(--av-accent) !important;
-}
-
-/* Article ocupa a coluna central */
-.av-article {
-  grid-column: 2;
-  padding: 64px 0 120px;
-  min-width: 0;
+  background: linear-gradient(90deg, rgba(63,185,80,0.08) 0%, transparent 100%); /* Fundo iluminado */
 }
 
 /* ================================================================
@@ -1133,6 +1135,7 @@
   .av-toolbar {
     bottom: 20px;
     padding: 5px 8px;
+
   }
 
   .av-tool-btn span { display: none; }

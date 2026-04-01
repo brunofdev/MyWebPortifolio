@@ -1,9 +1,7 @@
 /* ─── Wrapper ─────────────────────────────────────────────────────────────── */
 .kc-wrapper {
   width: 100%;
-  max-width: 960px;
-  margin: 0 auto 40px auto;
-  padding: 0 12px;
+  margin: 0 auto 20px auto;
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
 .kc-header {
