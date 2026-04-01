@@ -797,7 +797,7 @@ export default function ArticleEditor({
     setLineHeight,
     doSave,
     doPublish,
-  } = UseArticleEditor({ initialData, onSave, onPublish, autoSaveInterval });
+  } = useArticleEditor({ initialData, onSave, onPublish, autoSaveInterval });
 
   return (
     <div className="ae-root">
