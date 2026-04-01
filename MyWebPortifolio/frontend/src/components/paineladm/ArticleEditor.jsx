@@ -12,7 +12,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { EditorContent, useEditorState } from "@tiptap/react";
 
-import { useArticleEditor, EDITOR_FONTS, LINE_HEIGHT_OPTIONS } from "./UseArticleEditor";
+import { UseArticleEditor, EDITOR_FONTS, LINE_HEIGHT_OPTIONS } from "./UseArticleEditor";
 import "../../styles/articleeditor.css";
 
 // ─── Paleta de cores ──────────────────────────────────────────────────────────
@@ -797,7 +797,7 @@ export default function ArticleEditor({
     setLineHeight,
     doSave,
     doPublish,
-  } = useArticleEditor({ initialData, onSave, onPublish, autoSaveInterval });
+  } = UseArticleEditor({ initialData, onSave, onPublish, autoSaveInterval });
 
   return (
     <div className="ae-root">
