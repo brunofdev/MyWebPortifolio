@@ -1,30 +1,26 @@
-// src/components/MainLayout.jsx
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom"; // 👈 useNavigate importado!
 import { useAuth } from "../contexts/AuthContext";
 import Header from "./compartilhado/header/Header";
-import Footer from "./Footer";
+import Footer from "./compartilhado/footer/Footer";
 import AuthModal from "./auth/AuthModal";
 import Modal from "./Modal";
 import "../styles/mainlayout.css";
 
 const MainLayout = () => {
-  const { 
-    isAuthenticated, userName, userPhoto, userRole, token, 
-    handleLogin, handleLogout 
-  } = useAuth(); 
+  const {
+    isAuthenticated, userName, userPhoto, userRole, token,
+    handleLogin, handleLogout
+  } = useAuth();
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
   
- 
   const openEditProfile = () => {
     navigate("/editar-perfil");
-    window.scrollTo({ top: 0, behavior: "smooth" }); 
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleLoginSuccess = (data) => {
@@ -59,19 +55,21 @@ const MainLayout = () => {
         handleAdminNavigation={handleAdminNavigation}
         openEditProfile={openEditProfile}
       />
-
       {/* Se o modal for aberto, ele aparece por cima de qualquer tela */}
       <Modal isOpen={isAuthModalOpen} onClose={closeAuthModal}>
         <AuthModal handleLoginSuccess={handleLoginSuccess} onClose={closeAuthModal} />
       </Modal>
 
       <main className="layout-main-content">
-        <Outlet context={{ openAuthModal }}/> 
+        <Outlet context={{ openAuthModal }} />
       </main>
-
       <Footer />
     </div>
+
   );
+
 };
+
+
 
 export default MainLayout;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import "../styles/feedbackpanel.css";
-
+import { useAuth } from "../../contexts/AuthContext";
+import "../../styles/articlefeedbackpanel.css";
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const ArticleFeedbackPanel = ({ articleId }) => {
@@ -16,7 +15,7 @@ const ArticleFeedbackPanel = ({ articleId }) => {
   const [feedbacks, setFeedbacks]     = useState([]);
   const [loadingFb, setLoadingFb]     = useState(false);
 
-  // 👉 Busca feedbacks automaticamente ao carregar
+
   useEffect(() => {
     if (articleId) fetchFeedbacks();
   }, [articleId]);

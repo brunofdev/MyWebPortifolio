@@ -1,7 +1,7 @@
 // src/paginas/ArticleViewer.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ArticleFeedbackPanel from "../components/ArticleFeedbackPanel";
+import ArticleFeedbackPanel from "../components/articleviewer/ArticleFeedbackPanel";
 import "../styles/articleviewer.css";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
