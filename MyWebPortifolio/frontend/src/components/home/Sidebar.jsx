@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 import React, { useState, useEffect } from "react";
-import "../styles/sidebar.css";
+import "../../styles/sidebar.css";
 
 const Sidebar = ({ isMobile, isOpen }) => {
   const [copied, setCopied] = useState(false);

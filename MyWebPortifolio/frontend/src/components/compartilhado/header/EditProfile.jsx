@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import "../../../styles/editprofile.css";
-import Sidebar from "../../Sidebar";
+import Sidebar from "../../home/Sidebar";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL + "/usuario";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbfrjuodw/image/upload";
@@ -180,7 +180,7 @@ export default function EditProfile() {
   if (isLoading) {
     return (
       <div className="content">
-        <div className="sidebar-wrapper"><Sidebar /></div>
+       
         <main className="main-content">
           <div className="ep-skeleton-wrap">
             <div className="ep-skeleton ep-skeleton--avatar" />
@@ -332,7 +332,7 @@ export default function EditProfile() {
   // ── Main render ────────────────────────────────────────────────
   return (
     <div className="content">
-      <div className="sidebar-wrapper"><Sidebar /></div>
+      
 
       <main className="main-content">
         <div className="ep-page">

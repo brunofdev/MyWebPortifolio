@@ -1,10 +1,10 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useOutletContext } from "react-router-dom";
-import Sidebar from "../components/Sidebar"; 
+import Sidebar from "../components/home/Sidebar"; 
 import About from "../components/home/About";
-import Skills from "../components/Skills";
-import Projects from "../components/Projects";
+import Skills from "../components/home/Skills";
+import Projects from "../components/home/Projects";
 import Contact from "../components/home/Contact";
 import Feedback from "../components/home/Feedback";
 import FeedbackList from "../components/home/FeedbackList";
@@ -47,14 +47,15 @@ const Home = () => {
           <section className="section-contact" id="contact"><Contact /></section>
           <hr className="separator" />
 
-          <section className="section-feedback" id="feedback">
-            <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
-          </section>
-          <hr className="separator" />
-
           <section className="section-feedback-list" id="feedbackList">
             <FeedbackList userRole={userRole} token={token} currentUserName={userName} />
           </section>
+            <hr className="separator" />
+
+          <section className="section-feedback" id="feedback">
+            <Feedback isAuthenticated={isAuthenticated} token={token} openAuthModal={openAuthModal} />
+          </section>
+          
 
         </div>
       </main>
