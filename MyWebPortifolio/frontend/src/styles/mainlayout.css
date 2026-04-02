@@ -2,23 +2,22 @@
    MAIN LAYOUT (Estrutura Global)
    ========================================= */
 
-/* 👉 CORRIGIDO: Agora o CSS conversa com o JSX (layout-wrapper) */
 .layout-wrapper {
   background-color: rgba(18, 18, 18, 0.65);
   position: relative;
-  width: 70%; /* O comprimido de 70% */
+  width: 70%; 
   max-width: 1400px;
-  margin: 0 auto; /* Centraliza no monitor */
+  margin: 0 auto; 
   padding: 30px 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Faz a página ter pelo menos a altura do monitor */
+  min-height: 100vh;
 }
 
 .layout-main-content {
-  width: 100%; /* Respeita os 70% do pai */
-  flex: 1; /* Empurra o footer pro final */
+  width: 100%; 
+  flex: 1; 
   display: flex;
   flex-direction: column;
   padding: 20px 0; 
@@ -27,9 +26,29 @@
 /* =========================================
    RESPONSIVIDADE GLOBAL
    ========================================= */
+@media (max-width: 1335px) {
+  .layout-wrapper {
+    width: 85%; /* Expande no celular */
+    padding: 20px 10px;
+  }
+}
+
 @media (max-width: 1024px) {
   .layout-wrapper {
     width: 95%; /* Expande no celular */
     padding: 20px 10px;
   }
+}
+@media (max-width: 460px) {
+  .layout-wrapper {
+    width: 100%; /* Expande no celular */
+    padding: 0px;
+  }
+  .layout-main-content {
+  display: flex;
+  flex-direction: row; 
+  align-items: flex-start; 
+  gap: 40px; 
+  width: 100%;
+}
 }

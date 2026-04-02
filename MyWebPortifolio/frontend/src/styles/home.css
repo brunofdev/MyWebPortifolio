@@ -98,10 +98,22 @@
    8. RESPONSIVIDADE (CELULAR E TABLET)
    ========================================= */
 @media (max-width: 1024px) {
-  .content {
-    flex-direction: column; 
-    gap: 30px;
-  }
+  .main-container {
+  width: 100%;
+  max-width: 100%; /* 👈 Impede de crescer além do pai */
+  box-sizing: border-box; /* 👈 Garante que paddings não somem na largura */
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  color: #e2e8f0;
+}
+ .content {
+  display: flex;
+  flex-direction: row; 
+  align-items: flex-start; 
+  gap: 40px; 
+  width: 100%;
+  max-width: 100vw; /* 👈 Trava de segurança */
+}
   .sidebar-wrapper {
     display: none; 
   }
@@ -112,5 +124,31 @@
   .separator {
     margin: 40px auto; /* Reduz a distância no mobile */
     width: 95%;
+  }
+}
+  
+@media (max-width: 320px) {
+  .main-container {
+  width: 100%;
+  max-width: 100%; /* 👈 Impede de crescer além do pai */
+  box-sizing: border-box; /* 👈 Garante que paddings não somem na largura */
+  backdrop-filter: blur(16px);
+  color: #e2e8f0;
+}
+ .content {
+  display: flex;
+  flex-direction: row; 
+  align-items: flex-start; 
+  width: 100%;
+  max-width: 100vw; /* 👈 Trava de segurança */
+}
+  .sidebar-wrapper {
+    display: none; 
+  }
+  .main-container {
+    border-radius: 12px;
+  }
+  .separator {
+    width: 100%;
   }
 }

@@ -40,7 +40,7 @@ const MainLayout = () => {
 
   return (
     // 👉 RESTAURADO: Sua classe original "container"
-    <div className="container">
+    <div className="layout-wrapper">
       <Header
         isAuthenticated={isAuthenticated}
         userName={userName}

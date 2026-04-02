@@ -1,9 +1,8 @@
 #root {
   width: 100%;
-  max-width: 100%; /* MATAMOS A TRAVA DE 1280px AQUI! */
+  max-width: 100%; 
   margin: 0;
-  padding: 0;      /* TIRAMOS O ESPAÇAMENTO INVISÍVEL */
-  text-align: left;/* VOLTAMOS O TEXTO PRO PADRÃO */
+  padding: 0;     
 }
 
 .logo {
