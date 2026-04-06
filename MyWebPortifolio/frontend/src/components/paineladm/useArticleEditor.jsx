@@ -549,9 +549,10 @@ export function useArticleEditor({
      
       await syncEditorImagesWithCloudinary(editorRef.current);
     
-      const payload  = await buildPayloadWithCloudinary();
-      payload.status = "Publicado";
-      setFormData((prev) => ({ ...prev, status: "Publicado" }));
+     const payload  = await buildPayloadWithCloudinary();
+      const statusUpperCase = formDataRef.current.status.toUpperCase(); 
+      payload.status = statusUpperCase; 
+      setFormData((prev) => ({ ...prev, status: statusUpperCase }));
       
       console.log("2. Cloudinary terminou! Payload pronto:", payload); 
       

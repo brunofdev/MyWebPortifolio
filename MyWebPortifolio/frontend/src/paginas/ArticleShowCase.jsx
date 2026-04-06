@@ -232,7 +232,7 @@ const ArticleShowcase = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch(`${BASE_URL}/geral/artigos/listar-todos`);
+        const res  = await fetch(`${BASE_URL}/geral/artigos/listar-todos-publicados`);
         if (res.ok) {
           const data = await res.json();
           setArticles(data.dados || data || []);
