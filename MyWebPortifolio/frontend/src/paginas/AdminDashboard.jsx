@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import MatrixBackground from "../components/MatrixBackground";
 import ManageProjects from "../components/paineladm/ManageProjects";
 // 🚨 MUDANÇA AQUI: Importando o Pai (ManageArticles) em vez do Filho
-import ManageArticles from "../components/paineladm/ManageArticles"; 
+import ManageArticles from "../components/paineladm/ManageArticles";
+import SystemLogs from "../components/paineladm/Systemlogs";
 import "../styles/admindashboard.css";
 
 const AdminDashboard = () => {
@@ -45,19 +46,19 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard-wrapper">
       <MatrixBackground />
-      
+
       {/* NOVA TOPBAR EXCLUSIVA DO ADMIN */}
       <header className="admin-topbar">
         <div className="topbar-left">
           <span className="admin-brand">⚙️ Painel de Controle</span>
         </div>
-        
+
         <div className="topbar-right">
           <div className="admin-user-info">
             <img src={userPhoto} alt="Admin Profile" className="admin-avatar" />
             <span className="admin-name">Olá, {userName}</span>
           </div>
-          
+
           <div className="topbar-actions">
             <button className="btn-topbar primary" onClick={goHome}>
               🏠 Voltar ao Site
@@ -74,17 +75,21 @@ const AdminDashboard = () => {
         <aside className="admin-sidebar">
           <h2 className="admin-sidebar-title">Navegação</h2>
           <ul className="admin-menu">
-            <li 
+            <li
               className={activeModule === "projetos" ? "active" : ""}
               onClick={() => setActiveModule("projetos")}
             >
               Gerenciar Projetos
             </li>
-            <li 
+            <li
               className={activeModule === "artigos" ? "active" : ""}
               onClick={() => setActiveModule("artigos")}
             >
-               Gerenciar Artigos
+              Gerenciar Artigos
+            </li>
+            <li className={activeModule === "logs" ? "active" : ""}
+              onClick={() => setActiveModule("logs")}>
+              Logs do Sistema
             </li>
           </ul>
         </aside>
@@ -102,6 +107,11 @@ const AdminDashboard = () => {
           {activeModule === "artigos" && (
             <div className="admin-module" style={{ padding: "0" }}>
               <ManageArticles />
+            </div>
+          )}
+          {activeModule === "logs" && (
+            <div className="admin-module" style={{ padding: "0" }}>
+              <SystemLogs />
             </div>
           )}
         </main>
