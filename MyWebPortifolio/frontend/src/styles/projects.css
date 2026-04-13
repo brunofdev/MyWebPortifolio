@@ -307,6 +307,41 @@
   font-size: 1.1rem;
 }
 .modal-links a:hover { color: #f50505; border-color: #f50505; transform: translateY(-3px); }
+/* =========================================
+   TABELAS MARKDOWN
+   ========================================= */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.95rem;
+}
+
+.markdown-body thead tr {
+  background: rgba(76, 175, 80, 0.1);
+  border-bottom: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.markdown-body th {
+  color: #48bb78;
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.markdown-body td {
+  padding: 10px 14px;
+  color: #d1d5db;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.markdown-body tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-body tr:hover td {
+  background: rgba(76, 175, 80, 0.05);
+}
 
 /* =========================================
    NAVEGAÇÃO DO MODAL (SETAS EXTERNAS)

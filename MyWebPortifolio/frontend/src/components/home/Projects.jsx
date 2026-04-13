@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import ReactMarkdown from "react-markdown";
 import "../../styles/projects.css";
 import Modal from "../Modal";
+import remarkGfm from "remark-gfm";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const DEFAULT_AVATAR = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -275,7 +276,7 @@ const Projects = ({ token, userName, userRole }) => {
 
                 {/* O TEXTO RENDERIZADO COM MARKDOWN */}
                 <div className="markdown-body">
-                  <ReactMarkdown>{activeProject.description}</ReactMarkdown>
+                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{activeProject.description}</ReactMarkdown>
                 </div>
 
                 {activeProject.techs && (
