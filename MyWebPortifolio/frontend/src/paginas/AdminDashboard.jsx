@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MatrixBackground from "../components/MatrixBackground";
 import ManageProjects from "../components/paineladm/ManageProjects";
-// 🚨 MUDANÇA AQUI: Importando o Pai (ManageArticles) em vez do Filho
 import ManageArticles from "../components/paineladm/ManageArticles";
 import SystemLogs from "../components/paineladm/Systemlogs";
 import "../styles/admindashboard.css";
