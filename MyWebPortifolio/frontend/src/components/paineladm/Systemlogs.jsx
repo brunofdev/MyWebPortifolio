@@ -1,6 +1,4 @@
 /**
- * SystemLogs.jsx
- *
  * Ferramenta de monitoramento de logs do sistema para o painel admin.
  * Consome: GET /paineladm/logs?page=0&size=20
  * Design: Tech-Noir dark com paleta verde #48bb78 / #4caf50
