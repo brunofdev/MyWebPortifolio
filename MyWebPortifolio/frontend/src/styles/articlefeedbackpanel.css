@@ -279,3 +279,40 @@
   color: #718096;
   font-style: italic;
 }
+/* ─────────────────────────────────────────
+   ADICIONAR ao final de articlefeedbackpanel.css
+───────────────────────────────────────── */
+
+/* Área de ações do item (botão excluir) */
+.fbp-item-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.fbp-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  color: #f87171;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.fbp-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.5);
+  transform: translateY(-1px);
+}
+
+.fbp-delete-btn:active {
+  transform: translateY(0);
+}
