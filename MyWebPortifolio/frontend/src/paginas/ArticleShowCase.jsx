@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";
 
 /* ─────────────────────────────────────────
-   UTILS & UX HELPERS
+   UTILS
 ───────────────────────────────────────── */
 const estimateReadTime = (html = "") => {
   const text = html?.replace(/<[^>]+>/g, "") || "";
@@ -21,10 +21,9 @@ const formatDate = (dateStr) => {
   });
 };
 
-// UX Magic: Destaca o texto pesquisado no título
 const HighlightText = ({ text, highlight }) => {
   if (!highlight || !text) return <>{text}</>;
-  const regex = new RegExp(`(${highlight})`, "gi");
+  const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
   const parts = text.split(regex);
   return (
     <>
@@ -32,6 +31,171 @@ const HighlightText = ({ text, highlight }) => {
         regex.test(part) ? <mark key={i} className="asc-highlight">{part}</mark> : part
       )}
     </>
+  );
+};
+
+/* ─────────────────────────────────────────
+   TAG FILTER — Dropdown com busca interna
+   Substitui o scroll horizontal problemático
+───────────────────────────────────────── */
+const TagFilter = ({ allTags, activeTag, onChange }) => {
+  const [open, setOpen]           = useState(false);
+  const [tagSearch, setTagSearch] = useState("");
+  const dropdownRef               = useRef(null);
+  const inputRef                  = useRef(null);
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+        setTagSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Foca o input ao abrir
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+  }, [open]);
+
+  // Fecha com Escape
+  useEffect(() => {
+    const fn = (e) => { if (e.key === "Escape") { setOpen(false); setTagSearch(""); } };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, []);
+
+  const tagsExibidas = useMemo(() => {
+    const semTodos = allTags.filter(t => t !== "Todos");
+    if (!tagSearch) return semTodos;
+    return semTodos.filter(t => t.toLowerCase().includes(tagSearch.toLowerCase()));
+  }, [allTags, tagSearch]);
+
+  const totalSelecionado = activeTag !== "Todos" ? 1 : 0;
+
+  const handleSelect = (t) => {
+    onChange(t);
+    setOpen(false);
+    setTagSearch("");
+  };
+
+  return (
+    <div className="asc-tag-filter" ref={dropdownRef}>
+      {/* ── Tags fixas visíveis: Todos + até 4 tags ── */}
+      <div className="asc-tag-pills-row">
+        <button
+          className={`asc-pill ${activeTag === "Todos" ? "asc-pill--active" : ""}`}
+          onClick={() => onChange("Todos")}
+        >
+          Todos
+        </button>
+
+        {/* As 4 primeiras tags como pills rápidas */}
+        {allTags.filter(t => t !== "Todos").slice(0, 4).map(t => (
+          <button
+            key={t}
+            className={`asc-pill ${activeTag === t ? "asc-pill--active" : ""}`}
+            onClick={() => onChange(t)}
+          >
+            #{t}
+          </button>
+        ))}
+
+        {/* Botão "Ver todas" se houver mais de 4 tags */}
+        {allTags.length > 5 && (
+          <button
+            className={`asc-pill asc-pill--more ${open ? "asc-pill--more-open" : ""} ${totalSelecionado && !allTags.filter(t => t !== "Todos").slice(0, 4).includes(activeTag) ? "asc-pill--active" : ""}`}
+            onClick={() => setOpen(o => !o)}
+            aria-expanded={open}
+            aria-haspopup="listbox"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="8" y1="12" x2="20" y2="12"/>
+              <line x1="12" y1="18" x2="20" y2="18"/>
+            </svg>
+            {allTags.length - 5} mais
+            {totalSelecionado && !allTags.filter(t => t !== "Todos").slice(0, 4).includes(activeTag) ? (
+              <span className="asc-pill-badge">1</span>
+            ) : null}
+            <svg
+              className={`asc-pill-chevron ${open ? "asc-pill-chevron--open" : ""}`}
+              width="10" height="10" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* ── Dropdown ── */}
+      {open && (
+        <div className="asc-tag-dropdown" role="listbox" aria-label="Filtrar por tag">
+          {/* Header do dropdown */}
+          <div className="asc-tag-dropdown-header">
+            <div className="asc-tag-dropdown-search">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Buscar tag..."
+                value={tagSearch}
+                onChange={e => setTagSearch(e.target.value)}
+                className="asc-tag-dropdown-input"
+              />
+              {tagSearch && (
+                <button className="asc-tag-dropdown-clear" onClick={() => setTagSearch("")}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+            <span className="asc-tag-dropdown-count">{tagsExibidas.length} tags</span>
+          </div>
+
+          {/* Lista de tags */}
+          <div className="asc-tag-dropdown-list">
+            {tagsExibidas.length === 0 ? (
+              <div className="asc-tag-dropdown-empty">Nenhuma tag encontrada</div>
+            ) : (
+              tagsExibidas.map(t => (
+                <button
+                  key={t}
+                  role="option"
+                  aria-selected={activeTag === t}
+                  className={`asc-tag-dropdown-item ${activeTag === t ? "asc-tag-dropdown-item--active" : ""}`}
+                  onClick={() => handleSelect(t)}
+                >
+                  <span className="asc-tag-dropdown-item-hash">#</span>
+                  {t}
+                  {activeTag === t && (
+                    <svg className="asc-tag-dropdown-item-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+
+          {/* Footer: limpar seleção */}
+          {activeTag !== "Todos" && (
+            <div className="asc-tag-dropdown-footer">
+              <button className="asc-tag-dropdown-reset" onClick={() => handleSelect("Todos")}>
+                Limpar filtro de tag
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -65,7 +229,6 @@ const ArticleCard = React.memo(({ article, index, onClick, searchTerm }) => {
       onKeyDown={e => e.key === "Enter" && onClick()}
       aria-label={`Ler artigo: ${article.title}`}
     >
-      {/* ── CAPA E TAGS (O Segredo da UX aqui) ── */}
       <div className="asc-card-img-wrap">
         <img
           src={article.coverImage || FALLBACK_IMG}
@@ -74,10 +237,7 @@ const ArticleCard = React.memo(({ article, index, onClick, searchTerm }) => {
           loading="lazy"
           onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; }}
         />
-        {/* Gradiente escuro para garantir leitura das tags */}
         <div className="asc-card-img-overlay" />
-
-        {/* Tempo de leitura (Topo Direito) */}
         <div className="asc-card-top-bar">
           <span className="asc-card-readtime">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -86,34 +246,28 @@ const ArticleCard = React.memo(({ article, index, onClick, searchTerm }) => {
             {readTime} min
           </span>
         </div>
-
-        {/* Todas as Tags SOBRE a capa (Base) */}
         {article.tags?.length > 0 && (
           <div className="asc-card-tags-overlay">
-            {article.tags.map(t => (
+            {article.tags.slice(0, 3).map(t => (
               <span key={t} className="asc-tag-badge">{t}</span>
             ))}
+            {article.tags.length > 3 && (
+              <span className="asc-tag-badge asc-tag-badge--more">+{article.tags.length - 3}</span>
+            )}
           </div>
         )}
       </div>
 
-      {/* ── CORPO DO CARD ── */}
       <div className="asc-card-body">
         <time className="asc-card-date">{formatDate(article.dataCriacao)}</time>
-        
         <h3 className="asc-card-title">
           <HighlightText text={article.title || "Sem título"} highlight={searchTerm} />
         </h3>
-
         {article.subtitle && (
           <p className="asc-card-excerpt">
-            {article.subtitle.length > 100
-              ? article.subtitle.substring(0, 100) + "…"
-              : article.subtitle}
+            {article.subtitle.length > 100 ? article.subtitle.substring(0, 100) + "…" : article.subtitle}
           </p>
         )}
-
-        {/* Footer com Autor e Call to Action */}
         <div className="asc-card-footer">
           <div className="asc-card-author">
             <div className="asc-card-author-avatar">
@@ -129,7 +283,6 @@ const ArticleCard = React.memo(({ article, index, onClick, searchTerm }) => {
           </span>
         </div>
       </div>
-
       <div className="asc-card-glow" />
     </article>
   );
@@ -171,7 +324,9 @@ const CommandBar = ({ value, onChange, resultCount, total }) => {
       />
       {value && (
         <button className="asc-command-clear" onClick={() => onChange("")} aria-label="Limpar busca">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
       )}
       <div className="asc-command-meta">
@@ -191,9 +346,7 @@ const ViewToggle = ({ view, onChange }) => (
   <div className="asc-view-toggle" role="group" aria-label="Modo de visualização">
     <button
       className={`asc-view-btn ${view === "grid" ? "asc-view-btn--active" : ""}`}
-      onClick={() => onChange("grid")}
-      title="Grade"
-      aria-pressed={view === "grid"}
+      onClick={() => onChange("grid")} title="Grade" aria-pressed={view === "grid"}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -202,9 +355,7 @@ const ViewToggle = ({ view, onChange }) => (
     </button>
     <button
       className={`asc-view-btn ${view === "list" ? "asc-view-btn--active" : ""}`}
-      onClick={() => onChange("list")}
-      title="Lista"
-      aria-pressed={view === "list"}
+      onClick={() => onChange("list")} title="Lista" aria-pressed={view === "list"}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
@@ -221,18 +372,18 @@ const ViewToggle = ({ view, onChange }) => (
 const ArticleShowcase = () => {
   const navigate = useNavigate();
 
-  const [articles,  setArticles]  = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [search,    setSearch]    = useState("");
-  const [tag,       setTag]       = useState("Todos");
-  const [sort,      setSort]      = useState("newest");
-  const [view,      setView]      = useState("grid");
-  const [mounted,   setMounted]   = useState(false);
+  const [articles, setArticles] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState("");
+  const [tag,      setTag]      = useState("Todos");
+  const [sort,     setSort]     = useState("newest");
+  const [view,     setView]     = useState("grid");
+  const [mounted,  setMounted]  = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch(`${BASE_URL}/geral/artigos/listar-todos-publicados`);
+        const res = await fetch(`${BASE_URL}/geral/artigos/listar-todos-publicados`);
         if (res.ok) {
           const data = await res.json();
           setArticles(data.dados || data || []);
@@ -244,20 +395,17 @@ const ArticleShowcase = () => {
 
   const filtered = useMemo(() => {
     let res = articles;
-
     if (search) {
       const q = search.toLowerCase();
       res = res.filter(a =>
-        (a.title?.toLowerCase().includes(q)) ||
-        (a.subtitle?.toLowerCase().includes(q)) ||
-        (a.tags?.some(t => t.toLowerCase().includes(q)))
+        a.title?.toLowerCase().includes(q) ||
+        a.subtitle?.toLowerCase().includes(q) ||
+        a.tags?.some(t => t.toLowerCase().includes(q))
       );
     }
-
     if (tag !== "Todos") {
       res = res.filter(a => a.tags?.includes(tag));
     }
-
     return [...res].sort((a, b) => {
       const dA = new Date(a.dataCriacao || 0).getTime();
       const dB = new Date(b.dataCriacao || 0).getTime();
@@ -286,7 +434,6 @@ const ArticleShowcase = () => {
         <p className="asc-hero-sub">
           Insights sobre Java, arquitetura de software, boas práticas e desenvolvimento backend.
         </p>
-
         {!loading && (
           <div className="asc-hero-stats">
             <div className="asc-stat">
@@ -312,20 +459,9 @@ const ArticleShowcase = () => {
       <div className="asc-controls">
         <CommandBar value={search} onChange={setSearch} resultCount={filtered.length} total={articles.length} />
 
+        {/* ── Toolbar: TagFilter + Sort + View ── */}
         <div className="asc-toolbar-row">
-          {/* Scroll Horizontal Suave para as Tags */}
-          <div className="asc-pills-scroll">
-            {allTags.map(t => (
-              <button
-                key={t}
-                className={`asc-pill ${tag === t ? "asc-pill--active" : ""}`}
-                onClick={() => setTag(t)}
-              >
-                {t === "Todos" ? "Todos" : `#${t}`}
-              </button>
-            ))}
-          </div>
-
+          <TagFilter allTags={allTags} activeTag={tag} onChange={setTag} />
           <div className="asc-right-controls">
             <select
               className="asc-sort-select"
