@@ -74,7 +74,7 @@
    2. BASE DO COMPONENTE
    -------------------------------------------------------------------------- */
 .projects {
-  max-width: 1200px;
+  width: 100%;
   margin-inline: auto;
   margin-top: var(--space-8);
   padding: var(--space-10) var(--space-5);

@@ -151,7 +151,7 @@ const Sidebar = ({ isMobile, isOpen }) => {
             alt="QR Code — LinkedIn Bruno Fraga"
             referrerPolicy="no-referrer"
           />
-          <span className="sdb-qr-label">LinkedIn</span>
+          <span className="sdb-qr-label">QR CODE WHATSAPP</span>
         </div>
       </div>
 

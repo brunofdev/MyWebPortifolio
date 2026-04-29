@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+
+/* ==================== CONTAINER ==================== */
+.wv-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999;
+  cursor: grab;
+  user-select: none;
+  animation: wvPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.wv-container:active { cursor: grabbing; }
+.wv-container--mini { bottom: 28px; right: 28px; }
+
+/* ==================== BUTTONS ==================== */
+.wv-btn {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f172a;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  z-index: 10;
+}
+.wv-btn svg { width: 11px; height: 11px; }
+.wv-btn--close {
+  top: -10px;
+  right: -10px;
+}
+.wv-btn--close:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+  transform: rotate(90deg) scale(1.1);
+}
+.wv-btn--mini {
+  top: -10px;
+  left: -10px;
+}
+.wv-btn--mini:hover {
+  background: #1e293b;
+  border-color: rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+}
+
+/* ==================== BUBBLE ==================== */
+.wv-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 10px;
+  animation: wvBubbleIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+.wv-bubble {
+  background: #0f172a;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 16px 16px 2px 16px;
+  padding: 14px 16px 10px;
+  max-width: 260px;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.wv-bubble-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4ade80, #22d3ee);
+  border-radius: 2px 2px 0 0;
+}
+.wv-bubble-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  min-height: 22px;
+}
+.wv-bubble-dots {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+.wv-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 1px solid #334155;
+  transition: all 0.25s ease;
+}
+.wv-dot--active {
+  background: #4ade80;
+  border-color: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+}
+.wv-bubble-tail {
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 8px 0 0 10px;
+  border-color: transparent transparent transparent rgba(74, 222, 128, 0.25);
+  align-self: flex-end;
+  margin-right: 30px;
+}
+
+/* ==================== CURSOR ==================== */
+.wv-cursor {
+  display: inline-block;
+  width: 2px;
+  background: #4ade80;
+  margin-left: 1px;
+  animation: wvBlink 0.7s step-end infinite;
+  font-size: 0.85rem;
+  color: #4ade80;
+}
+
+/* ==================== AVATAR ==================== */
+.wv-avatar-wrap {
+  position: relative;
+  width: 120px;
+  animation: wvFloat 3.5s ease-in-out infinite;
+}
+.wv-avatar-wrap--mini {
+  width: 72px;
+  animation: wvFloat 3.5s ease-in-out infinite;
+}
+.wv-avatar-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 20px rgba(74, 222, 128, 0.2));
+}
+.wv-avatar-glow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(74,222,128,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ==================== MINI PING ==================== */
+.wv-mini-ping {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: wvPing 1.5s ease-in-out infinite;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes wvPopIn {
+  0%   { opacity: 0; transform: scale(0.4) translateY(40px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes wvBubbleIn {
+  0%   { opacity: 0; transform: scale(0.85) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes wvFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes wvBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+@keyframes wvPing {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.4; }
+}
+
+/* ==================== RESPONSIVO ==================== */
+@media (max-width: 480px) {
+  .wv-container { bottom: 16px; right: 16px; }
+  .wv-avatar-wrap { width: 90px; }
+  .wv-bubble { max-width: 210px; min-width: 150px; }
+  .wv-bubble-text { font-size: 0.8rem; }
+}

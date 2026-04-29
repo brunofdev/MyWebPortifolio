@@ -17,7 +17,7 @@ const MainLayout = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
-  
+
   const openEditProfile = () => {
     navigate("/editar-perfil");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -56,9 +56,12 @@ const MainLayout = () => {
         openEditProfile={openEditProfile}
       />
       {/* Se o modal for aberto, ele aparece por cima de qualquer tela */}
-      <Modal isOpen={isAuthModalOpen} onClose={closeAuthModal}>
-        <AuthModal handleLoginSuccess={handleLoginSuccess} onClose={closeAuthModal} />
-      </Modal>
+      {isAuthModalOpen && (
+        <AuthModal
+          handleLoginSuccess={handleLoginSuccess}
+          onClose={closeAuthModal}
+        />
+      )}
 
       <main className="layout-main-content">
         <Outlet context={{ openAuthModal }} />

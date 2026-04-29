@@ -1,25 +1,142 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef, memo } from "react";
 import "../../styles/feedback.css";
 
-// Função utilitária para requisições com retry
-const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await fetch(url, options);
-      if (response.status >= 500 && response.status <= 502 && attempt < retries) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        continue;
+const useBadWordsFilter = () => {
+  const badWordsMap = useMemo(() => ({
+    arrombado: "abençoado", boceta: "rosquinha", boquete: "beijinho", bosta: "docinho",
+    bunda: "popozão", buceta: "rosquinha", cacete: "biscoito", caralho: "sorvete",
+    carai: "caramba", cocô: "florzinha", cu: "docinho de coco", cuzão: "docinho grande",
+    foder: "brincar", foda: "sensacional", gozar: "celebrar", merda: "brigadeiro",
+    pau: "graveto", pinto: "pintinho", porra: "pipoca", puta: "estrela",
+    putaria: "festa", rola: "pirulito", siririca: "carinho", xoxota: "borboleta",
+  }), []);
+
+  const replaceBadWords = useCallback((text) => {
+    let filteredText = text;
+    const foundBadWords = [];
+    Object.keys(badWordsMap).forEach((badWord) => {
+      const regex = new RegExp(`\\b${badWord}\\b`, "gi");
+      if (regex.test(text)) {
+        const upper = badWord.toUpperCase();
+        if (!foundBadWords.includes(upper)) foundBadWords.push(upper);
+        filteredText = filteredText.replace(regex, badWordsMap[badWord]);
       }
-      return response;
-    } catch (error) {
-      if (attempt === retries) throw error;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-  throw new Error("Número máximo de tentativas excedido.");
+    });
+    return { filteredText, foundBadWords };
+  }, [badWordsMap]);
+
+  return { replaceBadWords };
 };
 
-const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
+const useApiRequest = () => {
+  const fetchWithRetry = useCallback(async (url, options, retries = 3, delay = 1200) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (response.status >= 500 && response.status <= 502 && attempt < retries) {
+          await new Promise((resolve) => setTimeout(resolve, delay * attempt));
+          continue;
+        }
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === "AbortError") throw new Error("Timeout");
+        if (attempt === retries) throw error;
+        await new Promise((resolve) => setTimeout(resolve, delay * attempt));
+      }
+    }
+    throw new Error("Falha na API.");
+  }, []);
+  return { fetchWithRetry };
+};
+
+const RATING_LABELS = ["", "Ruim", "Regular", "Bom", "Ótimo", "Excelente"];
+
+const StarRow = memo(({ rating, hoverRating, onRate, onHover, onLeave }) => (
+  <div className="fbf-stars">
+    {[1, 2, 3, 4, 5].map((star) => {
+      const active = star <= (hoverRating || rating);
+      return (
+        <button
+          key={star}
+          type="button"
+          className={`fbf-star ${active ? "fbf-star--active" : ""}`}
+          onClick={() => onRate(star)}
+          onMouseEnter={() => onHover(star)}
+          onMouseLeave={onLeave}
+          aria-label={`${star} estrelas`}
+        >
+          <svg viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+        </button>
+      );
+    })}
+    <span className="fbf-rating-label">
+      {RATING_LABELS[hoverRating || rating] || ""}
+    </span>
+  </div>
+));
+StarRow.displayName = "StarRow";
+
+const SuccessScreen = memo(({ rating, comment, onReset }) => (
+  <div className="fbf-success">
+    <div className="fbf-success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
+    <span className="fbf-success-eyebrow">// feedback_enviado.json</span>
+    <h3 className="fbf-success-title">Obrigado pelo retorno!</h3>
+    <p className="fbf-success-sub">Sua avaliação foi registrada com sucesso.</p>
+
+    <div className="fbf-success-card">
+      <div className="fbf-success-row">
+        <span className="fbf-success-key">nota</span>
+        <div className="fbf-success-stars">
+          {Array.from({ length: 5 }, (_, i) => (
+            <svg key={i} className={`fbf-mini-star ${i < rating ? "fbf-mini-star--on" : ""}`} viewBox="0 0 24 24" fill={i < rating ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+          ))}
+          <span className="fbf-success-badge">{rating}.0</span>
+        </div>
+      </div>
+      {comment && (
+        <div className="fbf-success-row fbf-success-row--col">
+          <span className="fbf-success-key">comentário</span>
+          <p className="fbf-success-comment">"{comment}"</p>
+        </div>
+      )}
+    </div>
+
+    <button type="button" className="fbf-btn-ghost" onClick={onReset}>
+      Enviar outro feedback
+    </button>
+  </div>
+));
+SuccessScreen.displayName = "SuccessScreen";
+
+const AuthGate = memo(({ onOpen }) => (
+  <div className="fbf-auth">
+    <div className="fbf-auth-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <p className="fbf-auth-text">Faça login para compartilhar sua experiência.</p>
+    <button type="button" className="fbf-btn-primary" onClick={onOpen}>
+      Entrar ou Cadastrar
+    </button>
+  </div>
+));
+AuthGate.displayName = "AuthGate";
+
+const Feedback = ({ isAuthenticated, token, openAuthModal, onFeedbackSubmitted }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -27,359 +144,165 @@ const Feedback = ({ isAuthenticated, token, openAuthModal }) => {
   const [warning, setWarning] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState("");
+  const [charFocus, setCharFocus] = useState(false);
 
-  const badWords = {
-    arrombado: "abençoado",
-    boceta: "rosquinha",
-    boquete: "beijinho",
-    bosta: "docinho",
-    bunda: "popozão",
-    buceta: "rosquinha",
-    cacete: "biscoito",
-    caralho: "sorvete",
-    carai: "caramba",
-    cocô: "florzinha",
-    cu: "docinho de coco",
-    cuzão: "docinho grande",
-    foder: "brincar",
-    foda: "sensacional",
-    gozar: "celebrar",
-    merda: "brigadeiro",
-    pau: "graveto",
-    pepeka: "serelepe",
-    perereca: "serelepe",
-    perereka: "serelepe",
-    pinto: "pintinho",
-    ppk: "serelepe",
-    porra: "pipoca",
-    punheta: "carinho",
-    puta: "estrela",
-    putaria: "festa",
-    putinha: "estrelinha",
-    putão: "super estrela",
-    rola: "pirulito",
-    siririca: "carinho",
-    tico: "tico-tico",
-    xoxota: "borboleta",
-    xoxóta: "borboleta",
-    bagos: "bolinhas",
-    cabaço: "novato",
-    caralha: "sorvetão",
-    chana: "florzona",
-    kacete: "biscoitão",
-    mandioca: "cenourinha",
-    pica: "gravetão",
-    pintelho: "peninha",
-    rabo: "caudinha",
-    trepar: "dançar",
-    xana: "borboletinha",
-    asno: "líder",
-    babaca: "herói",
-    bixa: "pessoa animada",
-    bixinha: "pessoa animada",
-    bixona: "pessoa animada",
-    burrice: "desafio",
-    burro: "gênio",
-    cabrão: "carinha",
-    canalha: "travesso",
-    carneiro: "ovelhinha",
-    chato: "curioso",
-    chifrudo: "desprevenido",
-    corno: "sortudo",
-    cretino: "bobalhão",
-    desgraça: "alegria",
-    droga: "puxa vida",
-    esquisito: "único",
-    fanfarrão: "engraçadinho",
-    fdp: "filho da estrela",
-    filho_da_puta: "filho da estrela",
-    fracassado: "vencedor",
-    gay: "pessoa alegre",
-    idiota: "sábio",
-    imbecil: "inteligente",
-    jumento: "mestre",
-    ladrão: "iluminado",
-    lixo: "tesouro",
-    maldito: "levado",
-    mané: "guerreiro",
-    mongol: "atleta",
-    nego: "luz",
-    nojento: "diferente",
-    otário: "campeão",
-    palhaçada: "brincadeira",
-    palhaço: "artista",
-    pequepe: "peixinho",
-    piolho: "pequenino",
-    pqp: "uau",
-    retardado: "esperto",
-    ridículo: "divertido",
-    safado: "malandro",
-    tonto: "desatento",
-    trouxa: "ingênuo",
-    vadia: "amiga",
-    vagabundo: "trabalhador",
-    viadagem: "animação",
-    viadão: "pessoa animada",
-    viadinho: "pessoa animada",
-    viado: "pessoa animada",
-    zé_ruela: "camarada",
-    baitola: "pessoa festiva",
-    beócio: "sabichão",
-    canalhice: "travessura",
-    capadócio: "espertalhão",
-    corno_manso: "sortudo tranquilo",
-    cuzona: "docinho gigante",
-    débil: "pensador",
-    escroto: "joia rara",
-    fedido: "aromático",
-    fuleco: "artista",
-    fuleiro: "charmeiro",
-    gado: "fã",
-    lazarento: "especial",
-    lesado: "descolado",
-    moleque: "jovem",
-    panaca: "amigão",
-    patife: "espertinho",
-    pentelho: "detalhista",
-    pilantra: "astuto",
-    pulha: "brincalhão",
-    sacana: "zoador",
-    salafrário: "malandrete",
-    sem_noção: "aventureiro",
-    traste: "tesourinho",
-    xarope: "doce",
-    zoiudo: "curioso",
-  };
+  const textareaRef = useRef(null);
+  const { replaceBadWords } = useBadWordsFilter();
+  const { fetchWithRetry } = useApiRequest();
 
-  const normalizeText = (text) =>
-    text
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/(.)\1+/g, "$1");
-
-  const replaceBadWords = (text) => {
-    let filteredText = text;
-    const foundBadWords = [];
-
-    for (const badWord in badWords) {
-      const regex = new RegExp(`\\b${badWord}\\b`, "gi");
-      if (text.match(regex)) {
-        if (!foundBadWords.includes(badWord.toUpperCase())) {
-          foundBadWords.push(badWord.toUpperCase());
-        }
-        filteredText = filteredText.replace(regex, badWords[badWord]);
-      }
-    }
-
-    if (foundBadWords.length > 0) {
-      setWarning(
-        `Ei! Palavras como "${foundBadWords.join(", ")}" foram trocadas por algo mais amigável 😉`
-      );
-    }
-
-    return filteredText;
-  };
-
-  // ==========================================
-  // 🧹 NOVO: LIMPEZA DA MESA AO MUDAR USUÁRIO
-  // ==========================================
   useEffect(() => {
-    // Se o token mudar (usuário deslogou ou outro usuário logou), reseta tudo para o estado inicial
-    setSubmitted(false);
-    setRating(0);
-    setHoverRating(0);
-    setComment("");
-    setSubmissionError("");
-    setWarning("");
+    setSubmitted(false); setRating(0); setHoverRating(0);
+    setComment(""); setSubmissionError(""); setWarning("");
   }, [token]);
-  // ==========================================
 
   useEffect(() => {
-    if (warning) {
-      const timer = setTimeout(() => setWarning(""), 3000);
-      return () => clearTimeout(timer);
-    }
+    if (!warning) return;
+    const t = setTimeout(() => setWarning(""), 4500);
+    return () => clearTimeout(t);
   }, [warning]);
 
-  const handleRating = (value) => {
-    setRating(value);
-  };
-
-  const handleCommentChange = (e) => {
-    if (e.target.value.length <= 1000) {
-      const newValue = replaceBadWords(e.target.value);
-      setComment(newValue);
-    }
-  };
+  const handleCommentChange = useCallback((e) => {
+    const rawValue = e.target.value;
+    if (rawValue.length > 1000) return;
+    const { filteredText, foundBadWords } = replaceBadWords(rawValue);
+    setComment(filteredText);
+    if (foundBadWords.length > 0) setWarning(`Palavras suavizadas: ${foundBadWords.join(", ")} 😉`);
+  }, [replaceBadWords]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      setSubmissionError("Você precisa estar logado para enviar um feedback.");
-      openAuthModal();
-      return;
-    }
-    if (rating === 0) {
-      setSubmissionError("Por favor, selecione uma avaliação com estrelas.");
-      return;
-    }
-    if (!comment.trim()) {
-      setSubmissionError("O comentário não pode estar vazio.");
-      return;
-    }
-    if (comment.trim().length < 10) {
-      setSubmissionError("O comentário deve ter no mínimo 10 caracteres.");
-      return;
-    }
+    if (!isAuthenticated) return openAuthModal();
+    if (rating === 0) return setSubmissionError("Selecione uma avaliação.");
+    if (comment.trim().length < 10) return setSubmissionError("Mínimo de 10 caracteres.");
 
     setIsLoading(true);
     setSubmissionError("");
-
-    const feedbackData = {
-      descricao: comment,
-      avaliacao: rating,
-      tipoFeedback: "GERAL",
-      referenciaId: 0,
-    };
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
     try {
-      const response = await fetchWithRetry(
-        `${import.meta.env.VITE_API_URL}/feedback/geral/criar`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(feedbackData),
-          signal: controller.signal,
-        }
-      );
-      clearTimeout(timeoutId);
-      const data = await response.json();
-
+      const response = await fetchWithRetry(`${import.meta.env.VITE_API_URL}/feedback/geral/criar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ descricao: comment.trim(), avaliacao: rating, tipoFeedback: "GERAL", referenciaId: 0 }),
+      });
       if (response.ok) {
         setSubmitted(true);
+        onFeedbackSubmitted?.({ rating, comment: comment.trim() });
       } else {
         if (response.status === 401 || response.status === 403) {
-          setSubmissionError("Sessão expirada ou token inválido. Faça login novamente.");
-          setTimeout(() => {
-            openAuthModal();
-          }, 2000);
-        } else if (response.status >= 500) {
-          setSubmissionError("Servidor indisponível após várias tentativas.");
+          setSubmissionError("Sessão expirada. Faça login novamente.");
+          setTimeout(openAuthModal, 1500);
         } else {
-          setSubmissionError(
-            data?.erro?.message || "Ocorreu um erro ao enviar o feedback."
-          );
+          setSubmissionError("Erro ao enviar feedback. Tente novamente.");
         }
       }
-    } catch (error) {
-      if (error.name === "AbortError") {
-        setSubmissionError("A requisição demorou muito. Tente novamente.");
-      } else {
-        console.error("Erro de conexão:", error);
-        setSubmissionError(
-          "Erro de conexão com o servidor. Verifique sua internet e tente novamente."
-        );
-      }
+    } catch {
+      setSubmissionError("Erro de conexão com o servidor.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const isSubmitDisabled = rating === 0 || comment.trim().length < 10 || isLoading || !isAuthenticated;
+  const charPct = Math.round((comment.length / 1000) * 100);
+
   return (
-    <>
-      <div className="feedback-container">
-        <section className="feedback animate-fadeIn">
-          <h2>Deixe seu Feedback</h2>
-          <h3>(Ajude-nos a melhorar!)</h3>
-          {isLoading && <div className="loading-bar" />}
-          {!isAuthenticated ? (
-            <div className="auth-required animate-fadeIn">
-              <p>Você precisa estar logado para enviar um feedback.</p>
-              <button className="login-link" onClick={openAuthModal}>
-                Fazer login ou cadastrar
-              </button>
-            </div>
-          ) : submitted ? (
-            <div className="feedback-submitted animate-fadeIn">
-              <div className="success-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--highlight-color)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </div>
-              <p className="thank-you-message">Seu feedback foi enviado com sucesso!</p>
-              <p className="submitted-rating">
-                <strong>Sua avaliação:</strong> {"★".repeat(rating)}
-                {"☆".repeat(5 - rating)}
-              </p>
-              <p className="submitted-comment">
-                <strong>Seu comentário:</strong> {comment}
-              </p>
-            </div>
-          ) : (
-            <form className="feedback-form" onSubmit={handleSubmit}>
-              <div className="feedback-stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={`star ${star <= (hoverRating || rating) ? "filled" : ""}`}
-                    onClick={() => handleRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <textarea
-                className="feedback-comment"
-                placeholder="Escreva seu comentário (mínimo 10 caracteres, máximo 500)"
-                value={comment}
-                onChange={handleCommentChange}
-                maxLength={500}
-                required
+    <div className="fbf-container">
+      <div className="fbf-card">
+
+        {isLoading && (
+          <div className="fbf-progress-bar">
+            <div className="fbf-progress-fill" />
+          </div>
+        )}
+
+        <div className="fbf-header">
+          <span className="fbf-eyebrow">// feedback.post()</span>
+          <h2 className="fbf-title">Deixe sua Avaliação</h2>
+          <p className="fbf-subtitle">Sua opinião constrói produtos melhores.</p>
+        </div>
+
+        {!isAuthenticated ? (
+          <AuthGate onOpen={openAuthModal} />
+        ) : submitted ? (
+          <SuccessScreen rating={rating} comment={comment} onReset={() => setSubmitted(false)} />
+        ) : (
+          <form className="fbf-form" onSubmit={handleSubmit} noValidate>
+
+            <div className="fbf-field">
+              <label className="fbf-label">Nota</label>
+              <StarRow
+                rating={rating}
+                hoverRating={hoverRating}
+                onRate={(s) => { setRating(s); setSubmissionError(""); }}
+                onHover={setHoverRating}
+                onLeave={() => setHoverRating(0)}
               />
-              <div className="instruction-message">
-                O comentário deve ter no mínimo 10 caracteres.
+            </div>
+
+            <div className="fbf-field">
+              <label className="fbf-label">Comentário</label>
+              <div className={`fbf-textarea-wrap ${charFocus ? "fbf-textarea-wrap--focus" : ""}`}>
+                <textarea
+                  ref={textareaRef}
+                  className="fbf-textarea"
+                  placeholder="Conte-nos o que achou..."
+                  value={comment}
+                  onChange={handleCommentChange}
+                  onFocus={() => setCharFocus(true)}
+                  onBlur={() => setCharFocus(false)}
+                  maxLength={1000}
+                  required
+                />
+                <div className="fbf-textarea-footer">
+                  <span className="fbf-helper">Mínimo 10 caracteres</span>
+                  <div className="fbf-char-track">
+                    <div className="fbf-char-bar" style={{ width: `${charPct}%`, background: charPct > 90 ? '#f87171' : charPct > 70 ? '#fbbf24' : '#4ade80' }} />
+                    <span className="fbf-char-count">{comment.length}/1000</span>
+                  </div>
+                </div>
               </div>
-              <p className="char-count">{comment.length}/1000</p>
-              {submissionError && (
-                <div className="submission-error animate-slideUp">{submissionError}</div>
+            </div>
+
+            {submissionError && (
+              <div className="fbf-error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                {submissionError}
+              </div>
+            )}
+
+            <button type="submit" className="fbf-btn-primary" disabled={isSubmitDisabled}>
+              {isLoading ? (
+                <>
+                  <svg className="fbf-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                  </svg>
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                  Enviar Feedback
+                </>
               )}
-              <button
-                type="submit"
-                className="feedback-submit"
-                disabled={rating === 0 || comment.trim().length < 10 || isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="spinner"></span>
-                    Enviando...
-                  </>
-                ) : (
-                  "Enviar Feedback"
-                )}
-              </button>
-            </form>
-          )}
-        </section>
+            </button>
+
+          </form>
+        )}
       </div>
-      {warning && <div className="feedback-warning animate-slideUp">{warning}</div>}
-    </>
+
+      {warning && (
+        <div className="fbf-toast">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {warning}
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Feedback;
+export default memo(Feedback);

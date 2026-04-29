@@ -1,228 +1,274 @@
-/* =========================================
-   CONTAINER PRINCIPAL RESPONSIVO
-   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+
+/* ==================== BASE ==================== */
 .skills-wrapper {
-  background-color: transparent;
-  color: #fff;
-  width: 100%;
+  background: transparent;
+  color: #e2e8f0;
+  font-family: 'Syne', sans-serif;
+  padding: 48px 40px;
+  animation: skillsFadeIn 0.6s ease-out forwards;
 }
 
-.skills-container {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; /* Coluna 1, Divisor, Coluna 2 */
-  gap: 40px;
-  align-items: center;
-  width: 100%;
+/* ==================== HEADER ==================== */
+.skills-header {
+  margin-bottom: 40px;
+}
+.skills-eyebrow {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #4ade80;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+.skills-eyebrow--spaced {
+  margin-bottom: 20px;
+  display: block;
+}
+.skills-title {
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+.skills-title-accent {
+  background: linear-gradient(90deg, #4ade80, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.skills-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0;
 }
 
-/* =========================================
-   COLUNA ESQUERDA: AS ESTEIRAS
-   ========================================= */
-.skills-section {
+/* ==================== ESTEIRAS ==================== */
+.skills-tracks {
+  margin-bottom: 44px;
+}
+.skills-track-label {
   display: flex;
-  flex-direction: column;
-  gap: 30px;
-  width: 100%;
-  overflow: hidden; /* Importante para o marquee não quebrar a tela */
-}
-
-.skill-track-box h3 {
-  font-size: 1.1rem;
-  color: #4caf50;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #475569;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  margin-bottom: 10px;
+  margin-top: 20px;
 }
+.skills-track-label:first-child { margin-top: 0; }
+.track-label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.track-label-dot--primary   { background: #4ade80; }
+.track-label-dot--secondary { background: #22d3ee; }
 
-/* O TRUQUE DE MÁGICA: Uma máscara de degradê que faz as imagens sumirem nas bordas */
 .skills-marquee {
   position: relative;
   width: 100%;
   display: flex;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
 }
-
 .skills-marquee-content {
   display: flex;
-  gap: 20px;
-  padding: 10px 0;
+  gap: 12px;
+  padding: 4px 0;
   width: max-content;
-  animation: scrollMarquee 15s linear infinite;
+  animation: scrollMarquee 22s linear infinite;
 }
-
-/* Inverte a direção da esteira do Backend para ficar mais dinâmico */
 .skills-marquee-content.reverse {
   animation-direction: reverse;
 }
-
 .skills-marquee-content:hover {
-  animation-play-state: paused; /* Para a esteira quando passa o mouse */
+  animation-play-state: paused;
 }
 
 .tech-badge {
-  width: 65px;
-  height: 65px;
-  object-fit: contain; /* Garante que a logo não amasse */
-  background: rgba(255, 255, 255, 0.05); /* Fundo sutil para destacar logos escuras */
-  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 76px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
+  padding: 12px 8px 10px;
+  cursor: default;
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  flex-shrink: 0;
 }
-
 .tech-badge:hover {
-  transform: scale(1.15) translateY(-5px);
-  border-color: #4caf50;
-  background: rgba(76, 175, 80, 0.1);
-  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+  transform: translateY(-6px);
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.06);
+}
+.tech-badge-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.tech-badge-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #475569;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 @keyframes scrollMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); } /* Move exatos 50% (o tamanho do array original) */
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* =========================================
-   DIVISOR NEON
-   ========================================= */
-.skills-divider {
-  width: 2px;
-  height: 80%;
-  min-height: 250px;
-  background: linear-gradient(180deg, transparent, #4caf50, transparent);
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+/* ==================== EXPERTISE GRID ==================== */
+.skills-expertise-block {
+  margin-top: 44px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.skills-expertise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
 }
 
-/* =========================================
-   COLUNA DIREITA: TEXTO GLASSMORPHISM
-   ========================================= */
-.skills-text {
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(76, 175, 80, 0.2);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #e0e0e0;
-  text-align: justify;
-  /* Altura fluida, sem precisar de barra de rolagem forçada */
-  max-height: 400px; 
-  overflow-y: auto;
+.expertise-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+.expertise-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0), transparent);
+  transition: background 0.4s ease;
+}
+.expertise-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.03);
+}
+.expertise-card:hover::after {
+  background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.6), transparent);
+}
+.expertise-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.expertise-index {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #4ade80;
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.expertise-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.expertise-detail {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.skills-text p {
-  margin-bottom: 15px;
+/* ==================== MOBILE GRID ==================== */
+.skills-mobile-grid { display: none; }
+
+/* ==================== ANIMAÇÃO ==================== */
+@keyframes skillsFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.skills-text p:last-child {
-  margin-bottom: 0;
-}
-
-/* Um destaque de cor para palavras chave */
-.highlight {
-  color: #4caf50;
-  font-weight: bold;
-}
-
-/* Scrollbar fina elegante só para a caixa de texto, caso o texto fique gigante */
-.skills-text::-webkit-scrollbar { width: 6px; }
-.skills-text::-webkit-scrollbar-track { background: transparent; }
-.skills-text::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; }
-
-/* =========================================
-   GRID MOBILE (oculto no desktop)
-   ========================================= */
-.skills-mobile-grid {
-  display: none;
-}
-
-/* =========================================
-   RESPONSIVIDADE (MOBILE E TABLET)
-   ========================================= */
+/* ==================== RESPONSIVO ==================== */
 @media (max-width: 992px) {
-  .skills-container {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+  .skills-tracks { display: none; }
+  .skills-mobile-grid { display: block; }
+  .skills-expertise-grid { grid-template-columns: 1fr 1fr; }
+}
 
-  .skills-section {
-    display: none;
-  }
+@media (max-width: 768px) {
+  .skills-wrapper { padding: 32px 24px; }
+  .skills-expertise-grid { grid-template-columns: 1fr; }
+}
 
-  .skills-mobile-grid {
-    display: block;
-  }
+@media (max-width: 480px) {
+  .skills-wrapper { padding: 24px 16px; }
+}
 
-  .smg-group {
-    margin-bottom: 20px;
-  }
-
-  .smg-group:last-child {
-    margin-bottom: 0;
-  }
-
-  .smg-title {
-    font-size: 0.78rem;
-    color: #4caf50;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .smg-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .smg-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(76, 175, 80, 0.2);
-    border-radius: 12px;
-    padding: 14px 10px 10px;
-    flex: 1 1 calc(25% - 8px);
-    min-width: 68px;
-    max-width: 96px;
-    transition: border-color 0.25s, background 0.25s;
-  }
-
-  .smg-item:active {
-    border-color: #4caf50;
-    background: rgba(76, 175, 80, 0.08);
-  }
-
-  .smg-icon {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-  }
-
-  .smg-name {
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.65);
-    text-align: center;
-    font-weight: 500;
-    line-height: 1.2;
-  }
-
-  .skills-divider {
-    display: none;
-  }
-
-  .skills-text {
-    padding: 20px;
-    max-height: none;
-    font-size: 0.92rem;
-  }
+/* ==================== MOBILE GRID ESTILOS ==================== */
+.smg-group { margin-bottom: 24px; }
+.smg-group:last-child { margin-bottom: 0; }
+.smg-title {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #4ade80;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.smg-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.smg-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 14px 10px 10px;
+  flex: 1 1 calc(25% - 8px);
+  min-width: 68px;
+  max-width: 90px;
+  transition: border-color 0.25s, background 0.25s;
+}
+.smg-item:active {
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.06);
+}
+.smg-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+.smg-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #475569;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
 }

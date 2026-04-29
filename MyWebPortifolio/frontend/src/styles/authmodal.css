@@ -22,6 +22,7 @@
   width: 100%;
   max-width: 700px;
   max-height: 90vh; /* Limita a altura do modal à tela */
+  min-height: 450px;
   display: flex; 
   flex-direction: column; 
   background-color: #1a1a1a;
@@ -104,8 +105,8 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow: hidden; 
-  padding: 40px;/* O form não rola, quem rola é o body abaixo */
+  padding: 40px;
+  overflow: hidden;
 }
 
 .form-scrollable-body {

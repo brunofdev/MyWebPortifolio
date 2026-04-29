@@ -9,6 +9,7 @@ import Contact from "../components/home/Contact";
 import Feedback from "../components/home/Feedback";
 import FeedbackList from "../components/home/FeedbackList";
 import ArticleCarousel from "../components/home/ArticleCarousel";
+import WelcomeAvatar from "../components/home/WelcomeAvatar";
 import "../styles/global.css";
 import "../styles/home.css";
 
@@ -19,7 +20,6 @@ const Home = () => {
 
   return (
     <div className="content">
-
       {/* Sidebar fixa na esquerda (some no mobile via CSS) */}
       <div className="sidebar-wrapper">
         <Sidebar />
@@ -27,6 +27,7 @@ const Home = () => {
 
       <main className="main-content">
         <div className="main-container">
+          <WelcomeAvatar />
 
           {/* Hero strip exclusiva do mobile — sidebar some, isso apresenta o dev */}
           <div className="mobile-hero-strip">
@@ -41,6 +42,11 @@ const Home = () => {
               ↓ Currículo PDF
             </a>
           </div>
+           {/* 4. DESEJO — liderança técnica via artigos */}
+          <section className="section-articles" id="articles">
+            <ArticleCarousel />
+          </section>
+          <hr className="separator" />
 
           {/* 1. ATENÇÃO — projetos: hook visual imediato */}
           <section className="section-projects" id="projects">
@@ -56,11 +62,7 @@ const Home = () => {
           <section className="section-skills" id="skills"><Skills /></section>
           <hr className="separator" />
 
-          {/* 4. DESEJO — liderança técnica via artigos */}
-          <section className="section-articles" id="articles">
-            <ArticleCarousel />
-          </section>
-          <hr className="separator" />
+         
 
           {/* 5. DESEJO — prova social */}
           <section className="section-feedback-list" id="feedbackList">

@@ -1,182 +1,360 @@
-/* =========================================
-   CONTAINER PRINCIPAL
-   ========================================= */
-.feedback-list-container {
-  background: rgba(18, 18, 18, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 30px !important;
-  border-radius: 16px;
-  border: 1px solid rgba(76, 175, 80, 0.15);
-  color: #fff;
-  margin: 20px auto;
-  max-width: 800px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+
+/* ==================== BASE ==================== */
+.fb-container {
+  padding: 48px 40px;
+  font-family: 'Syne', sans-serif;
+  color: #e2e8f0;
+  width: 100%;
+  animation: fbFadeIn 0.5s ease-out forwards;
 }
 
-.feedback-list-header {
+/* ==================== HEADER ==================== */
+.fb-header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 15px;
+  gap: 20px;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
 }
-
-.feedback-list-title {
-  font-size: 1.8rem;
-  color: #4caf50;
-  margin: 0;
-}
-
-.reload-button {
-  background: transparent;
-  color: #a0aec0;
-  border: 1px solid #a0aec0;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.reload-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-color: #fff;
-}
-
-/* =========================================
-   LISTA E SCROLL
-   ========================================= */
-.feedback-list {
+.fb-header-left {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Mais espaço entre as avaliações */
-  max-height: 600px;
-  overflow-y: auto;
-  padding-right: 15px;
+  gap: 6px;
 }
-
-.feedback-list::-webkit-scrollbar { width: 8px; }
-.feedback-list::-webkit-scrollbar-track { background: transparent; }
-.feedback-list::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 4px; }
-
-/* =========================================
-   CARDS DE AVALIAÇÃO (Adeus Bolhas, Olá Cards)
-   ========================================= */
-.whatsapp-bubble-container {
-  display: flex;
-  width: 100%;
+.fb-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #4ade80;
+  letter-spacing: 0.12em;
 }
-
-.whatsapp-bubble {
-  position: relative;
-  background: rgba(30, 30, 30, 0.5); /* Fundo de vidro escuro */
-  padding: 24px;
-  border-radius: 12px;
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+.fb-title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.15;
 }
-
-/* Efeito Premium no Hover: Apenas a borda brilha verde, o texto continua branco e legível */
-.whatsapp-bubble:hover {
-  transform: translateY(-4px);
-  background: rgba(40, 40, 40, 0.8);
-  border-color: rgba(76, 175, 80, 0.5);
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
-}
-
-/* Card alternado um pouco mais claro para quebrar a monotonia */
-.whatsapp-bubble.whatsapp-bubble-alt {
-  background: rgba(40, 40, 40, 0.4);
-}
-
-/* =========================================
-   CONTEÚDO DO CARD
-   ========================================= */
-.feedback-header {
+.fb-summary {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-top: 6px;
+}
+.fb-summary-score {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.fb-summary-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.fb-summary-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #475569;
+  letter-spacing: 0.05em;
 }
 
-.feedback-avatar {
-  width: 50px;
-  height: 50px;
+/* ==================== RELOAD BTN ==================== */
+.fb-reload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fb-reload-btn svg { width: 14px; height: 14px; }
+.fb-reload-btn:hover:not(:disabled) {
+  border-color: rgba(74, 222, 128, 0.35);
+  color: #4ade80;
+}
+.fb-reload-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fb-spin { animation: spin 0.8s linear infinite; }
+
+/* ==================== STARS ==================== */
+.fb-stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+.fb-star { width: 13px; height: 13px; }
+.fb-star--filled { color: #fbbf24; }
+.fb-star--empty  { color: #334155; }
+
+/* ==================== RATING BADGE ==================== */
+.fb-rating-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+.fb-badge--green  { background: rgba(74, 222, 128, 0.12); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.25); }
+.fb-badge--teal   { background: rgba(34, 211, 238, 0.12); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.25); }
+.fb-badge--yellow { background: rgba(251, 191, 36, 0.12);  color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); }
+.fb-badge--orange { background: rgba(251, 146, 60, 0.12);  color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.25); }
+.fb-badge--red    { background: rgba(248, 113, 113, 0.12); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.25); }
+
+/* ==================== LISTA ==================== */
+.fb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ==================== CARD ==================== */
+.fb-card {
+  display: flex;
+  gap: 16px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fbSlideIn 0.4s ease-out both;
+  transition: background 0.2s ease;
+  border-radius: 0;
+}
+.fb-card:first-child { padding-top: 0; }
+.fb-card:last-child  { border-bottom: none; }
+.fb-card:hover { background: rgba(74, 222, 128, 0.02); }
+
+/* ==================== AVATAR SIDE ==================== */
+.fb-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+.fb-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.fb-avatar {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #4caf50;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3); /* Brilho na foto */
+  border: 1.5px solid rgba(74, 222, 128, 0.3);
+}
+.fb-avatar-fallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1.5px solid rgba(74, 222, 128, 0.3);
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4ade80;
+  font-family: 'JetBrains Mono', monospace;
+}
+.fb-card-line {
+  width: 1px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  margin-top: 8px;
+  min-height: 20px;
+}
+.fb-card:last-child .fb-card-line { display: none; }
+
+/* ==================== CARD BODY ==================== */
+.fb-card-body {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+.fb-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.fb-user-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fb-username {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.fb-anon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  padding: 2px 8px;
+  letter-spacing: 0.06em;
+}
+.fb-anon-badge svg { width: 10px; height: 10px; }
+.fb-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fb-comment {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  line-height: 1.75;
+  margin: 10px 0 14px;
+}
+.fb-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fb-clock-icon { width: 12px; height: 12px; color: #334155; flex-shrink: 0; }
+.fb-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #334155;
+  letter-spacing: 0.03em;
 }
 
-.feedback-user-info {
+/* ==================== DELETE BTN ==================== */
+.fb-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 6px;
+  color: #f87171;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.fb-delete-btn svg { width: 13px; height: 13px; }
+.fb-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+/* ==================== ESTADOS ==================== */
+.fb-state {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+  text-align: center;
 }
+.fb-state svg { width: 36px; height: 36px; color: #334155; }
+.fb-state p { font-size: 0.9rem; color: #475569; margin: 0; }
+.fb-state--error svg { color: #f87171; }
+.fb-state--empty svg { color: #334155; }
 
-.feedback-item-username {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #fff;
-  margin: 0 0 4px 0;
-}
-
-.feedback-item-rating {
-  font-size: 16px;
-  margin: 0;
-}
-.full-stars { color: #ffd700; }
-.empty-stars { color: #555; }
-
-.feedback-item-comment {
-  font-size: 1.05rem;
-  color: #d1d5db;
-  line-height: 1.6;
-  margin: 0 0 15px 0;
-  text-align: justify;
-}
-
-.feedback-time {
-  font-size: 0.85rem;
-  color: #888;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 10px;
-  text-align: right;
-}
-
-/* Botão de Delete (Exclusivo Admin) */
-.delete-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid #ef4444;
-  padding: 6px 12px;
-  border-radius: 6px;
+.fb-retry-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: bold;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+.fb-retry-btn:hover {
+  border-color: rgba(74, 222, 128, 0.35);
+  color: #4ade80;
 }
 
-.delete-button:hover {
-  background-color: #ef4444;
-  color: #fff;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+/* ==================== SKELETON ==================== */
+.fb-skeleton {
+  width: 100%;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  animation: fbPulse 1.5s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+.fb-skeleton--short { height: 50px; width: 60%; }
+
+.fb-list {
+  max-height: 600px; /* altura de ~5 cards */
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
-/* =========================================
-   RESPONSIVIDADE
-   ========================================= */
-@media (max-width: 600px) {
-  .feedback-list-container { padding: 20px; }
-  .feedback-list-title { font-size: 1.4rem; }
-  .whatsapp-bubble { padding: 15px; }
-  .feedback-avatar { width: 40px; height: 40px; }
-  .feedback-item-username { font-size: 1rem; }
-  .feedback-item-comment { font-size: 0.95rem; }
+.fb-list::-webkit-scrollbar {
+  width: 4px;
+}
+.fb-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.fb-list::-webkit-scrollbar-thumb {
+  background: rgba(74, 222, 128, 0.3);
+  border-radius: 999px;
+}
+.fb-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 222, 128, 0.6);
+}
+
+
+/* ==================== ANIMAÇÕES ==================== */
+@keyframes fbFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fbSlideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fbPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.7; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ==================== RESPONSIVO ==================== */
+@media (max-width: 768px) {
+  .fb-container { padding: 32px 24px; }
+  .fb-header { flex-direction: column; gap: 16px; }
+  .fb-reload-btn { align-self: flex-start; }
+}
+@media (max-width: 480px) {
+  .fb-container { padding: 24px 16px; }
+  .fb-card { gap: 12px; }
+  .fb-avatar, .fb-avatar-wrap { width: 36px; height: 36px; }
+  .fb-card-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .fb-meta-right { align-self: flex-start; }
 }

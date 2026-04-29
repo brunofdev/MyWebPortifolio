@@ -3,10 +3,8 @@
    ========================================= */
 
 .layout-wrapper {
-  background-color: rgba(18, 18, 18, 0.65);
   position: relative;
-  width: 70%; 
-  max-width: 1400px;
+  width: 60%; 
   margin: 0 auto; 
   padding: 30px 20px;
   box-sizing: border-box;
@@ -25,12 +23,20 @@
   padding: 20px 0; 
 }
 
+
 /* =========================================
    RESPONSIVIDADE GLOBAL
    ========================================= */
+
+@media (max-width: 2400px) {
+  .layout-wrapper {
+    width: 90%; /* Expande no celular */
+    padding: 20px 10px;
+  }
+}   
 @media (max-width: 1335px) {
   .layout-wrapper {
-    width: 85%; /* Expande no celular */
+    width: 95%; /* Expande no celular */
     padding: 20px 10px;
   }
 }

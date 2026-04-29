@@ -2,19 +2,14 @@
    CONTAINER PRINCIPAL (SEM BARRA DE ROLAGEM)
    ========================================= */
 .about-section {
-  background: rgba(20, 20, 20, 0.4); /* Efeito vidro mais suave */
-  border: 1px solid rgba(76, 175, 80, 0.15); /* Borda verde bem sutil */
-  border-radius: 16px;
+ 
   padding: 40px !important;
   position: relative;
   transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-.about-section:hover {
-  border-color: #4caf50;
-  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.1);
-}
+
 
 /* =========================================
    CABEÇALHO E TÍTULO

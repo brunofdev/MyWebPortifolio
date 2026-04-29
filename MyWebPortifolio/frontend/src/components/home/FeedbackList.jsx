@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../../styles/feedbacklist.css';
 
-// --- Utilitário de API ---
 const API_BASE = `${import.meta.env.VITE_API_URL}/feedback/geral`;
 
 const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
@@ -21,72 +20,124 @@ const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
   throw new Error("Erro de conexão persistente.");
 };
 
-// --- Sub-componente: Item da Lista ---
-const FeedbackItem = ({ feedback, colorClass, isAdmin, currentUserName, handleDelete }) => {
-  // 1. Desestruturamos a nova propriedade isAnonimo do DTO
-  const { id, comentario, notaAvaliacao, dataDeCriacao, criadoPor, userName, fotoUsuario, isAnonimo } = feedback;
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return 'Data não disponível';
-    const date = new Date(dateString);
-    return isNaN(date.getTime()) ? 'Data não disponível' : 
-      date.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  };
-
-  const renderRating = (val) => {
-    const stars = Math.max(1, Math.min(5, Number(val) || 1));
-    return (
-      <div className="feedback-item-rating">
-        <span className="full-stars">{'★'.repeat(stars)}</span>
-        <span className="empty-stars">{'☆'.repeat(5 - stars)}</span>
-      </div>
-    );
-  };
-
-  const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-  // ==========================================
-  // 🎭 A MÁGICA DA MÁSCARA (ANONIMATO)
-  // ==========================================
-  const nomeExibicao = isAnonimo ? "Anônimo" : (criadoPor || 'Usuário');
-  const fotoExibicao = isAnonimo ? defaultAvatar : (fotoUsuario || defaultAvatar);
-
-  // 🔐 REGRA DE SEGURANÇA:
-  // A validação de quem pode deletar continua usando o 'criadoPor' real vindo do banco!
-  const podeDeletar = isAdmin || (currentUserName && currentUserName === userName);
-
+const StarRating = ({ value }) => {
+  const stars = Math.max(1, Math.min(5, Number(value) || 1));
   return (
-    <div className="whatsapp-bubble-container">
-      <div className={`whatsapp-bubble ${colorClass}`} role="article">
-        <div className="feedback-header">
-          {/* Usamos a foto mascarada */}
-          <img src={fotoExibicao} alt={nomeExibicao} className="feedback-avatar" />
-          <div className="feedback-user-info">
-            {/* Usamos o nome mascarado */}
-            <p className="feedback-item-username">{nomeExibicao}</p>
-            {renderRating(notaAvaliacao)}
-          </div>
-        </div>
-        <p className="feedback-item-comment">{comentario || 'Sem comentário'}</p>
-        <div className="feedback-time">{formatDateTime(dataDeCriacao)}</div>
-        
-        {/* Renderização Condicional do Botão */}
-        {podeDeletar && (
-          <button className="delete-button" onClick={() => handleDelete(id)}>delete</button>
-        )}
-      </div>
+    <div className="fb-stars">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg
+          key={i}
+          className={`fb-star ${i < stars ? 'fb-star--filled' : 'fb-star--empty'}`}
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+      ))}
     </div>
   );
 };
 
-// --- Componente Principal ---
-// Adicionada a prop refreshTrigger para a lista se auto-atualizar
+const RatingBadge = ({ value }) => {
+  const stars = Math.max(1, Math.min(5, Number(value) || 1));
+  const colors = {
+    1: 'fb-badge--red',
+    2: 'fb-badge--orange',
+    3: 'fb-badge--yellow',
+    4: 'fb-badge--teal',
+    5: 'fb-badge--green',
+  };
+  return (
+    <span className={`fb-rating-badge ${colors[stars]}`}>
+      {stars}.0
+    </span>
+  );
+};
+
+const FeedbackItem = ({ feedback, isAdmin, currentUserName, handleDelete, index }) => {
+  const { id, comentario, notaAvaliacao, dataDeCriacao, userName, fotoUsuario, isAnonimo, criadoPor } = feedback;
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'Data não disponível';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'Data não disponível' :
+      date.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+  const nomeExibicao = isAnonimo ? "Anônimo" : (criadoPor || 'Usuário');
+  const fotoExibicao = isAnonimo ? defaultAvatar : (fotoUsuario || defaultAvatar);
+  const podeDeletar = isAdmin || (currentUserName && currentUserName === userName);
+
+  const initials = nomeExibicao.slice(0, 2).toUpperCase();
+
+  return (
+    <article className="fb-card" style={{ animationDelay: `${index * 60}ms` }}>
+
+      <div className="fb-card-side">
+        <div className="fb-avatar-wrap">
+          <img
+            src={fotoExibicao}
+            alt={nomeExibicao}
+            className="fb-avatar"
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+          />
+          <div className="fb-avatar-fallback" style={{ display: 'none' }}>{initials}</div>
+        </div>
+        <div className="fb-card-line" />
+      </div>
+
+      <div className="fb-card-body">
+        <div className="fb-card-top">
+          <div className="fb-user-block">
+            <span className="fb-username">{nomeExibicao}</span>
+            {isAnonimo && (
+              <span className="fb-anon-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+                anônimo
+              </span>
+            )}
+          </div>
+          <div className="fb-meta-right">
+            <RatingBadge value={notaAvaliacao} />
+            {podeDeletar && (
+              <button className="fb-delete-btn" onClick={() => handleDelete(id)} title="Excluir feedback">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        <StarRating value={notaAvaliacao} />
+
+        <p className="fb-comment">{comentario || 'Sem comentário.'}</p>
+
+        <div className="fb-footer">
+          <svg className="fb-clock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span className="fb-date">{formatDateTime(dataDeCriacao)}</span>
+        </div>
+      </div>
+    </article>
+  );
+};
+
 const FeedbackList = ({ userRole, token, currentUserName, refreshTrigger }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Verificamos se é ADMIN3
   const isAdmin = userRole === "ADMIN3" || userRole?.includes("ADMIN3");
 
   const fetchFeedbacks = useCallback(async () => {
@@ -112,45 +163,96 @@ const FeedbackList = ({ userRole, token, currentUserName, refreshTrigger }) => {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (resp.ok) {
-          fetchFeedbacks();
+        fetchFeedbacks();
       } else {
-          alert("Erro: Você não tem permissão para apagar este feedback.");
+        alert("Erro: Você não tem permissão para apagar este feedback.");
       }
     } catch {
       alert("Erro ao tentar conectar com o servidor.");
     }
   };
 
-  // 👈 O fetchFeedbacks será chamado ao montar o componente ou sempre que refreshTrigger mudar!
-  useEffect(() => { 
-    fetchFeedbacks(); 
+  useEffect(() => {
+    fetchFeedbacks();
   }, [fetchFeedbacks, refreshTrigger]);
 
+  const avgRating = feedbacks.length
+    ? (feedbacks.reduce((acc, fb) => acc + (Number(fb.notaAvaliacao) || 0), 0) / feedbacks.length).toFixed(1)
+    : null;
+
   return (
-    <section className="feedback-list-container">
-      <div className="feedback-list-header">
-        <h2 className="feedback-list-title">Feedbacks Recebidos</h2>
-        <button className="reload-button" onClick={fetchFeedbacks} disabled={isLoading}>
-          {isLoading ? '...' : 'Recarregar'}
+    <section className="fb-container">
+
+      <div className="fb-header">
+        <div className="fb-header-left">
+          <span className="fb-eyebrow">// avaliações</span>
+          <h2 className="fb-title">Feedbacks Recebidos</h2>
+          {avgRating && (
+            <div className="fb-summary">
+              <span className="fb-summary-score">{avgRating}</span>
+              <div className="fb-summary-detail">
+                <StarRating value={Math.round(avgRating)} />
+                <span className="fb-summary-count">{feedbacks.length} avaliação{feedbacks.length !== 1 ? 'ões' : ''}</span>
+              </div>
+            </div>
+          )}
+        </div>
+        <button className="fb-reload-btn" onClick={fetchFeedbacks} disabled={isLoading}>
+          <svg
+            className={isLoading ? 'fb-spin' : ''}
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          >
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          {isLoading ? 'Carregando...' : 'Recarregar'}
         </button>
       </div>
 
-      {isLoading ? <p className="loading-text">Carregando...</p> : 
-       error ? <p className="error-text">{error}</p> : 
-       feedbacks.length === 0 ? <p className="no-feedback-text">Nenhum feedback encontrado.</p> : (
-        <div className="feedback-list">
+      {isLoading && (
+        <div className="fb-state">
+          <div className="fb-skeleton" />
+          <div className="fb-skeleton fb-skeleton--short" />
+          <div className="fb-skeleton" />
+        </div>
+      )}
+
+      {!isLoading && error && (
+        <div className="fb-state fb-state--error">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>{error}</p>
+          <button className="fb-retry-btn" onClick={fetchFeedbacks}>Tentar novamente</button>
+        </div>
+      )}
+
+      {!isLoading && !error && feedbacks.length === 0 && (
+        <div className="fb-state fb-state--empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <p>Nenhum feedback encontrado ainda.</p>
+        </div>
+      )}
+
+      {!isLoading && !error && feedbacks.length > 0 && (
+        <div className="fb-list">
           {feedbacks.map((fb, i) => (
-            <FeedbackItem 
-              key={fb.id || i} 
-              feedback={fb} 
-              isAdmin={isAdmin} 
-              currentUserName={currentUserName} 
-              handleDelete={handleDelete} 
-              colorClass={i % 2 === 0 ? '' : 'whatsapp-bubble-alt'} 
+            <FeedbackItem
+              key={fb.id || i}
+              feedback={fb}
+              index={i}
+              isAdmin={isAdmin}
+              currentUserName={currentUserName}
+              handleDelete={handleDelete}
             />
           ))}
         </div>
       )}
+
     </section>
   );
 };

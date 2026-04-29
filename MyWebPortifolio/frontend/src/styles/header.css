@@ -71,7 +71,6 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   height: 100%;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 0 28px;
   gap: 0;
