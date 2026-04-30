@@ -1,5 +1,3 @@
-
-cat > /mnt/user-data/outputs/README-MyWebPortifolio.md << 'ENDOFFILE'
 <div align="center">
 
 # 🌐 BrunoFragaDev — Portfolio Web
