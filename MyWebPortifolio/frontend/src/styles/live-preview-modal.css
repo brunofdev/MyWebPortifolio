@@ -192,7 +192,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   padding: 40px;
   z-index: 2;
   animation: lpm-fade-in 0.3s ease-out forwards;
@@ -200,20 +200,22 @@
 
 .lpm-state__title {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #4ade80;
+  text-shadow: 0 0 18px rgba(74, 222, 128, 0.45);
   margin: 0;
   text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .lpm-state__sub {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.4);
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.65);
   margin: 0;
   text-align: center;
-  line-height: 1.6;
-  max-width: 380px;
+  line-height: 1.7;
+  max-width: 420px;
 }
 
 /* Spinner */

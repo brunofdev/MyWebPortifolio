@@ -16,10 +16,10 @@ const LivePreviewModal = ({ url, title, isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       setIframeState("loading");
-      // Fallback timeout: se em 8s não carregou, assume bloqueado
+      // Timeout: se onLoad não disparar em 8s, assume bloqueado (ex: net::ERR sem onError)
       timeoutRef.current = setTimeout(() => {
         setIframeState((s) => (s === "loading" ? "blocked" : s));
-      }, 8000);
+      }, 60000);
     }
     return () => clearTimeout(timeoutRef.current);
   }, [isOpen, url]);
@@ -33,18 +33,7 @@ const LivePreviewModal = ({ url, title, isOpen, onClose }) => {
 
   const handleIframeLoad = useCallback(() => {
     clearTimeout(timeoutRef.current);
-    // Tenta detectar bloqueio: iframe carregado mas vazio (about:blank fallback)
-    try {
-      const doc = iframeRef.current?.contentDocument;
-      if (!doc || doc.body?.innerHTML === "") {
-        setIframeState("blocked");
-      } else {
-        setIframeState("ready");
-      }
-    } catch {
-      // Cross-origin throw = site carregou mas bloqueia acesso ao DOM = OK, está visível
-      setIframeState("ready");
-    }
+    setIframeState("ready");
   }, []);
 
   const handleIframeError = useCallback(() => {
@@ -110,15 +99,15 @@ const LivePreviewModal = ({ url, title, isOpen, onClose }) => {
           {iframeState === "loading" && (
             <div className="lpm-state lpm-state--loading" aria-live="polite">
               <div className="lpm-spinner">
-                <svg width="40" height="40" viewBox="0 0 40 40">
+                <svg width="56" height="56" viewBox="0 0 40 40">
                   <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(74,222,128,0.15)" strokeWidth="3"/>
                   <circle cx="20" cy="20" r="16" fill="none" stroke="#4ade80" strokeWidth="3"
                     strokeDasharray="60 40" strokeLinecap="round"/>
                 </svg>
               </div>
-              <p className="lpm-state__title">Conectando ao servidor</p>
+              <p className="lpm-state__title">Acordando o servidor...</p>
               <p className="lpm-state__sub">
-                O Render pode demorar ~30s para acordar na primeira requisição.
+                Servidores gratuitos hibernam quando inativos. Aguarde até 60 segundos na primeira requisição.
               </p>
             </div>
           )}
