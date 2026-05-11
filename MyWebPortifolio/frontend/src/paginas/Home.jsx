@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useOutletContext } from "react-router-dom";
-import Sidebar from "../components/home/Sidebar"; 
+import Sidebar from "../components/home/Sidebar";
 import About from "../components/home/About";
 import Skills from "../components/home/Skills";
 import Projects from "../components/home/Projects";
@@ -10,6 +10,7 @@ import Feedback from "../components/home/Feedback";
 import FeedbackList from "../components/home/FeedbackList";
 import ArticleCarousel from "../components/home/ArticleCarousel";
 import WelcomeAvatar from "../components/home/WelcomeAvatar";
+import GitHubActivity from "../components/home/Githubactivity";
 import "../styles/global.css";
 import "../styles/home.css";
 
@@ -42,9 +43,14 @@ const Home = () => {
               ↓ Currículo PDF
             </a>
           </div>
-           {/* 4. DESEJO — liderança técnica via artigos */}
+          {/* 4. DESEJO — liderança técnica via artigos */}
           <section className="section-articles" id="articles">
             <ArticleCarousel />
+          </section>
+          <hr className="separator" />
+
+          <section className="section-github" id="github-activity">
+            <GitHubActivity />
           </section>
           <hr className="separator" />
 
@@ -62,7 +68,7 @@ const Home = () => {
           <section className="section-skills" id="skills"><Skills /></section>
           <hr className="separator" />
 
-         
+
 
           {/* 5. DESEJO — prova social */}
           <section className="section-feedback-list" id="feedbackList">
