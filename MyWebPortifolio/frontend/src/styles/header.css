@@ -698,11 +698,11 @@
   .hdr-hamburger { display: flex; }
 
   .hdr-inner {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto auto;
     padding: 0 18px;
   }
 
-  .hdr-actions { gap: 8px; }
+  .hdr-actions { gap: 8px; justify-content: flex-end;}
 
   .hdr-user-name   { display: none; }
   .hdr-chevron     { display: none; }
