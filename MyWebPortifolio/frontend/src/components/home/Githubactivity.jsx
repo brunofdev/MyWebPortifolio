@@ -10,27 +10,53 @@ const EVENT_CONFIG = {
   PullRequestEvent:       { icon: "ti-git-pull-request", label: "PR",      cls: "pr"      },
   CreateEvent:            { icon: "ti-git-branch",       label: "Create",  cls: "create"  },
   IssuesEvent:            { icon: "ti-circle-dot",       label: "Issue",   cls: "issue"   },
-  IssueCommentEvent:      { icon: "ti-message",          label: "Comment", cls: "comment" },
-  DeleteEvent:            { icon: "ti-trash",            label: "Delete",  cls: "delete"  },
-  WatchEvent:             { icon: "ti-star",             label: "Star",    cls: "star"    },
-  ForkEvent:              { icon: "ti-git-fork",         label: "Fork",    cls: "fork"    },
   ReleaseEvent:           { icon: "ti-package",          label: "Release", cls: "release" },
   PullRequestReviewEvent: { icon: "ti-check",            label: "Review",  cls: "review"  },
 };
 
 const TYPE_COLORS = {
-  commit:  { accent: "#3fb950", bg: "rgba(63,185,80,0.08)",   text: "#4cbb61", border: "rgba(63,185,80,0.25)"   },
-  pr:      { accent: "#79c0ff", bg: "rgba(121,192,255,0.08)", text: "#79c0ff", border: "rgba(121,192,255,0.25)" },
-  create:  { accent: "#56d364", bg: "rgba(86,211,100,0.08)",  text: "#56d364", border: "rgba(86,211,100,0.25)"  },
-  issue:   { accent: "#f85149", bg: "rgba(248,81,73,0.08)",   text: "#f85149", border: "rgba(248,81,73,0.25)"   },
-  comment: { accent: "#bc8cff", bg: "rgba(188,140,255,0.08)", text: "#bc8cff", border: "rgba(188,140,255,0.25)" },
-  delete:  { accent: "#f0883e", bg: "rgba(240,136,62,0.08)",  text: "#f0883e", border: "rgba(240,136,62,0.25)"  },
-  star:    { accent: "#e3b341", bg: "rgba(227,179,65,0.08)",  text: "#e3b341", border: "rgba(227,179,65,0.25)"  },
-  fork:    { accent: "#bc8cff", bg: "rgba(188,140,255,0.08)", text: "#bc8cff", border: "rgba(188,140,255,0.25)" },
-  release: { accent: "#4dd0e1", bg: "rgba(77,208,225,0.08)",  text: "#4dd0e1", border: "rgba(77,208,225,0.25)"  },
-  review:  { accent: "#42a5f5", bg: "rgba(66,165,245,0.08)",  text: "#42a5f5", border: "rgba(66,165,245,0.25)"  },
-};
+  commit: {
+    accent: "#3FB950",
+    bg: "rgba(63, 185, 80, 0.10)",
+    text: "#7EE787",
+    border: "rgba(63, 185, 80, 0.22)",
+  },
 
+  pr: {
+    accent: "#2F81F7",
+    bg: "rgba(47, 129, 247, 0.10)",
+    text: "#A5D6FF",
+    border: "rgba(47, 129, 247, 0.22)",
+  },
+
+  create: {
+    accent: "#D29922",
+    bg: "rgba(210, 153, 34, 0.10)",
+    text: "#F2CC60",
+    border: "rgba(210, 153, 34, 0.22)",
+  },
+
+  issue: {
+    accent: "#F85149",
+    bg: "rgba(248, 81, 73, 0.10)",
+    text: "#FFABA8",
+    border: "rgba(248, 81, 73, 0.22)",
+  },
+
+  release: {
+    accent: "#C9D1D9",
+    bg: "rgba(201, 209, 217, 0.06)",
+    text: "#F0F6FC",
+    border: "rgba(201, 209, 217, 0.16)",
+  },
+
+  review: {
+    accent: "#1F9CF0",
+    bg: "rgba(31, 156, 240, 0.10)",
+    text: "#C2E7FF",
+    border: "rgba(31, 156, 240, 0.22)",
+  },
+};
 /* ── Helpers ─────────────────────────────────────────── */
 function timeAgo(dateStr) {
   const s = Math.floor((Date.now() - new Date(dateStr)) / 1000);

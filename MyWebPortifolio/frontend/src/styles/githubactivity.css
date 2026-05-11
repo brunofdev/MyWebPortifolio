@@ -4,14 +4,16 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .gh-root {
-  --bg: #0d1117;
+
+
+--bg: #0d1117;
   --surface: #161b22;
   --surface2: #1c2128;
   --border: rgba(255,255,255,0.07);
   --border-strong: rgba(255,255,255,0.12);
   --text-primary: #e6edf3;
   --text-secondary: #7d8590;
-  --text-muted: #484f58;
+  --text-muted: #a2a8b0;
   --green: #3fb950;
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Syne', sans-serif;
@@ -51,10 +53,10 @@
   color: var(--green); text-transform: uppercase;
 }
 .gh-user {
-  font-size: 11px; color: var(--text-muted); letter-spacing: 1px;
+  font-size: 12px; color: var(--text-muted); letter-spacing: 1px;
 }
 .gh-sync {
-  font-size: 10px; color: var(--text-muted); letter-spacing: 1px;
+  font-size: 14px; color: var(--text-muted); letter-spacing: 1px;
   font-family: var(--mono);
 }
 
@@ -131,7 +133,7 @@
 
 .gh-row {
   position: relative;
-  padding: 13px 20px 13px 20px;
+  padding: 20px;
   border-bottom: 1px solid var(--border);
   transition: background 0.15s ease;
   cursor: default;
@@ -182,7 +184,7 @@
 .gh-branch i { font-size: 10px; }
 
 .gh-time {
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  font-family: var(--mono); font-size: 14px; font-weight: 500;
   color: var(--text-muted); margin-left: auto; flex-shrink: 0; letter-spacing: 0.5px;
 }
 
@@ -359,46 +361,87 @@
   border: 1px solid var(--border-strong); border-radius: 3px;
   color: var(--text-muted);
 }
-
 /* ── Responsividade (Mobile) ───────────────────────── */
+
 @media (max-width: 768px) {
-  /* Arruma o cabeçalho para não encavalar os textos */
+  /* No mobile, o cabeçalho vira uma coluna para o tempo e sinal não atropelarem o título */
   .gh-header {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px 14px;
-  }
-  
-  /* Esconde o @brunofdev no mobile para poupar espaço (já estão no seu site mesmo) */
-  .gh-user {
-    display: none; 
-  }
-  
-  /* Empurra o relógio e os sinais para a direita ou para baixo */
-  .gh-header-right {
-    margin-left: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
   }
 
-  /* Reduz o padding das linhas para caber melhor na tela do celular */
-  .gh-row {
-    padding: 12px 12px 12px 16px;
+  .gh-header-right {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
   }
-  
-  /* Ajusta o grid de botões de filtro para ficar centralizado */
+
+  /* Filtros: centralizamos e deixamos os botões um pouco menores */
   .gh-filters {
     justify-content: center;
     padding: 10px;
+    gap: 4px;
   }
-  
-  /* Os stats (+ linhas / - linhas) quebram de linha se a tela for muito fina */
-  .gh-commit-meta {
-    flex-direction: column;
-    align-items: flex-start;
+
+  .gh-filter-btn {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+
+  /* Reduzimos o recuo das mensagens para aproveitar a largura da tela */
+  .gh-commit-body, .gh-pr-body {
+    padding-left: 10px;
+    border-left: 1px solid var(--border-strong);
+    margin-left: 5px;
+  }
+
+  /* Ajustamos o topo da linha para os elementos não brigarem por espaço */
+  .gh-row-top {
     gap: 6px;
   }
-  
-  .gh-stats {
+
+  .gh-repo {
+    font-size: 11px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Footer: empilhamos as informações para evitar o texto encavalado */
+  .gh-footer {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .gh-footer-link {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: center;
+  }
+
+  .gh-footer-hint {
+    font-size: 9px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* Ajuste fino para telas muito pequenas (abaixo de 380px) */
+@media (max-width: 380px) {
+  .gh-user {
+    display: none; /* Escondemos o @username para priorizar o título do log */
+  }
+  
+  .gh-time {
+    font-size: 11px;
+  }
+  
+  .gh-badge {
+    font-size: 8px;
+    padding: 1px 4px;
   }
 }
